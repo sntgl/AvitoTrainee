@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Avito Trainee</string>
+    <string name="hourly_forecast">На сегодня</string>
 </resources>

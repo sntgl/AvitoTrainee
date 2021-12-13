@@ -21,12 +21,12 @@ class MainActivity : ComponentActivity() {
             AvitoTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    Column {
-                        WeatherIcon(icon = "13n")
-                        WeatherIcon(icon = "02d")
-                        WeatherIcon(icon = "02d")
-                        WeatherIcon(icon = "")
-                    }
+//                    Column {
+//                        WeatherIcon(icon = "13n")
+//                        WeatherIcon(icon = "02d")
+//                        WeatherIcon(icon = "02d")
+//                        WeatherIcon(icon = "")
+//                    }
                 }
             }
         }

@@ -37,12 +37,15 @@ fun Hourly(
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
-                .padding(4.dp)
+                .padding(4.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.watches),
                 contentDescription = "icon",
-                tint = MaterialTheme.colors.secondary
+                tint = MaterialTheme.colors.secondaryVariant,
+                modifier = Modifier
+                    .size(20.dp)
             )
             Text(
                 text = stringResource(id = R.string.hourly_forecast),

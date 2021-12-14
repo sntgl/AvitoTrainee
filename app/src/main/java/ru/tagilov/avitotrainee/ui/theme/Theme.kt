@@ -14,6 +14,9 @@ private val DarkColorPalette = darkColors(
     secondary = Gray200,
     background = Gray700,
     onBackground = Gray500,
+    //шиммер
+    surface = Gray650,
+    onSurface = Gray550,
 )
 
 private val LightColorPalette = lightColors(
@@ -24,6 +27,9 @@ private val LightColorPalette = lightColors(
     secondaryVariant = Gray500,
     background = Gray100,
     onBackground = Gray200,
+    //шиммер
+    surface = Gray50,
+    onSurface = Gray150,
 
     /* Other default colors to override
     background = Color.White,

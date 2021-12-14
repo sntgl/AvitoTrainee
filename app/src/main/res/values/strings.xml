@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Avito Trainee</string>
     <string name="hourly_forecast">На сегодня</string>
+    <string name="humidity">Влажность: %d%%</string>
+    <string name="feels_like">Ощущается как %d°</string>
+    <string name="sunrise">Восход: %s</string>
+    <string name="sunset">Закат: %s</string>
+    <string name="daily_forecast">На неделю</string>
 </resources>

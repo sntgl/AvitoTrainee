@@ -19,8 +19,8 @@ fun Modifier.shimmerRound(
 ): Modifier = composed {
   this.placeholder(
     visible = visible,
-    color = MaterialTheme.colors.secondary,
-    highlight = PlaceholderHighlight.shimmer(MaterialTheme.colors.onBackground),
+    color = MaterialTheme.colors.onSurface,
+    highlight = PlaceholderHighlight.shimmer(MaterialTheme.colors.surface),
     shape = CircleShape
   )
 }
@@ -35,8 +35,8 @@ fun Modifier.shimmerContent(
 ): Modifier = composed {
   this.placeholder(
     visible = visible,
-    color = MaterialTheme.colors.secondary,
-    highlight = PlaceholderHighlight.shimmer(MaterialTheme.colors.onBackground),
+    color = MaterialTheme.colors.onSurface,
+    highlight = PlaceholderHighlight.shimmer(MaterialTheme.colors.surface),
     shape = RoundedCornerShape(roundSize)
   )
 }
@@ -49,7 +49,7 @@ fun Modifier.shimmer(
 ): Modifier = composed {
   this.placeholder(
     visible = visible,
-    color = MaterialTheme.colors.secondary,
-    highlight = PlaceholderHighlight.shimmer(MaterialTheme.colors.onBackground),
+    color = MaterialTheme.colors.onSurface,
+    highlight = PlaceholderHighlight.shimmer(MaterialTheme.colors.surface),
   )
 }

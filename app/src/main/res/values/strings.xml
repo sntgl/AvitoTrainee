@@ -6,4 +6,7 @@
     <string name="sunrise">Восход: %s</string>
     <string name="sunset">Закат: %s</string>
     <string name="daily_forecast">На неделю</string>
+    <string name="celsius_placeholder">%d°</string>
+    <string name="celsius">°</string>
+    <string name="max_min">Макс.: %d°, мин.: %d°</string>
 </resources>

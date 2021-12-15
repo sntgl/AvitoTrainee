@@ -4,37 +4,61 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
-import ru.tagilov.avitotrainee.ui.component.DailyPreview
-import ru.tagilov.avitotrainee.ui.component.HourlyPreview
-import ru.tagilov.avitotrainee.ui.component.WeatherIcon
+import ru.tagilov.avitotrainee.screen.Destination
+import ru.tagilov.avitotrainee.screen.Forecast
+import ru.tagilov.avitotrainee.screen.LocationPermission
 import ru.tagilov.avitotrainee.ui.theme.AvitoTheme
 
-
+@ExperimentalAnimationApi
+@ExperimentalCoilApi
 class MainActivity : ComponentActivity() {
-    @ExperimentalAnimationApi
-    @ExperimentalCoilApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             AvitoTheme {
-                // A surface container using the 'background' color from the theme
-                LazyColumn(
-                    modifier = Modifier
-                        .background(color = MaterialTheme.colors.background)
+                val navController = rememberNavController()
+                NavHost(
+                    navController = navController,
+                    startDestination = Destination.Permission.route
                 ) {
-                    item { HourlyPreview() }
-                    item { DailyPreview() }
+                    composable(
+                        route = Destination.Forecast.route,
+                        arguments = listOf(
+                            navArgument(Destination.Forecast.granted) { type = NavType.BoolType }
+                        ),
+                    ) {
+                        Forecast(
+                            navController = navController,
+                            locationGranted = it.arguments?.getBoolean(Destination.Forecast.granted)
+                        )
+                    }
+                    composable(Destination.Permission.route) {
+                        LocationPermission(navController)
+                    }
+//                    composable("profile") { Profile(/*...*/) }
+//                    composable("friendslist") { FriendsList(/*...*/) }
+                    /*...*/
                 }
+//                Column {
+//                    CityTitle(city = "Москва")
+//                    LazyColumn(
+//                        modifier = Modifier
+//                            .background(color = MaterialTheme.colors.background)
+//                    ) {
+//                        item { CurrentPreview() }
+//                        item { HourlyPreview() }
+//                        item { DailyPreview() }
+//                    }
+//                }
             }
         }
     }

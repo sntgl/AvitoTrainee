@@ -20,6 +20,7 @@
 * Экран ошибки
 * Полная поддержка темной темы
 * Мб персистентное хранилище с последним городом и последней погодой?
+* Если пользователь отказался выдать локацию, то используем geo по ip
 
 
 ## API
@@ -28,6 +29,7 @@
 ```
 https://api.openweathermap.org/data/2.5/onecall?lon=37.6156&lat=55.7522&appid=b66745312676702b882b8e673d774421&exclude=minutely&lang=ru&units=metric
 http://api.openweathermap.org/geo/1.0/direct?q=Moscow&appid=b66745312676702b882b8e673d774421&limit=1
+http://ip-api.com/json/
 ```
 
 ### Экран погоды

@@ -26,7 +26,7 @@ fun Current(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .background(color = MaterialTheme.colors.background),
+            .background(color = MaterialTheme.colors.surface),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
@@ -35,7 +35,7 @@ fun Current(
             if (forecast != null)
                 Text(
                     text = stringResource(id = R.string.celsius),
-                    color = MaterialTheme.colors.background,
+                    color = MaterialTheme.colors.surface,
                     style = MaterialTheme.typography.h1,
                 )
             Text(
@@ -96,7 +96,6 @@ fun CurrentPreview() {
         feelsLike = -4,
         sunset = "8:42",
         sunrise = "17:20",
-        city = "Москва",
         currentTemp = 0,
         currentDescription = "Снег"
     )

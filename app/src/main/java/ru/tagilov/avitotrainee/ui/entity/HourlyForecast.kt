@@ -1,7 +1,25 @@
 package ru.tagilov.avitotrainee.ui.entity
 
+import android.annotation.SuppressLint
+import ru.tagilov.avitotrainee.data.entity.CurrentForecastResponse
+import ru.tagilov.avitotrainee.data.entity.HourlyForecastResponse
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.math.roundToInt
+
 data class HourlyForecast (
-    val time: String, //Now or hour
+    val time: String, //Now or hour!!
     val icon: String,
     val temperature: Int,
+){
+    companion object
+}
+
+@SuppressLint("SimpleDateFormat")
+fun HourlyForecast.Companion.fromResponse(
+    response: HourlyForecastResponse,
+) = HourlyForecast(
+    time = SimpleDateFormat("H").format(Date(response.dt.toLong()*1000)),
+    icon = response.weather[0].icon,
+    temperature = response.temp.roundToInt()
 )

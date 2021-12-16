@@ -6,6 +6,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import ru.tagilov.avitotrainee.data.ForecastRepository
 import ru.tagilov.avitotrainee.data.LocationRepository
+import ru.tagilov.avitotrainee.ui.entity.Forecast
 import ru.tagilov.avitotrainee.ui.entity.PermissionState
 import timber.log.Timber
 
@@ -90,6 +91,9 @@ class ForecastViewModel : ViewModel() {
         viewModelScope.cancel()
     }
 
+    private val forecastMutableFlow = MutableStateFlow<Forecast?>(null)
+    val forecastFlow: StateFlow<Forecast?>
+        get() = forecastMutableFlow
     private var currentForecastJob: Job? = null
 
     fun getForecast() {
@@ -106,17 +110,19 @@ class ForecastViewModel : ViewModel() {
                     .collect {
                         cityMutableFlow.emit(city.copy(name = it))
                     }
+                forecastRepo
+                    .getWeather(longitude = city.longitude, latitude = city.latitude)
+                    .collect {
+                        forecastMutableFlow.emit(it)
+                    }
+
             }
-//            if (locationRepo)
-//            forecastRepo.getCityName(longitude = )
-//            forecastRepo.getCityName(long)
-//            getLocation()
-//            withContext(Dispatchers.IO) {
-//                Timber.d("get forecast from ${cityFlow.value?.longitude} ${cityFlow.value?.latitude}")
-//            }
         }
         currentForecastJob = null
     }
+
+
+
 
     init {
         cityMutableFlow.onEach {
@@ -124,6 +130,9 @@ class ForecastViewModel : ViewModel() {
             if (it != null && delayForecast) {
                 getForecast()
             }
+        }.launchIn(viewModelScope)
+        forecastMutableFlow.onEach {
+            Timber.d("new forecast: $it")
         }.launchIn(viewModelScope)
         getForecast()
     }

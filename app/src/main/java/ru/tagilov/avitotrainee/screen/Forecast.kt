@@ -4,22 +4,36 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.annotation.ExperimentalCoilApi
 import com.google.android.gms.location.LocationServices
 import ru.tagilov.avitotrainee.City
 import ru.tagilov.avitotrainee.ForecastViewModel
 import ru.tagilov.avitotrainee.ui.component.CityTitle
+import ru.tagilov.avitotrainee.ui.component.Current
+import ru.tagilov.avitotrainee.ui.component.Daily
+import ru.tagilov.avitotrainee.ui.component.Hourly
 import ru.tagilov.avitotrainee.ui.entity.PermissionState
 import timber.log.Timber
 
+@ExperimentalAnimationApi
+@ExperimentalCoilApi
 @Composable
 fun Forecast(
     navController: NavController,
@@ -31,6 +45,7 @@ fun Forecast(
     }
     val permissionState = remember { vm.permissionStateFlow }.collectAsState()
     val cityState = remember { vm.cityFlow }.collectAsState()
+    val forecastState = remember { vm.forecastFlow }.collectAsState()
     val context = LocalContext.current
     //локация
     val sendLocation = {
@@ -76,17 +91,31 @@ fun Forecast(
             permissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
         }
     }
-    //непосредственно верстка
+
     Column {
         CityTitle(city = cityState.value)
-        Button(onClick = { vm.getForecast() }) {
-            Text("run")
+        LazyColumn(
+            modifier = Modifier
+                .background(color = MaterialTheme.colors.surface)
+                .padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item { Current(forecast = forecastState.value?.current) }
+            item { Hourly(forecastList = forecastState.value?.hourly) }
+            item { Daily(forecastList = forecastState.value?.daily) }
         }
-        Button(onClick = { vm.test() }) {
-            Text("stop")
-        }
-        Text(cityState.value?.latitude.toString() + " " + cityState.value?.longitude.toString())
     }
+//    //непосредственно верстка
+//    Column {
+//        CityTitle(city = cityState.value)
+//        Button(onClick = { vm.getForecast() }) {
+//            Text("run")
+//        }
+//        Button(onClick = { vm.test() }) {
+//            Text("stop")
+//        }
+//        Text(cityState.value?.latitude.toString() + " " + cityState.value?.longitude.toString())
+//    }
 
 }
 

@@ -25,6 +25,7 @@ import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.ui.entity.DailyForecast
 import ru.tagilov.avitotrainee.ui.theme.AvitoTheme
 import ru.tagilov.avitotrainee.ui.util.shimmerContent
+import ru.tagilov.avitotrainee.ui.util.shimmerRound
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,7 +34,7 @@ import java.util.*
 @ExperimentalCoilApi
 @Composable
 fun DailyItem(
-    forecast: DailyForecast?
+    forecast: DailyForecast
 ) {
     val isCollapsed = remember { mutableStateOf(true) }
     Column(
@@ -44,8 +45,7 @@ fun DailyItem(
                 shape = MaterialTheme.shapes.medium
             )
             .clickable {
-                if (forecast != null)
-                    isCollapsed.value = !isCollapsed.value
+                isCollapsed.value = !isCollapsed.value
             }
             .padding(vertical = 2.dp, horizontal = 8.dp)
     ) {
@@ -60,63 +60,52 @@ fun DailyItem(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = forecast?.day ?: "a".repeat(SKELETON_TITLE_SIZE),
+                    text = forecast.day,
                     style = MaterialTheme.typography.subtitle2,
                     color = MaterialTheme.colors.secondary,
                     modifier = Modifier
-                        .shimmerContent(forecast == null)
                         .width(100.dp)
                 )
-                WeatherIcon(icon = forecast?.icon ?: "", size = 60.dp)
+                WeatherIcon(icon = forecast.icon)
             }
-            if (forecast != null) {
-                Row {
-                    Text(
-                        text = "${forecast.minTemp}°",
-                        style = MaterialTheme.typography.subtitle2,
-                        color = MaterialTheme.colors.secondaryVariant,
-                        modifier = Modifier
-                            .padding(horizontal = 4.dp)
-                            .width(40.dp)
-                    )
-                    Text(
-                        text = "${forecast.maxTemp}°",
-                        style = MaterialTheme.typography.subtitle2,
-                        color = MaterialTheme.colors.secondary,
-                        modifier = Modifier
-                            .padding(horizontal = 4.dp)
-                            .width(40.dp)
-                    )
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.wind),
-                        tint = MaterialTheme.colors.secondaryVariant,
-                        contentDescription = "wind icon",
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .size(24.dp)
-                    )
-                    Text(
-                        text = "${forecast.wind} м/с",
-                        style = MaterialTheme.typography.subtitle2,
-                        color = MaterialTheme.colors.secondaryVariant,
-                        modifier = Modifier
-                            .width(65.dp)
-                    )
-                }
-            } else {
+            Row {
                 Text(
-                    text = "a".repeat(SKELETON_CONTENT_SIZE),
+                    text = "${forecast.minTemp}°",
                     style = MaterialTheme.typography.subtitle2,
+                    color = MaterialTheme.colors.secondaryVariant,
                     modifier = Modifier
-                        .shimmerContent(true)
+                        .padding(horizontal = 4.dp)
+                        .width(40.dp)
+                )
+                Text(
+                    text = "${forecast.maxTemp}°",
+                    style = MaterialTheme.typography.subtitle2,
+                    color = MaterialTheme.colors.secondary,
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .width(40.dp)
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.wind),
+                    tint = MaterialTheme.colors.secondaryVariant,
+                    contentDescription = "wind icon",
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(24.dp)
+                )
+                Text(
+                    text = "${forecast.wind} м/с",
+                    style = MaterialTheme.typography.subtitle2,
+                    color = MaterialTheme.colors.secondaryVariant,
+                    modifier = Modifier
+                        .width(65.dp)
                 )
             }
         }
-
         AnimatedVisibility(visible = !isCollapsed.value) {
             Divider(
                 modifier = Modifier
@@ -134,12 +123,12 @@ fun DailyItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(id = R.string.humidity).format(forecast?.humidity),
+                    text = stringResource(id = R.string.humidity).format(forecast.humidity),
                     style = MaterialTheme.typography.subtitle2,
                     color = MaterialTheme.colors.secondary,
                 )
                 Text(
-                    text = stringResource(id = R.string.feels_like).format(forecast?.feelsLike),
+                    text = stringResource(id = R.string.feels_like).format(forecast.feelsLike),
                     style = MaterialTheme.typography.subtitle2,
                     color = MaterialTheme.colors.secondary,
                 )
@@ -154,18 +143,72 @@ fun DailyItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(id = R.string.sunrise).format(forecast?.sunrise),
+                    text = stringResource(id = R.string.sunrise).format(forecast.sunrise),
                     style = MaterialTheme.typography.subtitle2,
                     color = MaterialTheme.colors.secondary,
                     modifier = Modifier
                 )
                 Text(
-                    text = stringResource(id = R.string.sunset).format(forecast?.sunset),
+                    text = stringResource(id = R.string.sunset).format(forecast.sunset),
                     style = MaterialTheme.typography.subtitle2,
                     color = MaterialTheme.colors.secondary,
                     modifier = Modifier
                 )
             }
+        }
+    }
+}
+
+
+/*
+Вообще хотел использовать свою nullable концепцию, где null = шиммер, но что-то пошло не так
+Можно воспроизвести по ревизии ae66533b71da67b2d840b1b6e6cb58b90556b84a
+Те элементы, которые были шиммером, не реагируют на нажатие (не расширяются)
+Преположу, что animated visibility проверяет видимость по старой ссылке
+Чтобы не терять время решил просто сделать отдельный элемент заглушку
+ */
+@ExperimentalAnimationApi
+@ExperimentalCoilApi
+@Composable
+fun DailyShimmer() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colors.onBackground,
+                shape = MaterialTheme.shapes.medium
+            )
+            .padding(vertical = 2.dp, horizontal = 8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "a".repeat(SKELETON_TITLE_SIZE),
+                    style = MaterialTheme.typography.subtitle2,
+                    color = MaterialTheme.colors.secondary,
+                    modifier = Modifier
+                        .shimmerContent(true)
+                        .width(100.dp)
+                )
+                Box(modifier = Modifier
+                    .padding(10.dp)
+                    .size(60.dp)
+                    .shimmerRound(true))
+            }
+            Text(
+                text = "a".repeat(SKELETON_CONTENT_SIZE),
+                style = MaterialTheme.typography.subtitle2,
+                modifier = Modifier
+                    .shimmerContent(true)
+            )
         }
     }
 }
@@ -204,9 +247,7 @@ fun DailyItemPreview() {
                     sunrise = "8:40"
                 )
             )
-            DailyItem(
-                forecast = null
-            )
+            DailyShimmer()
         }
         AvitoTheme(darkTheme = true) {
         }
@@ -255,8 +296,8 @@ fun Daily(
                 for (forecastItem in forecastList)
                     DailyItem(forecast = forecastItem)
             else
-                for (i in 1..3)
-                    DailyItem(forecast = null)
+                for (i in 1..8)
+                    DailyShimmer()
         }
     }
 }
@@ -289,19 +330,188 @@ fun DailyPreview() {
             feelsLike = -100,
             sunset = "17:00",
             sunrise = "18:40"
+        ),
+        DailyForecast(
+            day = "aa",
+            icon = "11d",
+            minTemp = -99,
+            maxTemp = -99,
+            wind = 15,
+            humidity = 89,
+            feelsLike = -100,
+            sunset = "17:00",
+            sunrise = "18:40"
+        ),
+        DailyForecast(
+            day = "daj",
+            icon = "11d",
+            minTemp = -99,
+            maxTemp = -99,
+            wind = 15,
+            humidity = 89,
+            feelsLike = -100,
+            sunset = "17:00",
+            sunrise = "18:40"
+        ),
+        DailyForecast(
+            day = "fasdf",
+            icon = "11d",
+            minTemp = -99,
+            maxTemp = -99,
+            wind = 15,
+            humidity = 89,
+            feelsLike = -100,
+            sunset = "17:00",
+            sunrise = "18:40"
+        ),
+        DailyForecast(
+            day = "124",
+            icon = "11d",
+            minTemp = -99,
+            maxTemp = -99,
+            wind = 15,
+            humidity = 89,
+            feelsLike = -100,
+            sunset = "17:00",
+            sunrise = "18:40"
+        ),
+        DailyForecast(
+            day = "saifj",
+            icon = "11d",
+            minTemp = -99,
+            maxTemp = -99,
+            wind = 15,
+            humidity = 89,
+            feelsLike = -100,
+            sunset = "17:00",
+            sunrise = "18:40"
+        ),
+        DailyForecast(
+            day = "adf",
+            icon = "11d",
+            minTemp = -99,
+            maxTemp = -99,
+            wind = 15,
+            humidity = 89,
+            feelsLike = -100,
+            sunset = "17:00",
+            sunrise = "18:40"
+        ),
+        DailyForecast(
+            day = "asif",
+            icon = "11d",
+            minTemp = -99,
+            maxTemp = -99,
+            wind = 15,
+            humidity = 89,
+            feelsLike = -100,
+            sunset = "17:00",
+            sunrise = "18:40"
+        ),
+        DailyForecast(
+            day = "afij",
+            icon = "11d",
+            minTemp = -99,
+            maxTemp = -99,
+            wind = 15,
+            humidity = 89,
+            feelsLike = -100,
+            sunset = "17:00",
+            sunrise = "18:40"
+        ),
+        DailyForecast(
+            day = "afijw",
+            icon = "11d",
+            minTemp = -99,
+            maxTemp = -99,
+            wind = 15,
+            humidity = 89,
+            feelsLike = -100,
+            sunset = "17:00",
+            sunrise = "18:40"
+        ),
+        DailyForecast(
+            day = "aisfj",
+            icon = "11d",
+            minTemp = -99,
+            maxTemp = -99,
+            wind = 15,
+            humidity = 89,
+            feelsLike = -100,
+            sunset = "17:00",
+            sunrise = "18:40"
+        ),
+        DailyForecast(
+            day = "afouw",
+            icon = "11d",
+            minTemp = -99,
+            maxTemp = -99,
+            wind = 15,
+            humidity = 89,
+            feelsLike = -100,
+            sunset = "17:00",
+            sunrise = "18:40"
+        ),
+        DailyForecast(
+            day = "afo",
+            icon = "11d",
+            minTemp = -99,
+            maxTemp = -99,
+            wind = 15,
+            humidity = 89,
+            feelsLike = -100,
+            sunset = "17:00",
+            sunrise = "18:40"
+        ),
+        DailyForecast(
+            day = "afw",
+            icon = "11d",
+            minTemp = -99,
+            maxTemp = -99,
+            wind = 15,
+            humidity = 89,
+            feelsLike = -100,
+            sunset = "17:00",
+            sunrise = "18:40"
+        ),
+        DailyForecast(
+            day = "alfnq",
+            icon = "11d",
+            minTemp = -99,
+            maxTemp = -99,
+            wind = 15,
+            humidity = 89,
+            feelsLike = -100,
+            sunset = "17:00",
+            sunrise = "18:40"
+        ),
+        DailyForecast(
+            day = "afwtq",
+            icon = "11d",
+            minTemp = -99,
+            maxTemp = -99,
+            wind = 15,
+            humidity = 89,
+            feelsLike = -100,
+            sunset = "17:00",
+            sunrise = "18:40"
         )
     )
-    Column {
-        AvitoTheme(darkTheme = false) {
-            Column {
-                Daily(forecastList = fl)
-                Daily(forecastList = null)
+    LazyColumn {
+        item {
+            AvitoTheme(darkTheme = false) {
+                Column {
+                    Daily(forecastList = fl)
+                    Daily(forecastList = null)
+                }
             }
         }
-        AvitoTheme(darkTheme = true) {
-            Column {
-                Daily(forecastList = fl)
-                Daily(forecastList = null)
+        item {
+            AvitoTheme(darkTheme = true) {
+                Column {
+                    Daily(forecastList = fl)
+                    Daily(forecastList = null)
+                }
             }
         }
     }

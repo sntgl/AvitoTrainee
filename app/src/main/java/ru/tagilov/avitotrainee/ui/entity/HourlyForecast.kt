@@ -19,7 +19,9 @@ data class HourlyForecast (
 fun HourlyForecast.Companion.fromResponse(
     response: HourlyForecastResponse,
 ) = HourlyForecast(
-    time = SimpleDateFormat("H").format(Date(response.dt.toLong()*1000)),
+    time = "%02d".format(
+        SimpleDateFormat("H").format(Date(response.dt.toLong()*1000)).toInt()
+    ),
     icon = response.weather[0].icon,
     temperature = response.temp.roundToInt()
 )

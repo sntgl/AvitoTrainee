@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = Destination.Permission.route
+                    startDestination = Destination.Forecast.route
                 ) {
                     composable(
                         route = Destination.Forecast.route,
@@ -36,9 +36,10 @@ class MainActivity : ComponentActivity() {
                             navArgument(Destination.Forecast.granted) { type = NavType.BoolType }
                         ),
                     ) {
+//                            locationGranted = it.arguments?.getBoolean(Destination.Forecast.granted),
                         Forecast(
                             navController = navController,
-                            locationGranted = it.arguments?.getBoolean(Destination.Forecast.granted)
+                            city = null
                         )
                     }
                     composable(Destination.Permission.route) {

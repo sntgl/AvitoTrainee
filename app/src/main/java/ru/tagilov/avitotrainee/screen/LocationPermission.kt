@@ -4,19 +4,19 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material.Button
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import ru.tagilov.avitotrainee.ui.entity.PermissionState
 import timber.log.Timber
 
 @Composable
 fun LocationPermission(
     navController: NavController
 ) {
-    val state: MutableState<PermissionState> = remember { mutableStateOf(PermissionState.None) }
+    val state: MutableState<PermissionState> = remember { mutableStateOf(PermissionState.Required) }
     val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
@@ -31,7 +31,7 @@ fun LocationPermission(
         }
     }
 
-    if (state.value == PermissionState.None) {
+    if (state.value == PermissionState.Required) {
         state.value = PermissionState.Waiting
         SideEffect {
             when (PackageManager.PERMISSION_GRANTED) {
@@ -52,33 +52,21 @@ fun LocationPermission(
 
     when (state.value) {
         PermissionState.Denied -> {
-            state.value = PermissionState.Finished
             navController.navigate(Destination.Forecast.createRoute(false)) {
                 launchSingleTop = true
                 popUpTo(Destination.Permission.route) {inclusive = true}
-
             }
         }
         PermissionState.Granted -> {
-            state.value = PermissionState.Finished
             navController.navigate(Destination.Forecast.createRoute(true)) {
                 launchSingleTop = true
                 popUpTo(Destination.Permission.route) {inclusive = true}
             }
         }
-        PermissionState.Waiting -> {}
-        PermissionState.None -> {}
-        PermissionState.Finished -> {}
+        else -> {}
     }
 }
 
-sealed class PermissionState {
-    object None: PermissionState()
-    object Waiting : PermissionState()
-    object Granted : PermissionState()
-    object Denied : PermissionState()
-    object Finished : PermissionState()
-}
 
 
 @Preview

@@ -9,4 +9,6 @@
     <string name="celsius_placeholder">%d°</string>
     <string name="celsius">°</string>
     <string name="max_min">Макс.: %d°, мин.: %d°</string>
+    <string name="now">Сейчас</string>
+    <string name="today">Сегодня</string>
 </resources>

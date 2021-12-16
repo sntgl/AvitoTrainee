@@ -31,10 +31,10 @@ fun CurrentForecast.Companion.fromResponse(
     minTemp = minTemp,
     maxTemp = maxTemp,
     currentTemp = response.temp.roundToInt(),
-    currentDescription = response.weather[0].description,
+    currentDescription = response.weather[0].description.replaceFirstChar { it.uppercase() },
     wind = response.wind_speed.roundToInt(),
     humidity = response.humidity,
     feelsLike = response.feels_like.roundToInt(),
-    sunset = SimpleDateFormat("H m").format(Date(response.sunset.toLong() * 1000)),
-    sunrise = SimpleDateFormat("H m").format(Date(response.sunrise.toLong() * 1000)),
+    sunset = SimpleDateFormat("H:m").format(Date(response.sunset.toLong() * 1000)),
+    sunrise = SimpleDateFormat("H:m").format(Date(response.sunrise.toLong() * 1000)),
 )

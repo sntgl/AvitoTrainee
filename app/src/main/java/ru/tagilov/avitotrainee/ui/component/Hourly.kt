@@ -54,11 +54,14 @@ fun Hourly(
             )
         }
         LazyRow {
-            if (forecastList != null)
+            if (forecastList != null) {
                 items(forecastList.size) { i ->
-                    HourlyItem(forecast = forecastList[i])
+                    HourlyItem(
+                        forecast = forecastList[i + 1],
+                        isFirst = i == 0
+                    )
                 }
-            else
+            } else
                 items(10) {
                     HourlyItem(forecast = null)
                 }
@@ -106,7 +109,8 @@ fun HourlyPreview() {
 @ExperimentalCoilApi
 @Composable
 fun HourlyItem(
-    forecast: HourlyForecast?
+    forecast: HourlyForecast?,
+    isFirst: Boolean = false
 ) {
     Column(
         modifier = Modifier
@@ -122,7 +126,10 @@ fun HourlyItem(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = forecast?.time ?: "a".repeat(SKELETON_TITLE_SIZE),
+            text = if (!isFirst)
+                forecast?.time ?: "a".repeat(SKELETON_TITLE_SIZE)
+            else
+                stringResource(id = R.string.now),
             style = MaterialTheme.typography.subtitle2,
             color = MaterialTheme.colors.secondary,
             textAlign = TextAlign.Center,

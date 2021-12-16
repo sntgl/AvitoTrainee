@@ -8,6 +8,4 @@ data class HourlyForecastResponse(
     val humidity: Int,
     val wind_speed: Float,
     val weather: List<WeatherResponse>,
-    val minTemp: Float,
-    val maxTemp: Float,
 )

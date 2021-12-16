@@ -34,7 +34,8 @@ import java.util.*
 @ExperimentalCoilApi
 @Composable
 fun DailyItem(
-    forecast: DailyForecast
+    forecast: DailyForecast,
+    isFirst: Boolean,
 ) {
     val isCollapsed = remember { mutableStateOf(true) }
     Column(
@@ -60,7 +61,10 @@ fun DailyItem(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = forecast.day,
+                    text = if (!isFirst)
+                        forecast.day
+                    else
+                        stringResource(id = R.string.today),
                     style = MaterialTheme.typography.subtitle2,
                     color = MaterialTheme.colors.secondary,
                     modifier = Modifier
@@ -232,7 +236,8 @@ fun DailyItemPreview() {
                     feelsLike = -4,
                     sunset = "8:42",
                     sunrise = "17:20"
-                )
+                ),
+                true
             )
             DailyItem(
                 forecast = DailyForecast(
@@ -245,7 +250,8 @@ fun DailyItemPreview() {
                     feelsLike = -2,
                     sunset = "17:00",
                     sunrise = "8:40"
-                )
+                ),
+                false
             )
             DailyShimmer()
         }
@@ -293,8 +299,12 @@ fun Daily(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             if (forecastList != null)
-                for (forecastItem in forecastList)
-                    DailyItem(forecast = forecastItem)
+                forecastList.forEachIndexed { index, dailyForecast ->
+                    DailyItem(
+                        forecast = dailyForecast,
+                        isFirst = index == 0
+                    )
+                }
             else
                 for (i in 1..8)
                     DailyShimmer()

@@ -57,7 +57,7 @@ fun Hourly(
             if (forecastList != null) {
                 items(forecastList.size) { i ->
                     HourlyItem(
-                        forecast = forecastList[i + 1],
+                        forecast = forecastList[i],
                         isFirst = i == 0
                     )
                 }

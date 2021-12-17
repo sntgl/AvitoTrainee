@@ -18,6 +18,7 @@ data class DailyForecast (
     val feelsLike: Int,
     val sunset: String,
     val sunrise: String,
+    val pressure: Int,
 ){
     companion object
 }
@@ -38,4 +39,5 @@ fun DailyForecast.Companion.fromResponse(
         .format(Date(response.sunrise.toLong() * 1000)),
     day = SimpleDateFormat("E")
         .format(Date(response.dt.toLong() * 1000)).replaceFirstChar { it.uppercase() },
+    pressure = (response.pressure.toFloat() * 3 / 4).roundToInt() //гПа
 )

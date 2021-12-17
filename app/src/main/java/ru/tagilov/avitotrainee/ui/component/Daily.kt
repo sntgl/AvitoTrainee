@@ -126,11 +126,29 @@ fun DailyItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = stringResource(id = R.string.humidity).format(forecast.humidity),
-                    style = MaterialTheme.typography.subtitle2,
-                    color = MaterialTheme.colors.secondary,
-                )
+//                Text(
+//                    text = stringResource(id = R.string.humidity).format(forecast.humidity),
+//                    style = MaterialTheme.typography.subtitle2,
+//                    color = MaterialTheme.colors.secondary,
+//                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.humidity),
+                        tint = MaterialTheme.colors.secondary,
+                        contentDescription = "humidity icon",
+                        modifier = Modifier
+                            .padding(top = 8.dp, bottom = 8.dp)
+                            .size(24.dp)
+                    )
+                    Text(
+                        text = stringResource(id = R.string.percent_placeholder).format(forecast.humidity),
+                        style = MaterialTheme.typography.subtitle2,
+                        color = MaterialTheme.colors.secondary,
+                    )
+                }
                 Text(
                     text = stringResource(id = R.string.feels_like).format(forecast.feelsLike),
                     style = MaterialTheme.typography.subtitle2,
@@ -146,18 +164,43 @@ fun DailyItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = stringResource(id = R.string.sunrise).format(forecast.sunrise),
-                    style = MaterialTheme.typography.subtitle2,
-                    color = MaterialTheme.colors.secondary,
-                    modifier = Modifier
-                )
-                Text(
-                    text = stringResource(id = R.string.sunset).format(forecast.sunset),
-                    style = MaterialTheme.typography.subtitle2,
-                    color = MaterialTheme.colors.secondary,
-                    modifier = Modifier
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.sun),
+                        tint = MaterialTheme.colors.secondary,
+                        contentDescription = "humidity icon",
+                        modifier = Modifier
+                            .padding(top = 8.dp, bottom = 8.dp)
+                            .size(24.dp)
+                    )
+                    Text(
+                        text = forecast.sunrise + " - " + forecast.sunset,
+                        style = MaterialTheme.typography.subtitle2,
+                        color = MaterialTheme.colors.secondary,
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.pressure_placeholder)
+                            .format(forecast.pressure),
+                        style = MaterialTheme.typography.subtitle2,
+                        color = MaterialTheme.colors.secondary,
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.gauge),
+                        tint = MaterialTheme.colors.secondary,
+                        contentDescription = "pressure icon",
+                        modifier = Modifier
+                            .padding(top = 8.dp, bottom = 8.dp)
+                            .size(24.dp)
+                    )
+                }
             }
         }
     }
@@ -235,7 +278,8 @@ fun DailyItemPreview() {
                     humidity = 99,
                     feelsLike = -4,
                     sunset = "8:42",
-                    sunrise = "17:20"
+                    sunrise = "17:20",
+                    pressure = 1019
                 ),
                 true
             )
@@ -249,7 +293,8 @@ fun DailyItemPreview() {
                     humidity = 89,
                     feelsLike = -2,
                     sunset = "17:00",
-                    sunrise = "8:40"
+                    sunrise = "8:40",
+                    pressure = 1100
                 ),
                 false
             )
@@ -328,7 +373,8 @@ fun DailyPreview() {
             humidity = 99,
             feelsLike = -4,
             sunset = "8:42",
-            sunrise = "17:20"
+            sunrise = "17:20",
+            pressure = 700,
         ),
         DailyForecast(
             day = SimpleDateFormat("E").format(Date(0)),
@@ -339,7 +385,8 @@ fun DailyPreview() {
             humidity = 89,
             feelsLike = -100,
             sunset = "17:00",
-            sunrise = "18:40"
+            sunrise = "18:40",
+            pressure = 990
         ),
         DailyForecast(
             day = "aa",
@@ -350,162 +397,9 @@ fun DailyPreview() {
             humidity = 89,
             feelsLike = -100,
             sunset = "17:00",
-            sunrise = "18:40"
+            sunrise = "18:40",
+            pressure = 1200,
         ),
-        DailyForecast(
-            day = "daj",
-            icon = "11d",
-            minTemp = -99,
-            maxTemp = -99,
-            wind = 15,
-            humidity = 89,
-            feelsLike = -100,
-            sunset = "17:00",
-            sunrise = "18:40"
-        ),
-        DailyForecast(
-            day = "fasdf",
-            icon = "11d",
-            minTemp = -99,
-            maxTemp = -99,
-            wind = 15,
-            humidity = 89,
-            feelsLike = -100,
-            sunset = "17:00",
-            sunrise = "18:40"
-        ),
-        DailyForecast(
-            day = "124",
-            icon = "11d",
-            minTemp = -99,
-            maxTemp = -99,
-            wind = 15,
-            humidity = 89,
-            feelsLike = -100,
-            sunset = "17:00",
-            sunrise = "18:40"
-        ),
-        DailyForecast(
-            day = "saifj",
-            icon = "11d",
-            minTemp = -99,
-            maxTemp = -99,
-            wind = 15,
-            humidity = 89,
-            feelsLike = -100,
-            sunset = "17:00",
-            sunrise = "18:40"
-        ),
-        DailyForecast(
-            day = "adf",
-            icon = "11d",
-            minTemp = -99,
-            maxTemp = -99,
-            wind = 15,
-            humidity = 89,
-            feelsLike = -100,
-            sunset = "17:00",
-            sunrise = "18:40"
-        ),
-        DailyForecast(
-            day = "asif",
-            icon = "11d",
-            minTemp = -99,
-            maxTemp = -99,
-            wind = 15,
-            humidity = 89,
-            feelsLike = -100,
-            sunset = "17:00",
-            sunrise = "18:40"
-        ),
-        DailyForecast(
-            day = "afij",
-            icon = "11d",
-            minTemp = -99,
-            maxTemp = -99,
-            wind = 15,
-            humidity = 89,
-            feelsLike = -100,
-            sunset = "17:00",
-            sunrise = "18:40"
-        ),
-        DailyForecast(
-            day = "afijw",
-            icon = "11d",
-            minTemp = -99,
-            maxTemp = -99,
-            wind = 15,
-            humidity = 89,
-            feelsLike = -100,
-            sunset = "17:00",
-            sunrise = "18:40"
-        ),
-        DailyForecast(
-            day = "aisfj",
-            icon = "11d",
-            minTemp = -99,
-            maxTemp = -99,
-            wind = 15,
-            humidity = 89,
-            feelsLike = -100,
-            sunset = "17:00",
-            sunrise = "18:40"
-        ),
-        DailyForecast(
-            day = "afouw",
-            icon = "11d",
-            minTemp = -99,
-            maxTemp = -99,
-            wind = 15,
-            humidity = 89,
-            feelsLike = -100,
-            sunset = "17:00",
-            sunrise = "18:40"
-        ),
-        DailyForecast(
-            day = "afo",
-            icon = "11d",
-            minTemp = -99,
-            maxTemp = -99,
-            wind = 15,
-            humidity = 89,
-            feelsLike = -100,
-            sunset = "17:00",
-            sunrise = "18:40"
-        ),
-        DailyForecast(
-            day = "afw",
-            icon = "11d",
-            minTemp = -99,
-            maxTemp = -99,
-            wind = 15,
-            humidity = 89,
-            feelsLike = -100,
-            sunset = "17:00",
-            sunrise = "18:40"
-        ),
-        DailyForecast(
-            day = "alfnq",
-            icon = "11d",
-            minTemp = -99,
-            maxTemp = -99,
-            wind = 15,
-            humidity = 89,
-            feelsLike = -100,
-            sunset = "17:00",
-            sunrise = "18:40"
-        ),
-        DailyForecast(
-            day = "afwtq",
-            icon = "11d",
-            minTemp = -99,
-            maxTemp = -99,
-            wind = 15,
-            humidity = 89,
-            feelsLike = -100,
-            sunset = "17:00",
-            sunrise = "18:40"
-        )
     )
     LazyColumn {
         item {

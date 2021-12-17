@@ -91,13 +91,14 @@ fun Forecast(
             permissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
         }
     }
+    //непосредственно верстка
 
     Column {
         CityTitle(city = cityState.value)
         LazyColumn(
             modifier = Modifier
                 .background(color = MaterialTheme.colors.surface)
-                .padding(8.dp),
+                .padding(horizontal = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item { Current(forecast = forecastState.value?.current) }
@@ -105,17 +106,6 @@ fun Forecast(
             item { Daily(forecastList = forecastState.value?.daily) }
         }
     }
-//    //непосредственно верстка
-//    Column {
-//        CityTitle(city = cityState.value)
-//        Button(onClick = { vm.getForecast() }) {
-//            Text("run")
-//        }
-//        Button(onClick = { vm.test() }) {
-//            Text("stop")
-//        }
-//        Text(cityState.value?.latitude.toString() + " " + cityState.value?.longitude.toString())
-//    }
 
 }
 

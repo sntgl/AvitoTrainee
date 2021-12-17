@@ -39,15 +39,11 @@ class ForecastViewModel : ViewModel() {
 
     private fun setCity(city: City?) {
         viewModelScope.launch {
-            if (BuildConfig.DEBUG && cityMutableFlow.value != null)
-                throw Exception("CITY IS ALREADY SET")
             if (city == null) {
                 permissionStateMutableFlow.emit(PermissionState.Required)
-                Timber.d("Location city!")
-            } else {
-                Timber.d("Position city!")
+            } else if (cityMutableFlow.value == null) {
+                cityMutableFlow.emit(city)
             }
-            cityMutableFlow.emit(city)
         }
     }
 
@@ -85,10 +81,6 @@ class ForecastViewModel : ViewModel() {
             }
             currentLocationJob = null
         }
-    }
-
-    fun test() {
-        viewModelScope.cancel()
     }
 
     private val forecastMutableFlow = MutableStateFlow<Forecast?>(null)

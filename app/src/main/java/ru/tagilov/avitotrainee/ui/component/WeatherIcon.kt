@@ -53,7 +53,7 @@ fun WeatherIcon(
 @ExperimentalCoilApi
 @Preview
 @Composable
-fun WeatherIconPreview() {
+private fun WeatherIconPreview() {
     AvitoTheme {
         Column {
             WeatherIcon(icon = "13n")

@@ -86,7 +86,7 @@ fun Current(
 
 @Preview
 @Composable
-fun CurrentPreview() {
+private fun CurrentPreview() {
     val forecast = CurrentForecast(
         icon = "10d",
         minTemp = -1,

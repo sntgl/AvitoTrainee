@@ -33,7 +33,7 @@ import java.util.*
 @ExperimentalAnimationApi
 @ExperimentalCoilApi
 @Composable
-fun DailyItem(
+private fun DailyItem(
     forecast: DailyForecast,
     isFirst: Boolean,
 ) {
@@ -217,7 +217,7 @@ fun DailyItem(
 @ExperimentalAnimationApi
 @ExperimentalCoilApi
 @Composable
-fun DailyShimmer() {
+private fun DailyShimmer() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -264,7 +264,7 @@ fun DailyShimmer() {
 @ExperimentalCoilApi
 @Preview
 @Composable
-fun DailyItemPreview() {
+private fun DailyItemPreview() {
     Column {
         AvitoTheme(darkTheme = false) {
             DailyItem(
@@ -362,7 +362,7 @@ fun Daily(
 @ExperimentalAnimationApi
 @Preview
 @Composable
-fun DailyPreview() {
+private fun DailyPreview() {
     val fl = listOf(
         DailyForecast(
             day = "Сегодня",

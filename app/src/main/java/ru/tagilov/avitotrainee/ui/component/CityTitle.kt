@@ -49,7 +49,7 @@ fun CityTitle(
 
 @Preview
 @Composable
-fun CityTitlePreview() {
+private fun CityTitlePreview() {
     AvitoTheme {
         CityTitle(city = City(name="Москва", 0.0, 0.0))
     }

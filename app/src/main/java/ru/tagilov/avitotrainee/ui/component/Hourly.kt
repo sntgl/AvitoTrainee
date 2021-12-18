@@ -72,7 +72,7 @@ fun Hourly(
 @ExperimentalCoilApi
 @Preview
 @Composable
-fun HourlyPreview() {
+private fun HourlyPreview() {
     Column {
         AvitoTheme(darkTheme = false) {
             Column {
@@ -108,7 +108,7 @@ fun HourlyPreview() {
 
 @ExperimentalCoilApi
 @Composable
-fun HourlyItem(
+private fun HourlyItem(
     forecast: HourlyForecast?,
     isFirst: Boolean = false
 ) {
@@ -155,7 +155,7 @@ fun HourlyItem(
 @ExperimentalCoilApi
 @Preview
 @Composable
-fun HourlyItemPreview() {
+private fun HourlyItemPreview() {
     Column {
         AvitoTheme(darkTheme = false) {
             Row {

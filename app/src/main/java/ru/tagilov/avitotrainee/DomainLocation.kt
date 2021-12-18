@@ -6,7 +6,7 @@ data class DomainLocation(
     val longitude: Double,
     val latitude: Double
 ) {
-    companion object {}
+    companion object
 }
 
 fun DomainLocation.Companion.fromResponse(loc: ResponseLocation) =

@@ -23,9 +23,9 @@ import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.forecast.ui.entity.DailyForecast
-import ru.tagilov.avitotrainee.forecast.ui.theme.AvitoTheme
-import ru.tagilov.avitotrainee.forecast.ui.util.shimmerContent
-import ru.tagilov.avitotrainee.forecast.ui.util.shimmerRound
+import ru.tagilov.avitotrainee.theme.AvitoTheme
+import ru.tagilov.avitotrainee.util.shimmerContent
+import ru.tagilov.avitotrainee.util.shimmerRound
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -126,11 +126,6 @@ private fun DailyItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-//                Text(
-//                    text = stringResource(id = R.string.humidity).format(forecast.humidity),
-//                    style = MaterialTheme.typography.subtitle2,
-//                    color = MaterialTheme.colors.secondary,
-//                )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)

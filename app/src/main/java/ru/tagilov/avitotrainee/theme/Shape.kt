@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee.forecast.ui.theme
+package ru.tagilov.avitotrainee.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes

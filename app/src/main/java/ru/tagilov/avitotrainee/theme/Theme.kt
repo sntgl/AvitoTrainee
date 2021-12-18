@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee.forecast.ui.theme
+package ru.tagilov.avitotrainee.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
@@ -10,7 +10,7 @@ private val DarkColorPalette = darkColors(
     primary = Purple200,
     primaryVariant = Purple700,
     secondaryVariant = Gray200,
-    secondary = Gray100,
+    secondary = Gray50,
     background = Gray700,
     onBackground = Gray500,
     //шиммер

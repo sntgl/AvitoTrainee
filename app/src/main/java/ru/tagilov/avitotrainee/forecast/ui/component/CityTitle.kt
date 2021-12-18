@@ -10,19 +10,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.tagilov.avitotrainee.City
-import ru.tagilov.avitotrainee.forecast.ui.theme.AvitoTheme
-import ru.tagilov.avitotrainee.forecast.ui.util.shimmerRound
+import ru.tagilov.avitotrainee.theme.AvitoTheme
+import ru.tagilov.avitotrainee.util.shimmerRound
 
 @Composable
 fun CityTitle(
     modifier: Modifier = Modifier,
     city: City?
 ) {
-    Row(
+    Column(
         modifier = Modifier
-            .background(
-            color = MaterialTheme.colors.background,
-        )
+            .background(color = MaterialTheme.colors.background)
+            .height(60.dp)
     ) {
         Row(
             modifier = Modifier
@@ -46,6 +45,11 @@ fun CityTitle(
                 textAlign = TextAlign.Center
             )
         }
+        Box(
+            modifier = Modifier
+                .height(1.dp).fillMaxWidth()
+                .background(color = MaterialTheme.colors.secondaryVariant),
+        )
     }
 }
 
@@ -53,7 +57,7 @@ fun CityTitle(
 @Composable
 private fun CityTitlePreview() {
     AvitoTheme {
-        CityTitle(city = City(name="Москва", 0.0, 0.0))
+        CityTitle(city = City(name = "Москва", 0.0, 0.0))
     }
 }
 

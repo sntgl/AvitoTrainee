@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee.forecast.ui.util
+package ru.tagilov.avitotrainee.util
 
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape

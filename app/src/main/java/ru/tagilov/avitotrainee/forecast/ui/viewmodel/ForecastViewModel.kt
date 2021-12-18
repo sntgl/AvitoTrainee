@@ -21,11 +21,8 @@ class ForecastViewModel : ViewModel() {
     private var apiLocationFailed = false
     private var delayForecast = false
 
-    fun configure(city: City?): Boolean {
-        require(cityMutableFlow.value == null)
-        Timber.d("ViewModel configured!")
+    fun configure(city: City?) {
         setCity(city = city)
-        return true
     }
 
     private val permissionStateMutableFlow = MutableStateFlow<PermissionState>(PermissionState.None)
@@ -110,6 +107,7 @@ class ForecastViewModel : ViewModel() {
         currentForecastJob = viewModelScope.launch {
             screenStateMutableFlow.emit(ForecastScreenState.Loading)
             val oldCity = cityMutableFlow.value
+            //какой-то continuation получился))
             if (oldCity == null) {
                 getLocation()
                 delayForecast = true
@@ -123,7 +121,6 @@ class ForecastViewModel : ViewModel() {
                     .zip(forecastFlow) { t1, t2 -> t1 to t2 }
                     .onEach { (city, forecast) ->
                         isRefreshingMutableFlow.emit(false)
-                        Timber.d("ZIP IS HERE!!")
                         if (city != null && forecast != null) {
                             cityMutableFlow.emit(oldCity.copy(name = city))
                             forecastMutableFlow.emit(forecast)
@@ -138,7 +135,6 @@ class ForecastViewModel : ViewModel() {
     }
 
     fun refresh() {
-        Timber.d("REFRESH!")
         viewModelScope.launch {
             isRefreshingMutableFlow.emit(true)
         }

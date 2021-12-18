@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee.forecast.ui.theme
+package ru.tagilov.avitotrainee.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle
@@ -32,7 +32,12 @@ val Typography = Typography(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.SemiBold,
         fontSize = 18.sp
-    )
+    ),
+    body2 = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Light,
+        fontSize = 14.sp
+    ),
 
     /* Other default text styles to override
     button = TextStyle(

@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import ru.tagilov.avitotrainee.DomainLocation
-import ru.tagilov.avitotrainee.fromResponse
+import ru.tagilov.avitotrainee.ui.entity.DomainLocation
+import ru.tagilov.avitotrainee.ui.entity.fromResponse
 import java.io.IOException
 
 class LocationRepository {

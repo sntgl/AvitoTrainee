@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee
+package ru.tagilov.avitotrainee.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,6 +6,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import ru.tagilov.avitotrainee.data.ForecastRepository
 import ru.tagilov.avitotrainee.data.LocationRepository
+import ru.tagilov.avitotrainee.ui.entity.City
 import ru.tagilov.avitotrainee.ui.screen.ForecastScreenState
 import ru.tagilov.avitotrainee.ui.entity.Forecast
 import ru.tagilov.avitotrainee.ui.entity.PermissionState

@@ -24,8 +24,8 @@ import coil.annotation.ExperimentalCoilApi
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.location.LocationServices
-import ru.tagilov.avitotrainee.City
-import ru.tagilov.avitotrainee.ForecastViewModel
+import ru.tagilov.avitotrainee.ui.entity.City
+import ru.tagilov.avitotrainee.ui.viewmodel.ForecastViewModel
 import ru.tagilov.avitotrainee.ui.component.*
 import ru.tagilov.avitotrainee.ui.entity.PermissionState
 import timber.log.Timber

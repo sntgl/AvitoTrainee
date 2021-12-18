@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee
+package ru.tagilov.avitotrainee.ui.entity
 
 import ru.tagilov.avitotrainee.data.entity.ResponseLocation
 

@@ -13,9 +13,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
-import ru.tagilov.avitotrainee.ui.screen.Destination
-import ru.tagilov.avitotrainee.ui.screen.Forecast
-import ru.tagilov.avitotrainee.ui.theme.AvitoTheme
+import ru.tagilov.avitotrainee.forecast.ui.screen.Destination
+import ru.tagilov.avitotrainee.forecast.ui.screen.Forecast
+import ru.tagilov.avitotrainee.forecast.ui.theme.AvitoTheme
 
 @ExperimentalAnimationApi
 @ExperimentalCoilApi

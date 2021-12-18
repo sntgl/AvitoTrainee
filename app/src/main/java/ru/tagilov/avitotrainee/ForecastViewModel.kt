@@ -6,7 +6,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import ru.tagilov.avitotrainee.data.ForecastRepository
 import ru.tagilov.avitotrainee.data.LocationRepository
-import ru.tagilov.avitotrainee.screen.ForecastScreenState
+import ru.tagilov.avitotrainee.ui.screen.ForecastScreenState
 import ru.tagilov.avitotrainee.ui.entity.Forecast
 import ru.tagilov.avitotrainee.ui.entity.PermissionState
 import timber.log.Timber

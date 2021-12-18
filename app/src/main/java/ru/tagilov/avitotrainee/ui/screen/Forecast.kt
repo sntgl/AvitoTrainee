@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee.screen
+package ru.tagilov.avitotrainee.ui.screen
 
 import android.Manifest
 import android.content.pm.PackageManager

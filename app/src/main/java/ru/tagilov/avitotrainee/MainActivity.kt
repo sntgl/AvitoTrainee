@@ -13,9 +13,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
-import ru.tagilov.avitotrainee.screen.Destination
-import ru.tagilov.avitotrainee.screen.Forecast
-import ru.tagilov.avitotrainee.screen.LocationPermission
+import ru.tagilov.avitotrainee.ui.screen.Destination
+import ru.tagilov.avitotrainee.ui.screen.Forecast
 import ru.tagilov.avitotrainee.ui.theme.AvitoTheme
 
 @ExperimentalAnimationApi
@@ -42,24 +41,10 @@ class MainActivity : ComponentActivity() {
                             city = null
                         )
                     }
-                    composable(Destination.Permission.route) {
-                        LocationPermission(navController)
-                    }
 //                    composable("profile") { Profile(/*...*/) }
 //                    composable("friendslist") { FriendsList(/*...*/) }
                     /*...*/
                 }
-//                Column {
-//                    CityTitle(city = "Москва")
-//                    LazyColumn(
-//                        modifier = Modifier
-//                            .background(color = MaterialTheme.colors.background)
-//                    ) {
-//                        item { CurrentPreview() }
-//                        item { HourlyPreview() }
-//                        item { DailyPreview() }
-//                    }
-//                }
             }
         }
     }

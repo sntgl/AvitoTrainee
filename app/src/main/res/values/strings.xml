@@ -1,16 +1,20 @@
 <resources>
     <string name="app_name">Avito Trainee</string>
-    <string name="hourly_forecast">На сегодня</string>
+    <string name="hourly_forecast">Почасовой прогноз</string>
 <!--    <string name="humidity">Влажность: %d%%</string>-->
     <string name="percent_placeholder">%d%%</string>
     <string name="pressure_placeholder">%d мм</string>
     <string name="feels_like">Ощущается как %d°</string>
 <!--    <string name="sunrise">Восход: %s</string>-->
 <!--    <string name="sunset">Закат: %s</string>-->
-    <string name="daily_forecast">На неделю</string>
+    <string name="daily_forecast">Прогноз на неделю</string>
     <string name="celsius_placeholder">%d°</string>
     <string name="celsius">°</string>
     <string name="max_min">Макс.: %d°, мин.: %d°</string>
     <string name="now">Сейчас</string>
     <string name="today">Сегодня</string>
+    <string name="error_title">Произошла ошибка</string>
+    <string name="gps_off_description">Проверьте геолокацию</string>
+    <string name="try_again">Попробовать снова</string>
+    <string name="connection_error_description">Проверьте подключение к интернету</string>
 </resources>

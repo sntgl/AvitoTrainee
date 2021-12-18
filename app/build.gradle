@@ -82,7 +82,9 @@ dependencies {
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.21.2-beta"
 //    Jetpack navigation
     implementation "androidx.navigation:navigation-compose:2.4.0-beta02"
-//    HTTP logging TODO DELETE
+//    HTTP logging
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
+//    Swipe refresh
+    implementation "com.google.accompanist:accompanist-swiperefresh:0.21.2-beta"
 
 }

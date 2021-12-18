@@ -6,6 +6,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import ru.tagilov.avitotrainee.data.ForecastRepository
 import ru.tagilov.avitotrainee.data.LocationRepository
+import ru.tagilov.avitotrainee.screen.ForecastScreenState
 import ru.tagilov.avitotrainee.ui.entity.Forecast
 import ru.tagilov.avitotrainee.ui.entity.PermissionState
 import timber.log.Timber
@@ -15,6 +16,7 @@ class ForecastViewModel : ViewModel() {
     private val locationRepo = LocationRepository()
     private val forecastRepo = ForecastRepository()
     private var isApiLocation = true
+    private var apiLocationFailed = false
     private var delayForecast = false
 
     fun configure(city: City?): Boolean {
@@ -27,7 +29,16 @@ class ForecastViewModel : ViewModel() {
     val permissionStateFlow: StateFlow<PermissionState>
         get() = permissionStateMutableFlow
 
+    private val screenStateMutableFlow = MutableStateFlow<ForecastScreenState>(ForecastScreenState.None)
+    val screenStateFlow: StateFlow<ForecastScreenState>
+        get() = screenStateMutableFlow
+
+    private val isRefreshingMutableFlow = MutableStateFlow<Boolean>(false)
+    val isRefreshingFlow: StateFlow<Boolean>
+        get() = isRefreshingMutableFlow
+
     fun newPermissionState(state: PermissionState) {
+        Timber.d("new permission state - $state")
         viewModelScope.launch {
             permissionStateMutableFlow.emit(state)
         }
@@ -55,10 +66,8 @@ class ForecastViewModel : ViewModel() {
             if (isApiLocation || !fromApi) {
                 val city = cityMutableFlow.value
                 cityMutableFlow.emit(
-                    if (city != null)
-                        cityMutableFlow.value?.copy(longitude = long, latitude = lat)
-                    else
-                        City(name = null, longitude = long, latitude = lat)
+                    city?.copy(longitude = long, latitude = lat)
+                        ?: City(name = null, longitude = long, latitude = lat)
                 )
                 isApiLocation = fromApi
             }
@@ -75,8 +84,10 @@ class ForecastViewModel : ViewModel() {
                 if (loc != null) {
                     setLocation(lat = loc.latitude, long = loc.longitude, fromApi = true)
                 } else {
+                    apiLocationFailed = true
                     Timber.d("Something wrong with location")
-                    //TODO show err?
+                    if (permissionStateMutableFlow.value == PermissionState.Denied)
+                        screenStateMutableFlow.emit(ForecastScreenState.ErrorState.Location)
                 }
             }
             currentLocationJob = null
@@ -96,25 +107,38 @@ class ForecastViewModel : ViewModel() {
                 getLocation()
                 delayForecast = true
             } else {
+                screenStateMutableFlow.emit(ForecastScreenState.Loading)
                 delayForecast = false
                 forecastRepo
                     .getCityName(longitude = city.longitude, latitude = city.latitude)
-                    .collect {
-                        cityMutableFlow.emit(city.copy(name = it))
-                    }
+                    .onEach {
+                        Timber.d("new city $it")
+                        if (it != null)
+                            cityMutableFlow.emit(city.copy(name = it))
+//                        else if (cityMutableFlow.value == null)
+//
+                    }.launchIn(viewModelScope)
                 forecastRepo
                     .getWeather(longitude = city.longitude, latitude = city.latitude)
-                    .collect {
-                        forecastMutableFlow.emit(it)
-                    }
-
+                    .onEach {
+                        Timber.d("new weather $it")
+                        if (it != null)
+                            forecastMutableFlow.emit(it)
+                        else if (forecastMutableFlow.value == null)
+                            screenStateMutableFlow.emit(ForecastScreenState.ErrorState.Connection)
+                    }.launchIn(viewModelScope)
+                isRefreshingMutableFlow.emit(false)
             }
         }
         currentForecastJob = null
     }
 
-
-
+    fun refresh() {
+        viewModelScope.launch {
+            isRefreshingMutableFlow.emit(true)
+        }
+        getForecast()
+    }
 
     init {
         cityMutableFlow.onEach {
@@ -126,6 +150,20 @@ class ForecastViewModel : ViewModel() {
         forecastMutableFlow.onEach {
             Timber.d("new forecast: $it")
         }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            screenStateMutableFlow.emit(ForecastScreenState.Loading)
+        }
+//        forecastMutableFlow.onEach {
+//            if (apiLocationFailed)
+//                screenStateMutableFlow.emit(ForecastScreenState.ErrorState.Location)
+//        }.launchIn(viewModelScope)
         getForecast()
+        screenStateMutableFlow.onEach {
+            Timber.d("New screen state - $it")
+        }.launchIn(viewModelScope)
+        permissionStateMutableFlow.onEach {
+            if (it == PermissionState.Denied && apiLocationFailed)
+                screenStateMutableFlow.emit(ForecastScreenState.ErrorState.Location)
+        }.launchIn(viewModelScope)
     }
 }

@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import ru.tagilov.avitotrainee.forecast.ui.entity.fromResponse
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
-import timber.log.Timber
 import java.io.IOException
 
 class ForecastRepository {
@@ -17,7 +16,7 @@ class ForecastRepository {
     ): Flow<String?> = flow {
         try {
             emit(
-                Networking.forecastApi.getCityName(
+                ForecastNetworking.forecastApi.getCityName(
                     longitude = longitude.toString(),
                     latitude = latitude.toString()
                 )
@@ -36,7 +35,7 @@ class ForecastRepository {
     ): Flow<Forecast?> = flow {
         try {
             emit(
-                Networking.forecastApi.getFullForecast(
+                ForecastNetworking.forecastApi.getFullForecast(
                     longitude = longitude.toString(),
                     latitude = latitude.toString()
                 )

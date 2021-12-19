@@ -12,7 +12,7 @@ import java.io.IOException
 class LocationRepository {
     suspend fun getLocation(): Flow<DomainLocation?> = flow {
         try {
-            emit(Networking.locationApi.location())
+            emit(ForecastNetworking.locationApi.location())
         } catch (e: IOException) {
             emit(null)
         }

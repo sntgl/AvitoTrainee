@@ -46,7 +46,7 @@ fun Forecast(
     val cityState = remember { vm.cityFlow }.collectAsState()
     val forecastState = remember { vm.forecastFlow }.collectAsState()
     val isRefreshing = remember { vm.isRefreshingFlow }.collectAsState()
-    val screenState = remember { vm.screenStateFlow }.collectAsState()
+    val screenState = remember { vm.stateFlow }.collectAsState()
     val context = LocalContext.current
     //локация
     val sendLocation = {
@@ -127,8 +127,8 @@ fun Forecast(
                 Column(
                     modifier = Modifier
                 ) {
-                    if (screenState.value == ForecastScreenState.Content
-                        || screenState.value == ForecastScreenState.Loading
+                    if (screenState.value == ForecastState.Content
+                        || screenState.value == ForecastState.Loading
                     ) {
                         CityTitle(city = cityState.value)
                         SwipeRefresh(
@@ -155,25 +155,18 @@ fun Forecast(
                                 ) }
                             }
                         }
-                    } else if (screenState.value == ForecastScreenState.ErrorState.Connection) {
+                    } else if (screenState.value == ForecastState.ErrorState.Connection) {
                         ConnectionError { vm.refresh() }
-                    } else if (screenState.value == ForecastScreenState.ErrorState.Location) {
+                    } else if (screenState.value == ForecastState.ErrorState.Location) {
                         LocationError { vm.refresh() }
                     }
                 }
             }
         }
-        NavBar()
-    }
-}
-
-sealed class ForecastScreenState {
-    object None : ForecastScreenState()
-    object Loading : ForecastScreenState()
-    object Content : ForecastScreenState()
-    sealed class ErrorState : ForecastScreenState() {
-        object Location : ErrorState()
-        object Connection : ErrorState()
+        NavBar(
+            navController = navController,
+            isLocation = permissionState.value != PermissionState.None
+        )
     }
 }
 

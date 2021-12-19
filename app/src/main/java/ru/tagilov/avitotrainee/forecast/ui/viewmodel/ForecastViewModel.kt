@@ -8,7 +8,7 @@ import ru.tagilov.avitotrainee.forecast.data.ForecastRepository
 import ru.tagilov.avitotrainee.forecast.data.LocationRepository
 import ru.tagilov.avitotrainee.City
 import ru.tagilov.avitotrainee.ShowSnackbarEvent
-import ru.tagilov.avitotrainee.forecast.ui.screen.ForecastScreenState
+import ru.tagilov.avitotrainee.forecast.ui.screen.ForecastState
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
 import ru.tagilov.avitotrainee.forecast.ui.entity.PermissionState
 import timber.log.Timber
@@ -22,15 +22,17 @@ class ForecastViewModel : ViewModel() {
     private var delayForecast = false
 
     fun configure(city: City?) {
+        Timber.d("City configured: $city")
         setCity(city = city)
+        getForecast()
     }
 
     private val permissionStateMutableFlow = MutableStateFlow<PermissionState>(PermissionState.None)
     val permissionStateFlow: StateFlow<PermissionState>
         get() = permissionStateMutableFlow
 
-    private val screenStateMutableFlow = MutableStateFlow<ForecastScreenState>(ForecastScreenState.None)
-    val screenStateFlow: StateFlow<ForecastScreenState>
+    private val screenStateMutableFlow = MutableStateFlow<ForecastState>(ForecastState.None)
+    val stateFlow: StateFlow<ForecastState>
         get() = screenStateMutableFlow
 
     private val isRefreshingMutableFlow = MutableStateFlow<Boolean>(false)
@@ -86,7 +88,7 @@ class ForecastViewModel : ViewModel() {
                 } else {
                     apiLocationFailed = true
                     if (permissionStateMutableFlow.value == PermissionState.Denied)
-                        screenStateMutableFlow.emit(ForecastScreenState.ErrorState.Location)
+                        screenStateMutableFlow.emit(ForecastState.ErrorState.Location)
                 }
             }
             currentLocationJob = null
@@ -105,7 +107,7 @@ class ForecastViewModel : ViewModel() {
     fun getForecast() {
         currentForecastJob?.cancel()
         currentForecastJob = viewModelScope.launch {
-            screenStateMutableFlow.emit(ForecastScreenState.Loading)
+            screenStateMutableFlow.emit(ForecastState.Loading)
             val oldCity = cityMutableFlow.value
             //какой-то continuation получился))
             if (oldCity == null) {
@@ -125,7 +127,7 @@ class ForecastViewModel : ViewModel() {
                             cityMutableFlow.emit(oldCity.copy(name = city))
                             forecastMutableFlow.emit(forecast)
                         } else if (forecastMutableFlow.value == null)
-                            screenStateMutableFlow.emit(ForecastScreenState.ErrorState.Connection)
+                            screenStateMutableFlow.emit(ForecastState.ErrorState.Connection)
                         else
                             showSnackBarMutableEvent.emit(ShowSnackbarEvent())
                     }.launchIn(viewModelScope)
@@ -142,7 +144,6 @@ class ForecastViewModel : ViewModel() {
     }
 
     init {
-        getForecast()
         cityMutableFlow.onEach {
             Timber.d("new city: ${it?.name} at " + it?.latitude.toString() + " " + it?.longitude.toString())
             if (it != null && delayForecast) {
@@ -153,14 +154,14 @@ class ForecastViewModel : ViewModel() {
             Timber.d("new forecast: $it")
         }.launchIn(viewModelScope)
         viewModelScope.launch {
-            screenStateMutableFlow.emit(ForecastScreenState.Loading)
+            screenStateMutableFlow.emit(ForecastState.Loading)
         }
         screenStateMutableFlow.onEach {
             Timber.d("New screen state - $it")
         }.launchIn(viewModelScope)
         permissionStateMutableFlow.onEach {
             if (it == PermissionState.Denied && apiLocationFailed)
-                screenStateMutableFlow.emit(ForecastScreenState.ErrorState.Location)
+                screenStateMutableFlow.emit(ForecastState.ErrorState.Location)
         }.launchIn(viewModelScope)
     }
 }

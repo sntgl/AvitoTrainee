@@ -1,9 +1,10 @@
 package ru.tagilov.avitotrainee.forecast.ui.screen
 
+import ru.tagilov.avitotrainee.City
+
 
 sealed class Destination(val route: String) {
-    object Forecast: Destination("forecast/{granted}") {
-        fun createRoute(granted: Boolean) = "forecast/$granted"
-        const val granted: String = "granted"
+    object Forecast: Destination("forecast") {
+        const val key_city: String = "city"
     }
 }

@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import ru.tagilov.avitotrainee.forecast.ui.entity.fromResponse
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
+import timber.log.Timber
 import java.io.IOException
 
 class ForecastRepository {
@@ -25,10 +26,7 @@ class ForecastRepository {
             emit(null)
         }
     }.map{
-        if (it != null)
-            it[0].local_names.ru
-        else
-            null
+        it?.get(0)?.local_names?.ru ?: it?.get(0)?.name
     }.flowOn(Dispatchers.IO)
 
 

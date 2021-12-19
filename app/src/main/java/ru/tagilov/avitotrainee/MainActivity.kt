@@ -7,15 +7,14 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
 import ru.tagilov.avitotrainee.forecast.ui.screen.Destination
 import ru.tagilov.avitotrainee.forecast.ui.screen.Forecast
 import ru.tagilov.avitotrainee.theme.AvitoTheme
+import timber.log.Timber
 
 @ExperimentalAnimationApi
 @ExperimentalCoilApi
@@ -31,14 +30,20 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable(
                         route = Destination.Forecast.route,
-                        arguments = listOf(
-                            navArgument(Destination.Forecast.granted) { type = NavType.BoolType }
-                        ),
+//                        arguments = listOf(
+////                            navArgument(Destination.Forecast.granted) { type = NavType.BoolType },
+////                            NavType.
+//                            navArgument(Destination.Forecast.city) {
+//                                type = NavType.ParcelableType(City::class.java)
+//                            }
+//                        ),
                     ) {
-//                            locationGranted = it.arguments?.getBoolean(Destination.Forecast.granted),
+                        val city: City? = it.arguments?.getParcelable(Destination.Forecast.key_city)
+                        Timber.d("City = $city")
+//                        it.arguments.getP
                         Forecast(
                             navController = navController,
-                            city = null
+                            city = city
                         )
                     }
 //                    composable("profile") { Profile(/*...*/) }

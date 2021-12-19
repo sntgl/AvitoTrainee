@@ -1,11 +1,15 @@
 package ru.tagilov.avitotrainee.forecast.data.entity
 
+import com.google.gson.annotations.SerializedName
+
 data class HourlyForecastResponse(
     val dt: Int,
     val temp: Float,
-    val feels_like: Float,
+    @SerializedName("feels_like")
+    val feelsLike: Float,
     val pressure: Int,
     val humidity: Int,
-    val wind_speed: Float,
+    @SerializedName("wind_speed")
+    val windSpeed: Float,
     val weather: List<WeatherResponse>,
 )

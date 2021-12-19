@@ -6,7 +6,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import ru.tagilov.avitotrainee.forecast.data.ForecastRepository
 import ru.tagilov.avitotrainee.forecast.data.LocationRepository
-import ru.tagilov.avitotrainee.City
+import ru.tagilov.avitotrainee.CityModel
 import ru.tagilov.avitotrainee.ShowSnackbarEvent
 import ru.tagilov.avitotrainee.forecast.ui.screen.ForecastState
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
@@ -21,7 +21,7 @@ class ForecastViewModel : ViewModel() {
     private var apiLocationFailed = false
     private var delayForecast = false
 
-    fun configure(city: City?) {
+    fun configure(city: CityModel?) {
         Timber.d("City configured: $city")
         setCity(city = city)
         getForecast()
@@ -46,11 +46,11 @@ class ForecastViewModel : ViewModel() {
         }
     }
 
-    private val cityMutableFlow = MutableStateFlow<City?>(null)
-    val cityFlow: StateFlow<City?>
+    private val cityMutableFlow = MutableStateFlow<CityModel?>(null)
+    val cityFlow: StateFlow<CityModel?>
         get() = cityMutableFlow
 
-    private fun setCity(city: City?) {
+    private fun setCity(city: CityModel?) {
         viewModelScope.launch {
             if (city == null) {
                 permissionStateMutableFlow.emit(PermissionState.Required)
@@ -69,7 +69,7 @@ class ForecastViewModel : ViewModel() {
                 val city = cityMutableFlow.value
                 cityMutableFlow.emit(
                     city?.copy(longitude = long, latitude = lat)
-                        ?: City(name = null, longitude = long, latitude = lat)
+                        ?: CityModel(name = null, longitude = long, latitude = lat)
                 )
                 isApiLocation = fromApi
             }

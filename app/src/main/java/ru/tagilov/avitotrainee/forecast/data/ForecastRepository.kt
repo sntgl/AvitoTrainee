@@ -25,7 +25,7 @@ class ForecastRepository {
             emit(null)
         }
     }.map{
-        it?.get(0)?.local_names?.ru ?: it?.get(0)?.name
+        it?.get(0)?.localNames?.ru ?: it?.get(0)?.name
     }.flowOn(Dispatchers.IO)
 
 

@@ -11,6 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
+import kotlinx.coroutines.FlowPreview
+import ru.tagilov.avitotrainee.city.ui.screen.City
 import ru.tagilov.avitotrainee.forecast.ui.screen.Destination
 import ru.tagilov.avitotrainee.forecast.ui.screen.Forecast
 import ru.tagilov.avitotrainee.theme.AvitoTheme
@@ -19,6 +21,7 @@ import timber.log.Timber
 @ExperimentalAnimationApi
 @ExperimentalCoilApi
 class MainActivity : ComponentActivity() {
+    @FlowPreview
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -30,25 +33,19 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable(
                         route = Destination.Forecast.route,
-//                        arguments = listOf(
-////                            navArgument(Destination.Forecast.granted) { type = NavType.BoolType },
-////                            NavType.
-//                            navArgument(Destination.Forecast.city) {
-//                                type = NavType.ParcelableType(City::class.java)
-//                            }
-//                        ),
                     ) {
-                        val city: City? = it.arguments?.getParcelable(Destination.Forecast.key_city)
+                        val city: CityModel? = it.arguments?.getParcelable(Destination.Forecast.key_city)
                         Timber.d("City = $city")
-//                        it.arguments.getP
                         Forecast(
                             navController = navController,
                             city = city
                         )
                     }
-//                    composable("profile") { Profile(/*...*/) }
-//                    composable("friendslist") { FriendsList(/*...*/) }
-                    /*...*/
+                    composable(
+                        route = Destination.City.route,
+                    ) {
+                        City(navController = navController)
+                    }
                 }
             }
         }

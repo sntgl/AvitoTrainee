@@ -13,7 +13,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ru.tagilov.avitotrainee.City
+import ru.tagilov.avitotrainee.CityModel
 import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.forecast.ui.screen.Destination
 import ru.tagilov.avitotrainee.util.navigateWithParcelable
@@ -43,22 +43,22 @@ fun NavBar(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(
+            Row(
                 modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colors.background,
-                        shape = CircleShape
-                    )
+                    .size(60.dp)
                     .clickable {
-                        navController.navigateWithParcelable(
-                            route = Destination.Forecast.route,
-                            key = Destination.Forecast.key_city,
-                            parcelable = null
-                        ) {
-                            launchSingleTop = true
-                            popUpTo(Destination.Forecast.route) { inclusive = true }
-                        }
-                    }
+                        if (!isLocation)
+                            navController.navigateWithParcelable(
+                                route = Destination.Forecast.route,
+                                key = Destination.Forecast.key_city,
+                                parcelable = null
+                            ) {
+                                launchSingleTop = true
+                                popUpTo(Destination.Forecast.route) { inclusive = true }
+                            }
+                    },
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.arrow_gps),
@@ -71,23 +71,34 @@ fun NavBar(
                         .size(24.dp)
                 )
             }
-            Icon(
-                painter = painterResource(id = R.drawable.list),
-                contentDescription = "list",
-                tint = MaterialTheme.colors.secondary,
+            Row(
                 modifier = Modifier
-                    .size(24.dp)
+                    .size(60.dp)
                     .clickable {
-                        navController.navigateWithParcelable(
-                            route = Destination.Forecast.route,
-                            key = Destination.Forecast.key_city,
-                            parcelable = City(null, 50.0, 32.1)
-                        ) {
+//                        navController.navigateWithParcelable(
+//                            route = Destination.Forecast.route,
+//                            key = Destination.Forecast.key_city,
+//                            parcelable = CityModel(null, 50.0, 32.1)
+//                        ) {
+//                            launchSingleTop = true
+//                            popUpTo(Destination.Forecast.route) { inclusive = true }
+//                        }
+                        navController.navigate(route = Destination.City.route,){
                             launchSingleTop = true
-                            popUpTo(Destination.Forecast.route) { inclusive = true }
                         }
                     },
-            )
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.list),
+                    contentDescription = "list",
+                    tint = MaterialTheme.colors.secondary,
+                    modifier = Modifier
+                        .size(24.dp)
+                        .background(color = MaterialTheme.colors.background, shape = CircleShape),
+                )
+            }
         }
     }
 }

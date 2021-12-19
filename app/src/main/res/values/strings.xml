@@ -19,4 +19,6 @@
     <string name="connection_error_description">Проверьте подключение к интернету</string>
     <string name="unable_to_update">Не удалось обновить контент!</string>
     <string name="my_tag">" - Aleksandr Tagilov by OpenWeatherAPI - "</string>
+    <string name="text_field_tip">Название города</string>
+    <string name="cancel">Отмена</string>
 </resources>

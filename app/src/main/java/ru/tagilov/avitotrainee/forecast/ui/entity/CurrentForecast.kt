@@ -32,9 +32,9 @@ fun CurrentForecast.Companion.fromResponse(
     maxTemp = maxTemp,
     currentTemp = response.temp.roundToInt(),
     currentDescription = response.weather[0].description.replaceFirstChar { it.uppercase() },
-    wind = response.wind_speed.roundToInt(),
+    wind = response.windSpeed.roundToInt(),
     humidity = response.humidity,
-    feelsLike = response.feels_like.roundToInt(),
+    feelsLike = response.feelsLike.roundToInt(),
     sunset = SimpleDateFormat("H:m").format(Date(response.sunset.toLong() * 1000)),
     sunrise = SimpleDateFormat("H:m").format(Date(response.sunrise.toLong() * 1000)),
 )

@@ -3,7 +3,7 @@ package ru.tagilov.avitotrainee
 import android.os.Parcel
 import android.os.Parcelable
 
-data class City(
+data class CityModel(
     val name: String?,
     val latitude: Double,
     val longitude: Double,
@@ -24,12 +24,12 @@ data class City(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<City> {
-        override fun createFromParcel(parcel: Parcel): City {
-            return City(parcel)
+    companion object CREATOR : Parcelable.Creator<CityModel> {
+        override fun createFromParcel(parcel: Parcel): CityModel {
+            return CityModel(parcel)
         }
 
-        override fun newArray(size: Int): Array<City?> {
+        override fun newArray(size: Int): Array<CityModel?> {
             return arrayOfNulls(size)
         }
     }

@@ -1,10 +1,13 @@
 package ru.tagilov.avitotrainee.forecast.data.entity
 
+import com.google.gson.annotations.SerializedName
+
 data class ResponseCityLocale(
     val ru: String?
 )
 
 data class ResponseCityName (
     val name: String,
-    val local_names: ResponseCityLocale?
+    @SerializedName("local_names")
+    val localNames: ResponseCityLocale?
 )

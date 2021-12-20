@@ -105,5 +105,9 @@ class CityViewModel : ViewModel() {
             Timber.d("New screen state = $it")
         }.launchIn(viewModelScope)
 
+        screenStateMutableFlow
+            .filter { it is CityState.Saved }
+            .onEach { Timber.d("Show saved") }
+            .launchIn(viewModelScope)
     }
 }

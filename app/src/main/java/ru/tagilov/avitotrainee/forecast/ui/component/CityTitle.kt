@@ -9,14 +9,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.tagilov.avitotrainee.CityModel
+import ru.tagilov.avitotrainee.CityParcelable
 import ru.tagilov.avitotrainee.theme.AvitoTheme
 import ru.tagilov.avitotrainee.util.shimmerRound
 
 @Composable
 fun CityTitle(
     modifier: Modifier = Modifier,
-    city: CityModel?
+    city: CityParcelable?
 ) {
     Column(
         modifier = Modifier
@@ -56,7 +56,7 @@ fun CityTitle(
 @Preview
 @Composable
 private fun CityTitlePreview() {
-    AvitoTheme { CityTitle(city = CityModel(name = "Москва", 0.0, 0.0)) }
+    AvitoTheme { CityTitle(city = CityParcelable(name = "Москва", 0.0, 0.0)) }
 }
 
 private const val SKELETON_CITY_SIZE = 7

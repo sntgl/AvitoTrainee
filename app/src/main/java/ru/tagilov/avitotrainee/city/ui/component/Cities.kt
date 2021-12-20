@@ -9,30 +9,32 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ru.tagilov.avitotrainee.CityModel
-import ru.tagilov.avitotrainee.city.ui.entity.City
+import ru.tagilov.avitotrainee.CityParcelable
+import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.forecast.ui.screen.Destination
-import ru.tagilov.avitotrainee.theme.AvitoTheme
 import ru.tagilov.avitotrainee.util.navigateWithParcelable
 import ru.tagilov.avitotrainee.util.shimmerContent
+
 
 @Composable
 private fun CityItem(
     modifier: Modifier = Modifier,
-    city: City,
+    city: ru.tagilov.avitotrainee.city.ui.entity.CityModel,
     navController: NavController,
 ) {
     Box(
         modifier = Modifier
-            .padding(horizontal = 8.dp, vertical = 2.dp)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
             .clickable {
                 navController.navigateWithParcelable(
                     route = Destination.Forecast.route,
                     key = Destination.Forecast.key_city,
-                    parcelable = CityModel(city.name, city.lat, city.lon)
+                    parcelable = CityParcelable(city.name, city.lat, city.lon)
                 ) {
                     launchSingleTop = true
                     popUpTo(Destination.Forecast.route) { inclusive = true }
@@ -42,7 +44,7 @@ private fun CityItem(
         Row(
             modifier = modifier
                 .background(
-                    color = MaterialTheme.colors.background,
+                    color = MaterialTheme.colors.onBackground,
                     shape = MaterialTheme.shapes.medium
                 )
                 .fillMaxWidth()
@@ -76,9 +78,9 @@ private fun CityShimmer(
 ) {
     Row(
         modifier = modifier
-            .padding(horizontal = 8.dp, vertical = 2.dp)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
             .background(
-                color = MaterialTheme.colors.background,
+                color = MaterialTheme.colors.onBackground,
                 shape = MaterialTheme.shapes.medium
             )
             .fillMaxWidth()
@@ -111,22 +113,32 @@ private fun CityShimmer(
 @Composable
 fun Cities(
     modifier: Modifier = Modifier,
-    cities: List<City>?,
+    cities: List<CityModel>?,
     navController: NavController,
+    title: String,
 ) {
+    //все-таки решил, что тут не нужен свайп рефреш
     LazyColumn(
         modifier = modifier
             .fillMaxHeight()
     ) {
+        item {
+            Text(
+                // город
+                text = title,
+                style = MaterialTheme.typography.h4,
+                color = MaterialTheme.colors.secondary,
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .padding(horizontal = 24.dp, vertical = 12.dp)
+            )
+        }
         if (cities != null) {
             items(cities.size) {
                 CityItem(city = cities[it], navController = navController)
             }
-        } else {
-            items(3) {
-                CityShimmer()
-            }
-        }
+        } else
+            item { CityShimmer() }
     }
 }
 

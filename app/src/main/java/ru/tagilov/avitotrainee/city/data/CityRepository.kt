@@ -6,14 +6,14 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import ru.tagilov.avitotrainee.city.data.CityNetworking.cityApi
-import ru.tagilov.avitotrainee.city.ui.entity.City
+import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.city.ui.entity.fromResponse
 import java.io.IOException
 
 class CityRepository {
     suspend fun searchCities(
         query: String,
-    ): Flow<List<City>?> = flow {
+    ): Flow<List<CityModel>?> = flow {
         try {
             emit(
                 cityApi.getCities(q = query)
@@ -23,7 +23,7 @@ class CityRepository {
         }
     }.map{ list ->
         list?.map{
-            City.fromResponse(it)
+            CityModel.fromResponse(it)
         }
     }.flowOn(Dispatchers.IO)
 

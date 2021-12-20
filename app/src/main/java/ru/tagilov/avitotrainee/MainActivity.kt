@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = Destination.Forecast.route,
                     ) {
-                        val city: CityModel? = it.arguments?.getParcelable(Destination.Forecast.key_city)
+                        val city: CityParcelable? = it.arguments?.getParcelable(Destination.Forecast.key_city)
                         Timber.d("City = $city")
                         Forecast(
                             navController = navController,

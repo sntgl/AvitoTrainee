@@ -21,4 +21,8 @@
     <string name="my_tag">" - Aleksandr Tagilov by OpenWeatherAPI - "</string>
     <string name="text_field_tip">Название города</string>
     <string name="cancel">Отмена</string>
+    <string name="searched_cities">Найденные города</string>
+    <string name="nothing_found">Ничего не найдено</string>
+    <string name="try_to_correct">Попробуйте изменить запрос</string>
+    <string name="saved_cities">Сохраненные города</string>
 </resources>

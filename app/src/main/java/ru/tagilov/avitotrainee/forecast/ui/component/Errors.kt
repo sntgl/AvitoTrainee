@@ -24,6 +24,7 @@ fun LocationError(
         onRetry = onRetry,
         description = stringResource(id = R.string.gps_off_description),
         icon = painterResource(id = R.drawable.gps_off),
+        modifier = Modifier.fillMaxSize()
     )
 }
 
@@ -35,19 +36,19 @@ fun ConnectionError(
         onRetry = onRetry,
         description = stringResource(id = R.string.connection_error_description),
         icon = painterResource(id = R.drawable.cell_tower),
+        modifier = Modifier.fillMaxSize()
     )
 }
 
 @Composable
 private fun Error(
+    modifier: Modifier = Modifier,
     onRetry: () -> Unit,
     description: String,
     icon: Painter,
 ){
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp),
+        modifier = modifier.padding(8.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

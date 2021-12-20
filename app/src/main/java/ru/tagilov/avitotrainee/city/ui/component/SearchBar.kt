@@ -9,10 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -23,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.StateFlow
 import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.theme.AvitoTheme
 
@@ -31,21 +29,37 @@ import ru.tagilov.avitotrainee.theme.AvitoTheme
 @Composable
 fun SearchBar(
     state: MutableState<TextFieldValue>,
-    textUpdated: (String) -> Unit
+    textUpdated: (String) -> Unit,
+    isFocused: StateFlow<Boolean>,
+    onFocusChanged: (Boolean) -> Unit,
 ) {
     val colorSecondary = MaterialTheme.colors.secondary
     val colorOnSecondary = MaterialTheme.colors.secondaryVariant
     val textColor = remember { mutableStateOf(colorSecondary) }
     val placeHolderDefaultText = stringResource(R.string.text_field_tip)
     val placeHolderText = remember { mutableStateOf(placeHolderDefaultText) }
-    val focused = remember { mutableStateOf(false) }
+    val focused = remember { isFocused }.collectAsState()
+    val focusManager = LocalFocusManager.current
+
+    SideEffect {
+        if (!focused.value){
+            focusManager.clearFocus()
+            state.value = TextFieldValue("")
+            textUpdated("")
+            textColor.value = colorOnSecondary
+            placeHolderText.value = placeHolderDefaultText
+        } else {
+            textColor.value = colorSecondary
+            placeHolderText.value = placeHolderDefaultText
+        }
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colors.surface)
+            .background(MaterialTheme.colors.background)
     ) {
-        val focusManager = LocalFocusManager.current
         TextField(
             value = state.value,
             onValueChange = { value ->
@@ -56,14 +70,7 @@ fun SearchBar(
                 .weight(1f)
                 .padding(10.dp)
                 .onFocusChanged {
-                    focused.value = it.isFocused
-                    if (it.isFocused) {
-                        textColor.value = colorOnSecondary
-                        placeHolderText.value = ""
-                    } else {
-                        textColor.value = colorSecondary
-                        placeHolderText.value = placeHolderDefaultText
-                    }
+                    onFocusChanged(it.isFocused)
                 },
             textStyle = MaterialTheme.typography.body1,
             leadingIcon = {
@@ -80,7 +87,7 @@ fun SearchBar(
                 textColor = MaterialTheme.colors.secondary,
                 cursorColor = MaterialTheme.colors.primary,
                 leadingIconColor = textColor.value,
-                backgroundColor = MaterialTheme.colors.background,
+                backgroundColor = MaterialTheme.colors.surface,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
@@ -97,11 +104,7 @@ fun SearchBar(
                 text = stringResource(id = R.string.cancel),
                 modifier = Modifier
                     .padding(end = 28.dp, start = 12.dp)
-                    .clickable {
-                        focusManager.clearFocus()
-                        state.value = TextFieldValue("")
-                        textUpdated("")
-                    },
+                    .clickable { onFocusChanged(false) },
                 style = MaterialTheme.typography.subtitle1,
                 color = MaterialTheme.colors.primary
             )
@@ -109,12 +112,12 @@ fun SearchBar(
     }
 }
 
-@ExperimentalAnimationApi
-@Preview(showBackground = true)
-@Composable
-fun SearchBarPreview(){
-    AvitoTheme {
-        val v = remember{mutableStateOf(TextFieldValue())}
-        SearchBar(state = v, textUpdated = {})
-    }
-}
+//@ExperimentalAnimationApi
+//@Preview(showBackground = true)
+//@Composable
+//fun SearchBarPreview(){
+//    AvitoTheme {
+//        val v = remember{mutableStateOf(TextFieldValue())}
+//        SearchBar(state = v, textUpdated = {}, isFocused = false)
+//    }
+//}

@@ -7,7 +7,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.tagilov.avitotrainee.city.data.CityRepository
-import ru.tagilov.avitotrainee.city.ui.entity.City
+import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.city.ui.screen.CityState
 import timber.log.Timber
 
@@ -16,14 +16,14 @@ class CityViewModel : ViewModel() {
     private val cityRepository = CityRepository()
 
     private val entryMutableStateFlow = MutableStateFlow("")
-    private val searchMutableStateFlow = MutableStateFlow("")
+    private val newSearchMutableStateFlow = MutableStateFlow("")
 
     private val screenStateMutableFlow = MutableStateFlow<CityState>(CityState.None)
     val screenStateFlow: StateFlow<CityState>
         get() = screenStateMutableFlow
 
-    private val searchCityListMutableFlow = MutableStateFlow<List<City>?>(null)
-    val searchCityListFlow: StateFlow<List<City>?>
+    private val searchCityListMutableFlow = MutableStateFlow<List<CityModel>?>(null)
+    val searchCityListFlow: StateFlow<List<CityModel>?>
         get() = searchCityListMutableFlow
 
     fun newEntry(s: String) {
@@ -33,9 +33,22 @@ class CityViewModel : ViewModel() {
         }
     }
 
+    private val searchFocusedMutableFlow = MutableStateFlow(false)
+    val searchFocusedFlow: StateFlow<Boolean>
+        get() = searchFocusedMutableFlow
+
+    fun newSearchFocus(isFocused: Boolean) {
+        viewModelScope.launch {
+            searchFocusedMutableFlow.emit(isFocused)
+//            if (isFocused == false) {
+            searchCityListMutableFlow.emit(null)
+            screenStateMutableFlow.emit(CityState.Saved)
+//            }
+        }
+    }
 
     private var currentSearchJob: Job? = null
-    private fun search(query: String){
+    private fun search(query: String) {
         currentSearchJob?.cancel()
         currentSearchJob = viewModelScope.launch {
             screenStateMutableFlow.emit(CityState.Search.Loading)
@@ -58,18 +71,28 @@ class CityViewModel : ViewModel() {
         }
     }
 
+    fun retry() {
+        viewModelScope.launch {
+            search(entryMutableStateFlow.value)
+        }
+    }
+
     init {
         entryMutableStateFlow
+            .onEach {
+                if (it == "")
+                    screenStateMutableFlow.emit(CityState.Saved)
+            }
             .debounce(500)
             .onEach {
-                searchMutableStateFlow.emit(it)
+                newSearchMutableStateFlow.emit(it)
             }
             .launchIn(viewModelScope)
 
-        searchMutableStateFlow
+        newSearchMutableStateFlow
+            .filter { it != "" }
             .onEach {
-                if (it != "")
-                    search(it)
+                search(it)
             }
             .launchIn(viewModelScope)
 
@@ -77,5 +100,10 @@ class CityViewModel : ViewModel() {
             .onEach {
                 Timber.d("Response cities = $it")
             }.launchIn(viewModelScope)
+
+        screenStateFlow.onEach {
+            Timber.d("New screen state = $it")
+        }.launchIn(viewModelScope)
+
     }
 }

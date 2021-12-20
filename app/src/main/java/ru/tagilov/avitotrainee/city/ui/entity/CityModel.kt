@@ -1,9 +1,8 @@
 package ru.tagilov.avitotrainee.city.ui.entity
 
 import ru.tagilov.avitotrainee.city.data.entity.ResponseCity
-import ru.tagilov.avitotrainee.forecast.data.entity.ResponseCityLocale
 
-data class City(
+data class CityModel(
     val name: String,
     val lat: Double,
     val lon: Double,
@@ -12,8 +11,8 @@ data class City(
     companion object
 }
 
-fun City.Companion.fromResponse(r: ResponseCity): City {
-    return City(
+fun CityModel.Companion.fromResponse(r: ResponseCity): CityModel {
+    return CityModel(
         name = r.localNames?.ru ?: r.name,
         lat = r.lat,
         lon = r.lon,

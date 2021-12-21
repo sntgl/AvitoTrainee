@@ -9,9 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.tagilov.avitotrainee.CityParcelable
-import ru.tagilov.avitotrainee.theme.AvitoTheme
-import ru.tagilov.avitotrainee.util.shimmerRound
+import ru.tagilov.avitotrainee.core.routing.CityParcelable
+import ru.tagilov.avitotrainee.core.theme.AvitoTheme
+import ru.tagilov.avitotrainee.core.util.shimmerRound
 
 @Composable
 fun CityTitle(

@@ -9,16 +9,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ru.tagilov.avitotrainee.CityParcelable
+import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.forecast.ui.screen.Destination
-import ru.tagilov.avitotrainee.util.navigateWithParcelable
-import ru.tagilov.avitotrainee.util.shimmerContent
+import ru.tagilov.avitotrainee.core.util.navigateWithParcelable
+import ru.tagilov.avitotrainee.core.util.shimmerContent
 
 
 @Composable
@@ -33,7 +31,7 @@ private fun CityItem(
             .clickable {
                 navController.navigateWithParcelable(
                     route = Destination.Forecast.route,
-                    key = Destination.Forecast.key_city,
+                    key = Destination.Forecast.KEY_CITY,
                     parcelable = CityParcelable(city.name, city.lat, city.lon)
                 ) {
                     launchSingleTop = true

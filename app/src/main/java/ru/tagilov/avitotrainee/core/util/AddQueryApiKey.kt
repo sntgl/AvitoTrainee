@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee.util
+package ru.tagilov.avitotrainee.core.util
 
 import okhttp3.OkHttpClient
 

@@ -2,13 +2,16 @@ package ru.tagilov.avitotrainee.forecast.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import ru.tagilov.avitotrainee.core.ShowSnackbarEvent
+import ru.tagilov.avitotrainee.core.db.Database
+import ru.tagilov.avitotrainee.core.db.SavedCity
+import ru.tagilov.avitotrainee.core.db.wrap
+import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.forecast.data.ForecastRepository
 import ru.tagilov.avitotrainee.forecast.data.LocationRepository
-import ru.tagilov.avitotrainee.CityParcelable
-import ru.tagilov.avitotrainee.ShowSnackbarEvent
-import ru.tagilov.avitotrainee.forecast.ui.screen.ForecastState
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
 import ru.tagilov.avitotrainee.forecast.ui.entity.PermissionState
 import timber.log.Timber
@@ -20,6 +23,7 @@ class ForecastViewModel : ViewModel() {
     private var isApiLocation = true
     private var apiLocationFailed = false
     private var delayForecast = false
+    private val db = Database.instance.cityDao()
 
     fun configure(city: CityParcelable?) {
         Timber.d("City configured: $city")
@@ -77,7 +81,7 @@ class ForecastViewModel : ViewModel() {
     }
 
     private var currentLocationJob: Job? = null
-    private fun getLocation() {
+    private fun getLocation() { //TODO неразумно запрашивать каждый раз локацию(
         currentLocationJob?.cancel()
         currentLocationJob = viewModelScope.launch {
             if (permissionStateFlow.value == PermissionState.None)
@@ -104,7 +108,38 @@ class ForecastViewModel : ViewModel() {
     val showSnackBarEvent: StateFlow<ShowSnackbarEvent?>
         get() = showSnackBarMutableEvent
 
-    fun getForecast() {
+
+    private val savedCityMutableFlow = MutableStateFlow<SavedState>(SavedState.NONE)
+    val savedCityFlow: StateFlow<SavedState>
+        get() = savedCityMutableFlow
+
+
+    private fun checkSaved() {
+        val cityName = cityMutableFlow.value?.name
+        if (
+            savedCityMutableFlow.value == SavedState.NONE &&
+            permissionStateMutableFlow.value == PermissionState.None &&
+            cityName != null
+        ) {
+            db.get(cityName).onEach {
+                Timber.d("GET SAVED = $it")
+                savedCityMutableFlow.emit(
+                    if (it != null) SavedState.SAVED else SavedState.NOT_SAVED
+                )
+            }.launchIn(viewModelScope)
+        }
+    }
+
+    fun save() {
+        val city = cityMutableFlow.value
+        if (city != null)
+            viewModelScope.launch {
+                db.save(SavedCity.wrap(city))
+                Timber.d("SET SAVED!")
+            }
+    }
+
+    private fun getForecast() { //какой-то жирный получился, мб раскидать стоит
         currentForecastJob?.cancel()
         currentForecastJob = viewModelScope.launch {
             screenStateMutableFlow.emit(ForecastState.Loading)
@@ -113,7 +148,7 @@ class ForecastViewModel : ViewModel() {
             if (oldCity == null) {
                 getLocation()
                 delayForecast = true
-            } else {
+            } else if (cityMutableFlow.value?.name == null) {
                 delayForecast = false
                 val cityFlow = forecastRepo
                     .getCityName(longitude = oldCity.longitude, latitude = oldCity.latitude)
@@ -130,6 +165,21 @@ class ForecastViewModel : ViewModel() {
                             screenStateMutableFlow.emit(ForecastState.ErrorState.Connection)
                         else
                             showSnackBarMutableEvent.emit(ShowSnackbarEvent())
+                    }.launchIn(viewModelScope)
+            } else {
+                delayForecast = false
+                forecastRepo
+                    .getWeather(longitude = oldCity.longitude, latitude = oldCity.latitude)
+                    .onEach { forecast ->
+                        isRefreshingMutableFlow.emit(false)
+                        when {
+                            forecast != null ->
+                                forecastMutableFlow.emit(forecast)
+                            forecastMutableFlow.value == null ->
+                                screenStateMutableFlow.emit(ForecastState.ErrorState.Connection)
+                            else ->
+                                showSnackBarMutableEvent.emit(ShowSnackbarEvent())
+                        }
                     }.launchIn(viewModelScope)
             }
         }
@@ -162,6 +212,9 @@ class ForecastViewModel : ViewModel() {
         permissionStateMutableFlow.onEach {
             if (it == PermissionState.Denied && apiLocationFailed)
                 screenStateMutableFlow.emit(ForecastState.ErrorState.Location)
+        }.launchIn(viewModelScope)
+        cityMutableFlow.onEach {
+            checkSaved()
         }.launchIn(viewModelScope)
     }
 }

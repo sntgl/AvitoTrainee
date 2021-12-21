@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee.theme
+package ru.tagilov.avitotrainee.core.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee
+package ru.tagilov.avitotrainee.core.routing
 
 import android.os.Parcel
 import android.os.Parcelable

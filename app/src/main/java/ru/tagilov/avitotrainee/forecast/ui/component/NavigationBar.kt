@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.forecast.ui.screen.Destination
-import ru.tagilov.avitotrainee.util.navigateWithParcelable
+import ru.tagilov.avitotrainee.core.util.navigateWithParcelable
 
 
 @Composable
@@ -49,7 +49,7 @@ fun NavBar(
                         if (!isLocation)
                             navController.navigateWithParcelable(
                                 route = Destination.Forecast.route,
-                                key = Destination.Forecast.key_city,
+                                key = Destination.Forecast.KEY_CITY,
                                 parcelable = null
                             ) {
                                 launchSingleTop = true

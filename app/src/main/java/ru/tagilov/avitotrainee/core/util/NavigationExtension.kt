@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee.util
+package ru.tagilov.avitotrainee.core.util
 
 import android.os.Parcelable
 import androidx.navigation.NavController

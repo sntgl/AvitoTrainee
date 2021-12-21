@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee.theme
+package ru.tagilov.avitotrainee.core.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes

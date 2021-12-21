@@ -18,11 +18,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.StateFlow
 import ru.tagilov.avitotrainee.R
-import ru.tagilov.avitotrainee.theme.AvitoTheme
 
 
 @ExperimentalAnimationApi

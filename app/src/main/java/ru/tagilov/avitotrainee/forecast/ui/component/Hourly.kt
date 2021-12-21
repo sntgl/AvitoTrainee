@@ -17,8 +17,8 @@ import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.forecast.ui.entity.HourlyForecast
-import ru.tagilov.avitotrainee.theme.AvitoTheme
-import ru.tagilov.avitotrainee.util.shimmerContent
+import ru.tagilov.avitotrainee.core.theme.AvitoTheme
+import ru.tagilov.avitotrainee.core.util.shimmerContent
 
 @ExperimentalCoilApi
 @Composable

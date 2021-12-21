@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee.util
+package ru.tagilov.avitotrainee.core.util
 
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape

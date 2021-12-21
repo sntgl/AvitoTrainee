@@ -1,8 +1,8 @@
 package ru.tagilov.avitotrainee.forecast.data
 
 import retrofit2.create
-import ru.tagilov.avitotrainee.Networking.forecastRetrofit
-import ru.tagilov.avitotrainee.Networking.locationRetrofit
+import ru.tagilov.avitotrainee.core.Networking.forecastRetrofit
+import ru.tagilov.avitotrainee.core.Networking.locationRetrofit
 
 object ForecastNetworking {
 

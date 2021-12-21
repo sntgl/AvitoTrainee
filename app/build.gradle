@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -86,4 +87,10 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
 //    Swipe refresh
     implementation "com.google.accompanist:accompanist-swiperefresh:0.21.2-beta"
+//    Room
+    def room_version = "2.4.0"
+    implementation "androidx.room:room-ktx:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+
+
 }

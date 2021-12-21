@@ -4,18 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
 import kotlinx.coroutines.FlowPreview
 import ru.tagilov.avitotrainee.city.ui.screen.City
+import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.forecast.ui.screen.Destination
 import ru.tagilov.avitotrainee.forecast.ui.screen.Forecast
-import ru.tagilov.avitotrainee.theme.AvitoTheme
+import ru.tagilov.avitotrainee.core.theme.AvitoTheme
 import timber.log.Timber
 
 @ExperimentalAnimationApi
@@ -34,7 +32,8 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = Destination.Forecast.route,
                     ) {
-                        val city: CityParcelable? = it.arguments?.getParcelable(Destination.Forecast.key_city)
+                        val city: CityParcelable? =
+                            it.arguments?.getParcelable(Destination.Forecast.KEY_CITY)
                         Timber.d("City = $city")
                         Forecast(
                             navController = navController,
@@ -49,18 +48,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    AvitoTheme {
-        Greeting("Android")
     }
 }

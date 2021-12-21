@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee
+package ru.tagilov.avitotrainee.core
 
 //просто ивент, каждый инстанс которого не равен любым другим инстансам
 class ShowSnackbarEvent {

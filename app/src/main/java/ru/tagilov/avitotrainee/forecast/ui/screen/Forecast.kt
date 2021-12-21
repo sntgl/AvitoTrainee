@@ -24,10 +24,11 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
-import ru.tagilov.avitotrainee.CityParcelable
+import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.forecast.ui.component.*
 import ru.tagilov.avitotrainee.forecast.ui.entity.PermissionState
+import ru.tagilov.avitotrainee.forecast.ui.viewmodel.ForecastState
 import ru.tagilov.avitotrainee.forecast.ui.viewmodel.ForecastViewModel
 
 @ExperimentalAnimationApi

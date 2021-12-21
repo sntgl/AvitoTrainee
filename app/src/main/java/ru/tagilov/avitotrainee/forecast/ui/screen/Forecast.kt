@@ -28,12 +28,11 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
 import ru.tagilov.avitotrainee.R
+import ru.tagilov.avitotrainee.core.SnackBarMessage
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.forecast.ui.component.*
 import ru.tagilov.avitotrainee.forecast.ui.entity.PermissionState
-import ru.tagilov.avitotrainee.forecast.ui.viewmodel.ForecastState
 import ru.tagilov.avitotrainee.forecast.ui.viewmodel.ForecastViewModel
-import ru.tagilov.avitotrainee.forecast.ui.viewmodel.SavedState
 
 @ExperimentalAnimationApi
 @ExperimentalCoilApi
@@ -99,10 +98,17 @@ fun Forecast(
     val snackbarEvents = remember { vm.showSnackBarEvent }.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     val unableUpdateMessage = stringResource(id = R.string.unable_to_update)
+    val unableSaveMessage = stringResource(id = R.string.unable_to_save)
     LaunchedEffect(key1 = snackbarEvents.value) {
-        if (snackbarEvents.value != null)
+        val event = snackbarEvents.value
+        if (event != null)
             coroutineScope.launch {
-                snackbarState.showSnackbar(unableUpdateMessage)
+                snackbarState.showSnackbar(
+                    message = when (event.state) {
+                        SnackBarMessage.UNABLE_LOAD -> unableUpdateMessage
+                        SnackBarMessage.UNABLE_SAVE -> unableSaveMessage
+                    }
+                )
             }
     }
 //    непосредственно верстка

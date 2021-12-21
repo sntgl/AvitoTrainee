@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee.forecast.ui.viewmodel
+package ru.tagilov.avitotrainee.forecast.ui.screen
 
 sealed class ForecastState {
     object None : ForecastState()

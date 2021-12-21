@@ -6,6 +6,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.tagilov.avitotrainee.core.ShowSnackbarEvent
+import ru.tagilov.avitotrainee.core.SnackBarMessage
 import ru.tagilov.avitotrainee.core.db.Database
 import ru.tagilov.avitotrainee.core.db.SavedCity
 import ru.tagilov.avitotrainee.core.db.wrap
@@ -14,6 +15,8 @@ import ru.tagilov.avitotrainee.forecast.data.ForecastRepository
 import ru.tagilov.avitotrainee.forecast.data.LocationRepository
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
 import ru.tagilov.avitotrainee.forecast.ui.entity.PermissionState
+import ru.tagilov.avitotrainee.forecast.ui.screen.ForecastState
+import ru.tagilov.avitotrainee.forecast.ui.screen.SavedState
 import timber.log.Timber
 
 class ForecastViewModel : ViewModel() {
@@ -91,7 +94,7 @@ class ForecastViewModel : ViewModel() {
     }
 
     private var currentLocationJob: Job? = null
-    private fun getLocation() { //TODO неразумно запрашивать каждый раз локацию(
+    private fun getLocation() {
         currentLocationJob?.cancel()
         currentLocationJob = viewModelScope.launch {
             if (permissionStateFlow.value == PermissionState.None)
@@ -143,8 +146,11 @@ class ForecastViewModel : ViewModel() {
     fun save() {
         cityMutableFlow.value?.let {
             viewModelScope.launch {
-                db.save(SavedCity.wrap(it))
-                Timber.d("SET SAVED!")
+                try {
+                    db.save(SavedCity.wrap(it))
+                } catch (e: IllegalArgumentException) {
+                    showSnackBarMutableEvent.emit(ShowSnackbarEvent(SnackBarMessage.UNABLE_SAVE))
+                }
             }
         }
     }
@@ -174,7 +180,9 @@ class ForecastViewModel : ViewModel() {
                         } else if (forecastMutableFlow.value == null)
                             screenStateMutableFlow.emit(ForecastState.ErrorState.Connection)
                         else
-                            showSnackBarMutableEvent.emit(ShowSnackbarEvent())
+                            showSnackBarMutableEvent.emit(
+                                ShowSnackbarEvent(SnackBarMessage.UNABLE_LOAD)
+                            )
                     }.launchIn(viewModelScope)
             } else {
                 delayForecast = false
@@ -188,7 +196,9 @@ class ForecastViewModel : ViewModel() {
                             forecastMutableFlow.value == null ->
                                 screenStateMutableFlow.emit(ForecastState.ErrorState.Connection)
                             else ->
-                                showSnackBarMutableEvent.emit(ShowSnackbarEvent())
+                                showSnackBarMutableEvent.emit(
+                                    ShowSnackbarEvent(SnackBarMessage.UNABLE_LOAD)
+                                )
                         }
                     }.launchIn(viewModelScope)
             }

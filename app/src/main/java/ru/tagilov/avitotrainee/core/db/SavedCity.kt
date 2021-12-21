@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
+import kotlin.jvm.Throws
 
 @Entity(tableName = SavedCityContract.TABLE_NAME)
 data class SavedCity(
@@ -25,9 +26,14 @@ fun SavedCity.unwrap(): CityParcelable = CityParcelable(
     latitude = lat
 )
 
-fun SavedCity.Companion.wrap(city: CityParcelable): SavedCity = SavedCity(
-    name = city.name ?: "", //TODO ЛЮТЫЙ КОСТЫЛЬ!!! надо нормальные модели
-    lon = city.longitude,
-    lat = city.latitude,
-    countryCode = city.countryCode ?: "",
-)
+@Throws(IllegalArgumentException::class)
+fun SavedCity.Companion.wrap(city: CityParcelable): SavedCity {
+    requireNotNull(city.name)
+    requireNotNull(city.countryCode)
+    return SavedCity(
+        name = city.name,
+        lon = city.longitude,
+        lat = city.latitude,
+        countryCode = city.countryCode,
+    )
+}

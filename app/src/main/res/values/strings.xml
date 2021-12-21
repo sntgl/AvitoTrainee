@@ -26,4 +26,5 @@
     <string name="try_to_correct">Попробуйте изменить запрос</string>
     <string name="saved_cities">Сохраненные города</string>
     <string name="save">Сохранить</string>
+    <string name="unable_to_save">Сначала дождитесь загрузки</string>
 </resources>

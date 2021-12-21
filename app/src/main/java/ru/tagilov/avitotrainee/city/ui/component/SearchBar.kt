@@ -4,10 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,6 +15,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.StateFlow
 import ru.tagilov.avitotrainee.R
@@ -56,6 +54,7 @@ fun SearchBar(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .height(80.dp)
             .background(MaterialTheme.colors.background)
     ) {
         TextField(
@@ -101,10 +100,13 @@ fun SearchBar(
             Text(
                 text = stringResource(id = R.string.cancel),
                 modifier = Modifier
+                    .clickable { onFocusChanged(false) }
+                    .fillMaxHeight()
                     .padding(end = 28.dp, start = 12.dp)
-                    .clickable { onFocusChanged(false) },
+                    .wrapContentHeight(),
                 style = MaterialTheme.typography.subtitle1,
-                color = MaterialTheme.colors.primary
+                color = MaterialTheme.colors.primary,
+                textAlign = TextAlign.Center
             )
         }
     }

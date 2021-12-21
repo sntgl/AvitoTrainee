@@ -52,7 +52,7 @@ private fun CityItem(
         ) {
             Text(
                 text = city.name,
-                style = MaterialTheme.typography.h2,
+                style = MaterialTheme.typography.h4,
                 color = MaterialTheme.colors.secondary,
                 modifier = Modifier
                     .weight(1f)
@@ -124,7 +124,7 @@ fun Cities(
             Text(
                 // город
                 text = title,
-                style = MaterialTheme.typography.h4,
+                style = MaterialTheme.typography.subtitle2,
                 color = MaterialTheme.colors.secondary,
                 textAlign = TextAlign.Start,
                 modifier = Modifier

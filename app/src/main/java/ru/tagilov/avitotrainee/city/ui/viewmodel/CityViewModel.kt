@@ -103,6 +103,8 @@ class CityViewModel : ViewModel() {
             .onEach {
                 if (it == "")
                     screenStateMutableFlow.emit(CityState.Saved)
+                else
+                    screenStateMutableFlow.emit(CityState.Search.Loading)
             }
             .debounce(500)
             .onEach {

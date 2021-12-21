@@ -35,6 +35,10 @@ class ForecastViewModel : ViewModel() {
     val permissionStateFlow: StateFlow<PermissionState>
         get() = permissionStateMutableFlow
 
+    private val isLocationMutableFlow = MutableStateFlow<Boolean>(true)
+    val isLocationFlow: StateFlow<Boolean>
+        get() = isLocationMutableFlow
+
     private val screenStateMutableFlow = MutableStateFlow<ForecastState>(ForecastState.None)
     val stateFlow: StateFlow<ForecastState>
         get() = screenStateMutableFlow
@@ -59,6 +63,7 @@ class ForecastViewModel : ViewModel() {
             if (city == null) {
                 permissionStateMutableFlow.emit(PermissionState.Required)
             } else if (cityMutableFlow.value == null) {
+                isLocationMutableFlow.emit(false)
                 cityMutableFlow.emit(city)
             }
         }
@@ -109,7 +114,7 @@ class ForecastViewModel : ViewModel() {
         get() = showSnackBarMutableEvent
 
 
-    private val savedCityMutableFlow = MutableStateFlow<SavedState>(SavedState.NONE)
+    private val savedCityMutableFlow = MutableStateFlow(SavedState.NONE)
     val savedCityFlow: StateFlow<SavedState>
         get() = savedCityMutableFlow
 
@@ -131,12 +136,12 @@ class ForecastViewModel : ViewModel() {
     }
 
     fun save() {
-        val city = cityMutableFlow.value
-        if (city != null)
+        cityMutableFlow.value?.let {
             viewModelScope.launch {
-                db.save(SavedCity.wrap(city))
+                db.save(SavedCity.wrap(it))
                 Timber.d("SET SAVED!")
             }
+        }
     }
 
     private fun getForecast() { //какой-то жирный получился, мб раскидать стоит
@@ -200,21 +205,29 @@ class ForecastViewModel : ViewModel() {
                 getForecast()
             }
         }.launchIn(viewModelScope)
+
         forecastMutableFlow.onEach {
             Timber.d("new forecast: $it")
         }.launchIn(viewModelScope)
+
         viewModelScope.launch {
             screenStateMutableFlow.emit(ForecastState.Loading)
         }
         screenStateMutableFlow.onEach {
             Timber.d("New screen state - $it")
         }.launchIn(viewModelScope)
+
         permissionStateMutableFlow.onEach {
             if (it == PermissionState.Denied && apiLocationFailed)
                 screenStateMutableFlow.emit(ForecastState.ErrorState.Location)
         }.launchIn(viewModelScope)
+
         cityMutableFlow.onEach {
             checkSaved()
+        }.launchIn(viewModelScope)
+
+        savedCityMutableFlow.onEach {
+            Timber.d("Saved = $it")
         }.launchIn(viewModelScope)
     }
 }

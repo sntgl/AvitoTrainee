@@ -6,7 +6,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -24,12 +27,13 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
-import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.R
+import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.forecast.ui.component.*
 import ru.tagilov.avitotrainee.forecast.ui.entity.PermissionState
 import ru.tagilov.avitotrainee.forecast.ui.viewmodel.ForecastState
 import ru.tagilov.avitotrainee.forecast.ui.viewmodel.ForecastViewModel
+import ru.tagilov.avitotrainee.forecast.ui.viewmodel.SavedState
 
 @ExperimentalAnimationApi
 @ExperimentalCoilApi
@@ -49,6 +53,8 @@ fun Forecast(
     val isRefreshing = remember { vm.isRefreshingFlow }.collectAsState()
     val screenState = remember { vm.stateFlow }.collectAsState()
     val context = LocalContext.current
+    val saved = remember { vm.savedCityFlow }.collectAsState()
+    val isLocation = remember { vm.isLocationFlow }.collectAsState()
     //локация
     val sendLocation = {
         LocationServices
@@ -90,9 +96,9 @@ fun Forecast(
     }
 //    логика снекбара
     val snackbarState = remember { SnackbarHostState() }
+    val snackbarEvents = remember { vm.showSnackBarEvent }.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     val unableUpdateMessage = stringResource(id = R.string.unable_to_update)
-    val snackbarEvents = remember { vm.showSnackBarEvent }.collectAsState()
     LaunchedEffect(key1 = snackbarEvents.value) {
         if (snackbarEvents.value != null)
             coroutineScope.launch {
@@ -101,7 +107,7 @@ fun Forecast(
     }
 //    непосредственно верстка
 
-    Column{
+    Column {
 
         Column(
             modifier = Modifier
@@ -145,15 +151,17 @@ fun Forecast(
                                 item { Current(forecast = forecastState.value?.current) }
                                 item { Hourly(forecastList = forecastState.value?.hourly) }
                                 item { Daily(forecastList = forecastState.value?.daily) }
-                                item { Text(
-                                    text= stringResource(id = R.string.my_tag),
-                                    style = MaterialTheme.typography.body2,
-                                    color = MaterialTheme.colors.secondaryVariant,
-                                    modifier = Modifier
-                                        .padding(top = 8.dp, bottom = 20.dp)
-                                        .fillMaxWidth(),
-                                    textAlign = TextAlign.Center
-                                ) }
+                                item {
+                                    Text(
+                                        text = stringResource(id = R.string.my_tag),
+                                        style = MaterialTheme.typography.body2,
+                                        color = MaterialTheme.colors.secondaryVariant,
+                                        modifier = Modifier
+                                            .padding(top = 8.dp, bottom = 20.dp)
+                                            .fillMaxWidth(),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
                             }
                         }
                     } else if (screenState.value == ForecastState.ErrorState.Connection) {
@@ -166,7 +174,9 @@ fun Forecast(
         }
         NavBar(
             navController = navController,
-            isLocation = permissionState.value != PermissionState.None
+            isLocation = isLocation.value,
+            isSaved = saved.value == SavedState.SAVED,
+            onSave = { vm.save() }
         )
     }
 }

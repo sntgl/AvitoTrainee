@@ -25,4 +25,5 @@
     <string name="nothing_found">Ничего не найдено</string>
     <string name="try_to_correct">Попробуйте изменить запрос</string>
     <string name="saved_cities">Сохраненные города</string>
+    <string name="save">Сохранить</string>
 </resources>

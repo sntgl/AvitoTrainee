@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface SavedCityDao {
     @Query("SELECT * FROM ${SavedCityContract.TABLE_NAME}")
-    fun getAll(): List<SavedCity>
+    suspend fun getAll(): List<SavedCity>
 
     //все равно одинаковые города нельзя искать, да и сервак никаких id не возвращает,
     // чтобы нормально идентифицировать города
@@ -22,8 +22,8 @@ interface SavedCityDao {
     fun get(name: String): Flow<SavedCity?>
 
     @Insert
-    fun save(savedCity: SavedCity)
+    suspend fun save(savedCity: SavedCity)
 
     @Delete
-    fun delete(savedCity: SavedCity)
+    suspend fun delete(savedCity: SavedCity)
 }

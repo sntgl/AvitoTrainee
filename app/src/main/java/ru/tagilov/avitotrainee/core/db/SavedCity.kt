@@ -10,8 +10,8 @@ data class SavedCity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = SavedCityContract.Columns.ID)
     val id: Int? = null,
-    @ColumnInfo(name = SavedCityContract.Columns.COUNTRY_CODE) val countryCode: String?,
-    @ColumnInfo(name = SavedCityContract.Columns.NAME) val name: String?,
+    @ColumnInfo(name = SavedCityContract.Columns.COUNTRY_CODE) val countryCode: String,
+    @ColumnInfo(name = SavedCityContract.Columns.NAME) val name: String,
     @ColumnInfo(name = SavedCityContract.Columns.LONGITUDE) val lon: Double,
     @ColumnInfo(name = SavedCityContract.Columns.LATITUDE) val lat: Double
 ) {
@@ -26,8 +26,8 @@ fun SavedCity.unwrap(): CityParcelable = CityParcelable(
 )
 
 fun SavedCity.Companion.wrap(city: CityParcelable): SavedCity = SavedCity(
-    name = city.name,
+    name = city.name ?: "", //TODO ЛЮТЫЙ КОСТЫЛЬ!!! надо нормальные модели
     lon = city.longitude,
     lat = city.latitude,
-    countryCode = city.countryCode,
+    countryCode = city.countryCode ?: "",
 )

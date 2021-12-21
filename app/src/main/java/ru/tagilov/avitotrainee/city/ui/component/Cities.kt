@@ -22,7 +22,7 @@ import ru.tagilov.avitotrainee.core.util.shimmerContent
 @Composable
 private fun CityItem(
     modifier: Modifier = Modifier,
-    city: ru.tagilov.avitotrainee.city.ui.entity.CityModel,
+    city: CityModel,
     navController: NavController,
 ) {
     Box(
@@ -64,7 +64,7 @@ private fun CityItem(
             Text(
                 text = city.countryCode,
                 style = MaterialTheme.typography.h2,
-                color = MaterialTheme.colors.onBackground
+                color = MaterialTheme.colors.secondaryVariant
             )
         }
     }

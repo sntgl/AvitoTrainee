@@ -56,7 +56,7 @@ fun City(
             }
             CityState.Saved -> {
                 Cities(
-                    cities = null,
+                    cities = savedCities.value,
                     navController = navController,
                     title = stringResource(id = R.string.saved_cities)
                 )

@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import ru.tagilov.avitotrainee.city.data.CityRepository
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.city.ui.screen.CityState
+import ru.tagilov.avitotrainee.city.ui.util.toModel
 import ru.tagilov.avitotrainee.core.db.Database
 import ru.tagilov.avitotrainee.core.db.unwrap
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
@@ -31,8 +32,8 @@ class CityViewModel : ViewModel() {
     val searchCityListFlow: StateFlow<List<CityModel>?>
         get() = searchCityListMutableFlow
 
-    private val savedCitiesMutableFlow = MutableStateFlow<List<CityParcelable>?>(null)
-    val savedCitiesFlow: StateFlow<List<CityParcelable>?>
+    private val savedCitiesMutableFlow = MutableStateFlow<List<CityModel>?>(null)
+    val savedCitiesFlow: StateFlow<List<CityModel>?>
         get() = savedCitiesMutableFlow
 
     fun newEntry(s: String) {
@@ -94,7 +95,8 @@ class CityViewModel : ViewModel() {
 
     init {
         db.getAll().onEach { newSavedList ->
-            savedCitiesMutableFlow.emit(newSavedList.map{ it.unwrap() })
+            Timber.d("get saved cities = $newSavedList")
+            savedCitiesMutableFlow.emit(newSavedList.map{ it.toModel() })
         }.launchIn(viewModelScope)
 
         entryMutableStateFlow

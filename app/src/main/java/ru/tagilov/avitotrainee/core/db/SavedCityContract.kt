@@ -6,6 +6,7 @@ object SavedCityContract {
     object Columns {
         const val ID = "id"
         const val NAME = "name"
+        const val COUNTRY_CODE = "cc"
         const val LONGITUDE = "lon"
         const val LATITUDE = "lat"
     }

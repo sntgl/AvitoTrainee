@@ -56,7 +56,7 @@ fun CityTitle(
 @Preview
 @Composable
 private fun CityTitlePreview() {
-    AvitoTheme { CityTitle(city = CityParcelable(name = "Москва", 0.0, 0.0)) }
+    AvitoTheme { CityTitle(city = CityParcelable(name = "Москва",null, 0.0, 0.0)) }
 }
 
 private const val SKELETON_CITY_SIZE = 7

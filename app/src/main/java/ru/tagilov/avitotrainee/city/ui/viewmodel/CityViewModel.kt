@@ -9,11 +9,16 @@ import kotlinx.coroutines.launch
 import ru.tagilov.avitotrainee.city.data.CityRepository
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.city.ui.screen.CityState
+import ru.tagilov.avitotrainee.core.db.Database
+import ru.tagilov.avitotrainee.core.db.unwrap
+import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import timber.log.Timber
 
 @FlowPreview
 class CityViewModel : ViewModel() {
     private val cityRepository = CityRepository()
+
+    private val db = Database.instance.cityDao()
 
     private val entryMutableStateFlow = MutableStateFlow("")
     private val newSearchMutableStateFlow = MutableStateFlow("")
@@ -25,6 +30,10 @@ class CityViewModel : ViewModel() {
     private val searchCityListMutableFlow = MutableStateFlow<List<CityModel>?>(null)
     val searchCityListFlow: StateFlow<List<CityModel>?>
         get() = searchCityListMutableFlow
+
+    private val savedCitiesMutableFlow = MutableStateFlow<List<CityParcelable>?>(null)
+    val savedCitiesFlow: StateFlow<List<CityParcelable>?>
+        get() = savedCitiesMutableFlow
 
     fun newEntry(s: String) {
         Timber.d("New search bar text = $s")
@@ -77,7 +86,17 @@ class CityViewModel : ViewModel() {
         }
     }
 
+//    private fun loadSavedCities() {
+//        viewModelScope.launch {
+//            savedCitiesMutableFlow.emit(db.getAll().map { it.unwrap() })
+//        }
+//    }
+
     init {
+        db.getAll().onEach { newSavedList ->
+            savedCitiesMutableFlow.emit(newSavedList.map{ it.unwrap() })
+        }.launchIn(viewModelScope)
+
         entryMutableStateFlow
             .onEach {
                 if (it == "")

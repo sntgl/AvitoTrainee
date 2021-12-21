@@ -32,7 +32,8 @@ fun City(
     val searchBarState = remember { mutableStateOf(TextFieldValue()) }
     val vm: CityViewModel = viewModel()
     val screenState = remember { vm.screenStateFlow }.collectAsState()
-    val cities = remember { vm.searchCityListFlow }.collectAsState()
+    val loadedCities = remember { vm.searchCityListFlow }.collectAsState()
+    val savedCities = remember { vm.savedCitiesFlow }.collectAsState()
 
     BackHandler(enabled = screenState.value is CityState.Search) {
         vm.newSearchFocus(false)
@@ -62,7 +63,7 @@ fun City(
             }
             CityState.Search.Content -> {
                 Cities(
-                    cities = cities.value,
+                    cities = loadedCities.value,
                     navController = navController,
                     title = stringResource(id = R.string.searched_cities)
                 )

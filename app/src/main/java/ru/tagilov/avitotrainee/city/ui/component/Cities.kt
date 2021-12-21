@@ -32,7 +32,7 @@ private fun CityItem(
                 navController.navigateWithParcelable(
                     route = Destination.Forecast.route,
                     key = Destination.Forecast.KEY_CITY,
-                    parcelable = CityParcelable(city.name, city.lat, city.lon)
+                    parcelable = CityParcelable(city.name, city.countryCode, city.lat, city.lon)
                 ) {
                     launchSingleTop = true
                     popUpTo(Destination.Forecast.route) { inclusive = true }

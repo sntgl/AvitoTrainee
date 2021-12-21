@@ -78,7 +78,12 @@ class ForecastViewModel : ViewModel() {
                 val city = cityMutableFlow.value
                 cityMutableFlow.emit(
                     city?.copy(longitude = long, latitude = lat)
-                        ?: CityParcelable(name = null, longitude = long, latitude = lat)
+                        ?: CityParcelable(
+                            name = null,
+                            countryCode = null,
+                            longitude = long,
+                            latitude = lat
+                        )
                 )
                 isApiLocation = fromApi
             }

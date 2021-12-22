@@ -1,9 +1,9 @@
 package ru.tagilov.avitotrainee.city.ui.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -12,63 +12,60 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
-import ru.tagilov.avitotrainee.forecast.ui.screen.Destination
-import ru.tagilov.avitotrainee.core.util.navigateWithParcelable
 import ru.tagilov.avitotrainee.core.util.shimmerContent
 
 
-@Composable
-private fun CityItem(
-    modifier: Modifier = Modifier,
-    city: CityModel,
-    navController: NavController,
-) {
-    Box(
-        modifier = Modifier
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-            .clickable {
-                navController.navigateWithParcelable(
-                    route = Destination.Forecast.route,
-                    key = Destination.Forecast.KEY_CITY,
-                    parcelable = CityParcelable(city.name, city.countryCode, city.lat, city.lon)
-                ) {
-                    launchSingleTop = true
-                    popUpTo(Destination.Forecast.route) { inclusive = true }
-                }
-            }
-    ) {
-        Row(
-            modifier = modifier
-                .background(
-                    color = MaterialTheme.colors.onBackground,
-                    shape = MaterialTheme.shapes.medium
-                )
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = city.name,
-                style = MaterialTheme.typography.h4,
-                color = MaterialTheme.colors.secondary,
-                modifier = Modifier
-                    .weight(1f)
-            )
-            Box(
-                modifier = Modifier
-                    .size(10.dp)
-            )
-            Text(
-                text = city.countryCode,
-                style = MaterialTheme.typography.h2,
-                color = MaterialTheme.colors.secondaryVariant
-            )
-        }
-    }
-}
+//@Composable
+//private fun CityItem(
+//    modifier: Modifier = Modifier,
+//    city: CityModel,
+//    navController: NavController,
+//) {
+//    Box(
+//        modifier = Modifier
+//            .padding(horizontal = 8.dp, vertical = 4.dp)
+//            .clickable {
+//                navController.navigateWithParcelable(
+//                    route = Destination.Forecast.route,
+//                    key = Destination.Forecast.KEY_CITY,
+//                    parcelable = CityParcelable(city.name, city.countryCode, city.lat, city.lon)
+//                ) {
+//                    launchSingleTop = true
+//                    popUpTo(Destination.Forecast.route) { inclusive = true }
+//                }
+//            }
+//    ) {
+//        Row(
+//            modifier = modifier
+//                .background(
+//                    color = MaterialTheme.colors.onBackground,
+//                    shape = MaterialTheme.shapes.medium
+//                )
+//                .fillMaxWidth()
+//                .padding(horizontal = 16.dp, vertical = 12.dp),
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            Text(
+//                text = city.name,
+//                style = MaterialTheme.typography.h4,
+//                color = MaterialTheme.colors.secondary,
+//                modifier = Modifier
+//                    .weight(1f)
+//            )
+//            Box(
+//                modifier = Modifier
+//                    .size(10.dp)
+//            )
+//            Text(
+//                text = city.countryCode,
+//                style = MaterialTheme.typography.h2,
+//                color = MaterialTheme.colors.secondaryVariant
+//            )
+//        }
+//    }
+//}
 
 @Composable
 private fun CityShimmer(
@@ -108,12 +105,15 @@ private fun CityShimmer(
 }
 
 
+@ExperimentalMaterialApi
 @Composable
 fun Cities(
     modifier: Modifier = Modifier,
     cities: List<CityModel>?,
     navController: NavController,
     title: String,
+    onDismiss: (CityModel) -> Unit,
+    dismissible: Boolean
 ) {
     //все-таки решил, что тут не нужен свайп рефреш
     LazyColumn(
@@ -133,7 +133,17 @@ fun Cities(
         }
         if (cities != null) {
             items(cities.size) {
-                CityItem(city = cities[it], navController = navController)
+                if (dismissible)
+                    CityDismissible(
+                        city = cities[it],
+                        navController = navController,
+                        onDismiss = onDismiss
+                    )
+                else
+                    CityItem(
+                        city = cities[it],
+                        navController = navController
+                    )
             }
         } else
             item { CityShimmer() }

@@ -8,10 +8,15 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.tagilov.avitotrainee.city.data.CityRepository
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
+import ru.tagilov.avitotrainee.city.ui.entity.toSaved
 import ru.tagilov.avitotrainee.city.ui.screen.CityState
 import ru.tagilov.avitotrainee.city.ui.util.toModel
+import ru.tagilov.avitotrainee.core.ShowSnackbarEvent
+import ru.tagilov.avitotrainee.core.SnackBarMessage
 import ru.tagilov.avitotrainee.core.db.Database
+import ru.tagilov.avitotrainee.core.db.SavedCity
 import ru.tagilov.avitotrainee.core.db.unwrap
+import ru.tagilov.avitotrainee.core.db.wrap
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import timber.log.Timber
 
@@ -87,11 +92,12 @@ class CityViewModel : ViewModel() {
         }
     }
 
-//    private fun loadSavedCities() {
-//        viewModelScope.launch {
-//            savedCitiesMutableFlow.emit(db.getAll().map { it.unwrap() })
-//        }
-//    }
+    fun delete(city: CityModel) {
+        Timber.d("Delete viewmodel $city")
+        viewModelScope.launch {
+            db.delete(city.toSaved())
+        }
+    }
 
     init {
         db.getAll().onEach { newSavedList ->
@@ -101,9 +107,10 @@ class CityViewModel : ViewModel() {
 
         entryMutableStateFlow
             .onEach {
-                if (it == "")
+                if (it == "") {
+                    currentSearchJob?.cancel()
                     screenStateMutableFlow.emit(CityState.Saved)
-                else
+                }else
                     screenStateMutableFlow.emit(CityState.Search.Loading)
             }
             .debounce(500)

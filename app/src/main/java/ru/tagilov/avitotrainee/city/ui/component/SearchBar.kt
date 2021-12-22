@@ -76,7 +76,8 @@ fun SearchBar(
                     contentDescription = "",
                     modifier = Modifier
                         .size(16.dp)
-            )},
+                )
+            },
             trailingIcon = null,
             singleLine = true,
             shape = MaterialTheme.shapes.large,

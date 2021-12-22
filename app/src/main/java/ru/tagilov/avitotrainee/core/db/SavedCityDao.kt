@@ -13,7 +13,7 @@ interface SavedCityDao {
 
     //все равно одинаковые города нельзя искать, да и сервак никаких id не возвращает,
     // чтобы нормально идентифицировать города
-    //ну либо сделать через сравнение всех хар-к города
+    // ну либо сделать через сравнение всех хар-к города
     @Query(
         "SELECT * FROM ${SavedCityContract.TABLE_NAME} " +
                 "WHERE ${SavedCityContract.Columns.NAME} = :name " +

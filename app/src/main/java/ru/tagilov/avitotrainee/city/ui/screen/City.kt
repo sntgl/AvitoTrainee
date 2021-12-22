@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -23,6 +24,7 @@ import ru.tagilov.avitotrainee.city.ui.component.EmptySearch
 import ru.tagilov.avitotrainee.city.ui.component.SearchBar
 import ru.tagilov.avitotrainee.city.ui.viewmodel.CityViewModel
 
+@ExperimentalMaterialApi
 @FlowPreview
 @ExperimentalAnimationApi
 @Composable
@@ -58,14 +60,18 @@ fun City(
                 Cities(
                     cities = savedCities.value,
                     navController = navController,
-                    title = stringResource(id = R.string.saved_cities)
+                    title = stringResource(id = R.string.saved_cities),
+                    dismissible = true,
+                    onDismiss = {vm.delete(it)}
                 )
             }
             CityState.Search.Content -> {
                 Cities(
                     cities = loadedCities.value,
                     navController = navController,
-                    title = stringResource(id = R.string.searched_cities)
+                    title = stringResource(id = R.string.searched_cities),
+                    dismissible = false,
+                    onDismiss = {  }
                 )
             }
             CityState.Search.Empty -> {
@@ -80,7 +86,9 @@ fun City(
                 Cities(
                     cities = null,
                     navController = navController,
-                    title = stringResource(id = R.string.searched_cities)
+                    title = stringResource(id = R.string.searched_cities),
+                    dismissible = false,
+                    onDismiss = { }
                 )
             }
         }

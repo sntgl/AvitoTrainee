@@ -104,12 +104,3 @@ fun NavBar(
     }
 }
 
-
-
-@Preview
-@Composable
-fun NavBarPreview() {
-//    AvitoTheme {
-//        NavBar(rememberNavController(navigators = ))
-//    }
-}

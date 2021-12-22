@@ -18,10 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.FlowPreview
 import ru.tagilov.avitotrainee.R
-import ru.tagilov.avitotrainee.city.ui.component.Cities
-import ru.tagilov.avitotrainee.city.ui.component.CityLoadError
-import ru.tagilov.avitotrainee.city.ui.component.EmptySearch
-import ru.tagilov.avitotrainee.city.ui.component.SearchBar
+import ru.tagilov.avitotrainee.city.ui.component.*
 import ru.tagilov.avitotrainee.city.ui.viewmodel.CityViewModel
 
 @ExperimentalMaterialApi
@@ -54,14 +51,14 @@ fun City(
         )
         when (screenState.value) {
             CityState.None -> {
-
+                CurrentCity(navController = navController)
             }
             CityState.Saved -> {
                 Cities(
                     cities = savedCities.value,
                     navController = navController,
                     title = stringResource(id = R.string.saved_cities),
-                    dismissible = true,
+                    isLocal = true,
                     onDismiss = {vm.delete(it)}
                 )
             }
@@ -70,7 +67,7 @@ fun City(
                     cities = loadedCities.value,
                     navController = navController,
                     title = stringResource(id = R.string.searched_cities),
-                    dismissible = false,
+                    isLocal = false,
                     onDismiss = {  }
                 )
             }
@@ -87,7 +84,7 @@ fun City(
                     cities = null,
                     navController = navController,
                     title = stringResource(id = R.string.searched_cities),
-                    dismissible = false,
+                    isLocal = false,
                     onDismiss = { }
                 )
             }

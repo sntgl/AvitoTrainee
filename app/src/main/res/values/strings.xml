@@ -27,4 +27,7 @@
     <string name="saved_cities">Сохраненные города</string>
     <string name="save">Сохранить</string>
     <string name="unable_to_save">Сначала дождитесь загрузки</string>
+    <string name="nothing_saved">Нет сохраненных городов</string>
+    <string name="save_something">Сохраните хотя бы один город</string>
+    <string name="current_city">Текущее место</string>
 </resources>

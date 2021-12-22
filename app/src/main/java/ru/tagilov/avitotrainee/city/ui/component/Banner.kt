@@ -17,8 +17,10 @@ import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.core.theme.AvitoTheme
 
 @Composable
-fun EmptySearch(
-    modifier: Modifier = Modifier
+private fun Banner(
+    modifier: Modifier = Modifier,
+    title: String,
+    message: String
 ) {
     Column(
         modifier = modifier
@@ -28,17 +30,38 @@ fun EmptySearch(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = stringResource(id = R.string.nothing_found),
+            text = title,
             style = MaterialTheme.typography.subtitle2,
             color = MaterialTheme.colors.secondary,
         )
         Text(
-            text = stringResource(id = R.string.try_to_correct),
+            text = message,
             style = MaterialTheme.typography.body2,
             color = MaterialTheme.colors.secondaryVariant,
         )
-
     }
+}
+
+@Composable
+fun EmptySearch(
+    modifier: Modifier = Modifier
+) {
+    Banner(
+        modifier = modifier,
+        title = stringResource(id = R.string.nothing_found),
+        message = stringResource(id = R.string.try_to_correct)
+    )
+}
+
+@Composable
+fun EmptySaved(
+    modifier: Modifier = Modifier
+) {
+    Banner(
+        modifier = modifier,
+        title = stringResource(id = R.string.nothing_saved),
+        message = stringResource(id = R.string.save_something)
+    )
 }
 
 @Composable
@@ -68,7 +91,7 @@ fun CityLoadError(
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.primary,
             modifier = Modifier
-                .clickable{ onRetry() }
+                .clickable { onRetry() }
         )
 
     }

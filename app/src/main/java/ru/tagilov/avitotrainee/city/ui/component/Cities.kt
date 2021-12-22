@@ -113,27 +113,33 @@ fun Cities(
     navController: NavController,
     title: String,
     onDismiss: (CityModel) -> Unit,
-    dismissible: Boolean
+    isLocal: Boolean
 ) {
     //все-таки решил, что тут не нужен свайп рефреш
     LazyColumn(
         modifier = modifier
             .fillMaxHeight()
     ) {
-        item {
-            Text(
-                // город
-                text = title,
-                style = MaterialTheme.typography.subtitle2,
-                color = MaterialTheme.colors.secondary,
-                textAlign = TextAlign.Start,
-                modifier = Modifier
-                    .padding(horizontal = 24.dp, vertical = 12.dp)
-            )
+        if (isLocal) {
+            item { CurrentCity(navController = navController) }
+        }
+        if (isLocal && cities?.isEmpty() == true) {
+            item { EmptySaved() }
+        } else {
+            item {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.subtitle2,
+                    color = MaterialTheme.colors.secondary,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp, vertical = 12.dp)
+                )
+            }
         }
         if (cities != null) {
             items(cities.size) {
-                if (dismissible)
+                if (isLocal)
                     CityDismissible(
                         city = cities[it],
                         navController = navController,
@@ -149,51 +155,6 @@ fun Cities(
             item { CityShimmer() }
     }
 }
-
-//@Preview
-//@Composable
-//fun CitiesPreview() {
-//    AvitoTheme {
-//        Cities(
-//            cities = listOf(
-//                City(
-//                    name = "Ну вообще ну очень какой-то длинный город",
-//                    lat = 10.0,
-//                    lon = 10.0,
-//                    countryCode = "RU"
-//                ),
-//                City(name = "Москва", lat = 10.0, lon = 10.0, countryCode = "RU"),
-//                City(name = "Москва", lat = 10.0, lon = 10.0, countryCode = "RU"),
-//            )
-//        )
-//    }
-//}
-//
-//@Preview
-//@Composable
-//private fun CityItemPreview() {
-//    AvitoTheme {
-//        Column {
-//            CityItem(
-//                city = City(
-//                    "МоскваМоскваМоскваМоскваМоскваМоскваМоскваМоскваМосква",
-//                    1.0,
-//                    1.0,
-//                    "RU"
-//                )
-//            )
-//            CityItem(
-//                city = City(
-//                    "Москва",
-//                    1.0,
-//                    1.0,
-//                    "RU"
-//                )
-//            )
-//            CityShimmer()
-//        }
-//    }
-//}
 
 private const val SKELETON_CITY_NAME_SIZE = 7
 private const val SKELETON_COUNTRY_CODE_SIZE = 3

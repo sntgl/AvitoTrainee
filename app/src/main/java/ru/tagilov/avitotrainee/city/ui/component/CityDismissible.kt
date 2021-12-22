@@ -10,13 +10,13 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
+import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
-import ru.tagilov.avitotrainee.core.theme.AvitoTheme
 import ru.tagilov.avitotrainee.core.util.navigateWithParcelable
 import ru.tagilov.avitotrainee.forecast.ui.screen.Destination
 import timber.log.Timber
@@ -89,23 +89,32 @@ fun CityDismissible(
 
 @ExperimentalMaterialApi
 @Composable
-fun CityItem(
-    city: CityModel,
+fun CurrentCity(
     navController: NavController,
+) {
+    CityItemBase(cityName = stringResource(id = R.string.current_city), countryCode = "") {
+        navController.navigateWithParcelable(
+            route = Destination.Forecast.route,
+            key = Destination.Forecast.KEY_CITY,
+            parcelable = null
+        ) {
+            launchSingleTop = true
+            popUpTo(Destination.Forecast.route) { inclusive = true }
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+fun CityItemBase(
+    cityName: String,
+    countryCode: String,
+    onClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 4.dp)
-            .clickable {
-                navController.navigateWithParcelable(
-                    route = Destination.Forecast.route,
-                    key = Destination.Forecast.KEY_CITY,
-                    parcelable = CityParcelable(city.name, city.countryCode, city.lat, city.lon)
-                ) {
-                    launchSingleTop = true
-                    popUpTo(Destination.Forecast.route) { inclusive = true }
-                }
-            }
+            .clickable { onClick() }
     ) {
         Row(
             modifier = Modifier
@@ -119,7 +128,7 @@ fun CityItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = city.name,
+                text = cityName,
                 style = MaterialTheme.typography.h4,
                 color = MaterialTheme.colors.secondary,
                 modifier = Modifier
@@ -130,12 +139,34 @@ fun CityItem(
                     .size(10.dp)
             )
             Text(
-                text = city.countryCode,
+                text = countryCode,
                 style = MaterialTheme.typography.h2,
                 color = MaterialTheme.colors.secondaryVariant
             )
         }
     }
+}
+
+@ExperimentalMaterialApi
+@Composable
+fun CityItem(
+    city: CityModel,
+    navController: NavController,
+) {
+    CityItemBase(
+        cityName = city.name,
+        onClick = {
+            navController.navigateWithParcelable(
+                route = Destination.Forecast.route,
+                key = Destination.Forecast.KEY_CITY,
+                parcelable = CityParcelable(city.name, city.countryCode, city.lat, city.lon)
+            ) {
+                launchSingleTop = true
+                popUpTo(Destination.Forecast.route) { inclusive = true }
+            }
+        },
+        countryCode = city.countryCode,
+    )
 }
 
 //@ExperimentalMaterialApi

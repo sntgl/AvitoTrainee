@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee.forecast.ui.screen
+package ru.tagilov.avitotrainee.core.routing
 
 
 sealed class Destination(val route: String) {

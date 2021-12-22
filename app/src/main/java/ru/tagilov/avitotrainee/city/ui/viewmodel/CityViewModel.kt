@@ -11,13 +11,7 @@ import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.city.ui.entity.toSaved
 import ru.tagilov.avitotrainee.city.ui.screen.CityState
 import ru.tagilov.avitotrainee.city.ui.util.toModel
-import ru.tagilov.avitotrainee.core.ShowSnackbarEvent
-import ru.tagilov.avitotrainee.core.SnackBarMessage
 import ru.tagilov.avitotrainee.core.db.Database
-import ru.tagilov.avitotrainee.core.db.SavedCity
-import ru.tagilov.avitotrainee.core.db.unwrap
-import ru.tagilov.avitotrainee.core.db.wrap
-import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import timber.log.Timber
 
 @FlowPreview
@@ -102,7 +96,7 @@ class CityViewModel : ViewModel() {
     init {
         db.getAll().onEach { newSavedList ->
             Timber.d("get saved cities = $newSavedList")
-            savedCitiesMutableFlow.emit(newSavedList.map{ it.toModel() })
+            savedCitiesMutableFlow.emit(newSavedList.map { it.toModel() })
         }.launchIn(viewModelScope)
 
         entryMutableStateFlow
@@ -110,7 +104,7 @@ class CityViewModel : ViewModel() {
                 if (it == "") {
                     currentSearchJob?.cancel()
                     screenStateMutableFlow.emit(CityState.Saved)
-                }else
+                } else
                     screenStateMutableFlow.emit(CityState.Search.Loading)
             }
             .debounce(500)

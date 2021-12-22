@@ -3,24 +3,19 @@ package ru.tagilov.avitotrainee.forecast.ui.component
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ru.tagilov.avitotrainee.R
-import ru.tagilov.avitotrainee.forecast.ui.screen.Destination
+import ru.tagilov.avitotrainee.core.routing.Destination
 import ru.tagilov.avitotrainee.core.util.navigateWithParcelable
-import timber.log.Timber
 
 
 @ExperimentalAnimationApi
@@ -35,7 +30,8 @@ fun NavBar(
     Column(
         modifier = modifier
     ) {
-        Box( //Divider
+        Box(
+            //Divider
             modifier = Modifier
                 .height(1.dp)
                 .fillMaxWidth()
@@ -81,7 +77,7 @@ fun NavBar(
                     shape = MaterialTheme.shapes.large
                 ) {
                     Text(
-                        text= stringResource(id = R.string.save),
+                        text = stringResource(id = R.string.save),
                     )
                 }
             }
@@ -93,7 +89,7 @@ fun NavBar(
                     .fillMaxHeight()
                     .width(80.dp)
                     .clickable {
-                        navController.navigate(route = Destination.City.route,) {
+                        navController.navigate(route = Destination.City.route) {
                             launchSingleTop = true
                         }
                     }

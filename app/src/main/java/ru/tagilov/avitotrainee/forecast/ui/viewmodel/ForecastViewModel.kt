@@ -38,7 +38,7 @@ class ForecastViewModel : ViewModel() {
     val permissionStateFlow: StateFlow<PermissionState>
         get() = permissionStateMutableFlow
 
-    private val isLocationMutableFlow = MutableStateFlow<Boolean>(true)
+    private val isLocationMutableFlow = MutableStateFlow(true)
     val isLocationFlow: StateFlow<Boolean>
         get() = isLocationMutableFlow
 
@@ -46,7 +46,7 @@ class ForecastViewModel : ViewModel() {
     val stateFlow: StateFlow<ForecastState>
         get() = screenStateMutableFlow
 
-    private val isRefreshingMutableFlow = MutableStateFlow<Boolean>(false)
+    private val isRefreshingMutableFlow = MutableStateFlow(false)
     val isRefreshingFlow: StateFlow<Boolean>
         get() = isRefreshingMutableFlow
 
@@ -161,46 +161,50 @@ class ForecastViewModel : ViewModel() {
             screenStateMutableFlow.emit(ForecastState.Loading)
             val oldCity = cityMutableFlow.value
             //какой-то continuation получился))
-            if (oldCity == null) {
-                getLocation()
-                delayForecast = true
-            } else if (cityMutableFlow.value?.name == null) {
-                delayForecast = false
-                val cityFlow = forecastRepo
-                    .getCityName(longitude = oldCity.longitude, latitude = oldCity.latitude)
-                val forecastFlow = forecastRepo
-                    .getWeather(longitude = oldCity.longitude, latitude = oldCity.latitude)
-                cityFlow
-                    .zip(forecastFlow) { t1, t2 -> t1 to t2 }
-                    .onEach { (city, forecast) ->
-                        isRefreshingMutableFlow.emit(false)
-                        if (city != null && forecast != null) {
-                            cityMutableFlow.emit(oldCity.copy(name = city))
-                            forecastMutableFlow.emit(forecast)
-                        } else if (forecastMutableFlow.value == null)
-                            screenStateMutableFlow.emit(ForecastState.ErrorState.Connection)
-                        else
-                            showSnackBarMutableEvent.emit(
-                                ShowSnackbarEvent(SnackBarMessage.UNABLE_LOAD)
-                            )
-                    }.launchIn(viewModelScope)
-            } else {
-                delayForecast = false
-                forecastRepo
-                    .getWeather(longitude = oldCity.longitude, latitude = oldCity.latitude)
-                    .onEach { forecast ->
-                        isRefreshingMutableFlow.emit(false)
-                        when {
-                            forecast != null ->
+            when {
+                oldCity == null -> {
+                    getLocation()
+                    delayForecast = true
+                }
+                cityMutableFlow.value?.name == null -> {
+                    delayForecast = false
+                    val cityFlow = forecastRepo
+                        .getCityName(longitude = oldCity.longitude, latitude = oldCity.latitude)
+                    val forecastFlow = forecastRepo
+                        .getWeather(longitude = oldCity.longitude, latitude = oldCity.latitude)
+                    cityFlow
+                        .zip(forecastFlow) { t1, t2 -> t1 to t2 }
+                        .onEach { (city, forecast) ->
+                            isRefreshingMutableFlow.emit(false)
+                            if (city != null && forecast != null) {
+                                cityMutableFlow.emit(oldCity.copy(name = city))
                                 forecastMutableFlow.emit(forecast)
-                            forecastMutableFlow.value == null ->
+                            } else if (forecastMutableFlow.value == null)
                                 screenStateMutableFlow.emit(ForecastState.ErrorState.Connection)
-                            else ->
+                            else
                                 showSnackBarMutableEvent.emit(
                                     ShowSnackbarEvent(SnackBarMessage.UNABLE_LOAD)
                                 )
-                        }
-                    }.launchIn(viewModelScope)
+                        }.launchIn(viewModelScope)
+                }
+                else -> {
+                    delayForecast = false
+                    forecastRepo
+                        .getWeather(longitude = oldCity.longitude, latitude = oldCity.latitude)
+                        .onEach { forecast ->
+                            isRefreshingMutableFlow.emit(false)
+                            when {
+                                forecast != null ->
+                                    forecastMutableFlow.emit(forecast)
+                                forecastMutableFlow.value == null ->
+                                    screenStateMutableFlow.emit(ForecastState.ErrorState.Connection)
+                                else ->
+                                    showSnackBarMutableEvent.emit(
+                                        ShowSnackbarEvent(SnackBarMessage.UNABLE_LOAD)
+                                    )
+                            }
+                        }.launchIn(viewModelScope)
+                }
             }
         }
         currentForecastJob = null

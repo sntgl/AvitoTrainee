@@ -42,7 +42,7 @@ fun Modifier.shimmerContent(
 }
 
 /** Empty shimmer (fills entire size)
- *
+ * not used
  */
 fun Modifier.shimmer(
   visible: Boolean,

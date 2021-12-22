@@ -19,13 +19,6 @@ data class SavedCity(
     companion object
 }
 
-fun SavedCity.unwrap(): CityParcelable = CityParcelable(
-    name = name,
-    countryCode = countryCode,
-    longitude = lon,
-    latitude = lat
-)
-
 @Throws(IllegalArgumentException::class)
 fun SavedCity.Companion.wrap(city: CityParcelable): SavedCity {
     requireNotNull(city.name)

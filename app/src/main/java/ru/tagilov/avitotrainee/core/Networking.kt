@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ru.tagilov.avitotrainee.core.util.addQueryApiKey
 
 object Networking {
-    private val logger = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC);
+    private val logger = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
 
     private val locationClient: OkHttpClient = OkHttpClient.Builder()
         .addQueryApiKey("apiKey", Key.LOCATION_API_KEY)

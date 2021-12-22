@@ -18,7 +18,7 @@ import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.core.util.navigateWithParcelable
-import ru.tagilov.avitotrainee.forecast.ui.screen.Destination
+import ru.tagilov.avitotrainee.core.routing.Destination
 import timber.log.Timber
 
 @ExperimentalMaterialApi
@@ -36,12 +36,7 @@ fun CityDismissible(
         Timber.d("KEY!!!!!!!!")
         dismissState = rememberDismissState(
             confirmStateChange = {
-                isDismissed.value = true
-//                if (it == DismissValue.DismissedToStart) {
-//                    LaunchedEffect(key1 = Unit, block = )
-//                    delay(300)
-//                    onDismiss(city)
-//                }
+                isDismissed.value = it == DismissValue.DismissedToStart
                 true
             }
         )
@@ -168,21 +163,3 @@ fun CityItem(
         countryCode = city.countryCode,
     )
 }
-
-//@ExperimentalMaterialApi
-//@Preview
-//@Composable
-//private fun CityDismissablePreview() {
-//    AvitoTheme {
-//        Column {
-//            CityDismissible(
-//                city = CityModel(
-//                    name = "Москва",
-//                    lon = 12.4,
-//                    lat = 14.2,
-//                    countryCode = "RU"
-//                )
-//            )
-//        }
-//    }
-//}

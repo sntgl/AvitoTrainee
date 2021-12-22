@@ -12,7 +12,7 @@ import coil.annotation.ExperimentalCoilApi
 import kotlinx.coroutines.FlowPreview
 import ru.tagilov.avitotrainee.city.ui.screen.City
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
-import ru.tagilov.avitotrainee.forecast.ui.screen.Destination
+import ru.tagilov.avitotrainee.core.routing.Destination
 import ru.tagilov.avitotrainee.forecast.ui.screen.Forecast
 import ru.tagilov.avitotrainee.core.theme.AvitoTheme
 import timber.log.Timber

@@ -2,6 +2,7 @@
 
 - [Тестовое задание](https://github.com/avito-tech/android-trainee-task-2021)
 - [Видео работы приложения](https://youtu.be/w6tAj_zjciQ)
+- [APK](app/release/app-release.apk)
 
 Тагилов А.М.
 

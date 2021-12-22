@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -155,6 +156,14 @@ fun Forecast(
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 item { Current(forecast = forecastState.value?.current) }
+                                item {
+                                    AnimatedVisibility(
+                                        visible = !isLocation.value &&
+                                                saved.value != SavedState.SAVED
+                                    ) {
+                                        SaveSuggestion { vm.save() }
+                                    }
+                                }
                                 item { Hourly(forecastList = forecastState.value?.hourly) }
                                 item { Daily(forecastList = forecastState.value?.daily) }
                                 item {

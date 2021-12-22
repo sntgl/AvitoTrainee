@@ -14,10 +14,10 @@ private val DarkColorPalette = darkColors(
     secondary = Gray50,
     background = Gray700,
     onBackground = Gray500,
-    //шиммер
     surface = Gray650,
     onSurface = Gray550,
     error = ErrorRed,
+    onError = ErrorDark,
 )
 
 private val LightColorPalette = lightColors(
@@ -28,20 +28,10 @@ private val LightColorPalette = lightColors(
     secondaryVariant = Gray500,
     background = Gray100,
     onBackground = Gray200,
-    //шиммер
     surface = Gray50,
     onSurface = Gray150,
     error = ErrorRed,
-
-
-    /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
+    onError = ErrorBright,
 )
 
 @Composable

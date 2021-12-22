@@ -30,4 +30,6 @@
     <string name="nothing_saved">Нет сохраненных городов</string>
     <string name="save_something">Сохраните хотя бы один город</string>
     <string name="current_city">Текущее место</string>
+    <string name="city_not_saved">Город не сохранен</string>
+    <string name="save_city">Сохраните город, чтобы легко открыть эту страницу</string>
 </resources>

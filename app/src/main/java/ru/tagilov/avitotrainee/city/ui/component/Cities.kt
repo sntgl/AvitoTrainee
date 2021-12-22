@@ -16,57 +16,6 @@ import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.core.util.shimmerContent
 
 
-//@Composable
-//private fun CityItem(
-//    modifier: Modifier = Modifier,
-//    city: CityModel,
-//    navController: NavController,
-//) {
-//    Box(
-//        modifier = Modifier
-//            .padding(horizontal = 8.dp, vertical = 4.dp)
-//            .clickable {
-//                navController.navigateWithParcelable(
-//                    route = Destination.Forecast.route,
-//                    key = Destination.Forecast.KEY_CITY,
-//                    parcelable = CityParcelable(city.name, city.countryCode, city.lat, city.lon)
-//                ) {
-//                    launchSingleTop = true
-//                    popUpTo(Destination.Forecast.route) { inclusive = true }
-//                }
-//            }
-//    ) {
-//        Row(
-//            modifier = modifier
-//                .background(
-//                    color = MaterialTheme.colors.onBackground,
-//                    shape = MaterialTheme.shapes.medium
-//                )
-//                .fillMaxWidth()
-//                .padding(horizontal = 16.dp, vertical = 12.dp),
-//            horizontalArrangement = Arrangement.SpaceBetween,
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            Text(
-//                text = city.name,
-//                style = MaterialTheme.typography.h4,
-//                color = MaterialTheme.colors.secondary,
-//                modifier = Modifier
-//                    .weight(1f)
-//            )
-//            Box(
-//                modifier = Modifier
-//                    .size(10.dp)
-//            )
-//            Text(
-//                text = city.countryCode,
-//                style = MaterialTheme.typography.h2,
-//                color = MaterialTheme.colors.secondaryVariant
-//            )
-//        }
-//    }
-//}
-
 @Composable
 private fun CityShimmer(
     modifier: Modifier = Modifier,

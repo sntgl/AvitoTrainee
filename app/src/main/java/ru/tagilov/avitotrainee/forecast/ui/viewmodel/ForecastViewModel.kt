@@ -82,6 +82,7 @@ class ForecastViewModel : ViewModel() {
                 cityMutableFlow.emit(
                     city?.copy(longitude = long, latitude = lat)
                         ?: CityParcelable(
+                            id = null,
                             name = null,
                             countryCode = null,
                             longitude = long,
@@ -128,13 +129,13 @@ class ForecastViewModel : ViewModel() {
 
 
     private fun checkSaved() {
-        val cityName = cityMutableFlow.value?.name
+        val cityId = cityMutableFlow.value?.id
         if (
             savedCityMutableFlow.value == SavedState.NONE &&
             permissionStateMutableFlow.value == PermissionState.None &&
-            cityName != null
+            cityId != null
         ) {
-            db.get(cityName).onEach {
+            db.get(cityId).onEach {
                 Timber.d("GET SAVED = $it")
                 savedCityMutableFlow.emit(
                     if (it != null) SavedState.SAVED else SavedState.NOT_SAVED

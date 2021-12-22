@@ -33,7 +33,6 @@ fun CityDismissible(
     lateinit var dismissState: DismissState
     val isDismissed = remember { mutableStateOf(false) }
     key(city.id) {
-        Timber.d("KEY!!!!!!!!")
         dismissState = rememberDismissState(
             confirmStateChange = {
                 isDismissed.value = it == DismissValue.DismissedToStart
@@ -154,7 +153,7 @@ fun CityItem(
             navController.navigateWithParcelable(
                 route = Destination.Forecast.route,
                 key = Destination.Forecast.KEY_CITY,
-                parcelable = CityParcelable(city.name, city.countryCode, city.lat, city.lon)
+                parcelable = CityParcelable(city.id, city.name, city.countryCode, city.lat, city.lon)
             ) {
                 launchSingleTop = true
                 popUpTo(Destination.Forecast.route) { inclusive = true }

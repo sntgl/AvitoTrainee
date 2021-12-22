@@ -61,14 +61,11 @@ fun Forecast(
             .getFusedLocationProviderClient(context)
             .lastLocation
             .addOnSuccessListener { location ->
-                if (location != null)
-                    vm.setLocation(
-                        long = location.longitude,
-                        lat = location.latitude,
-                        fromApi = false
-                    )
-                else
-                    vm.newPermissionState(PermissionState.Denied)
+                vm.setLocation(
+                    long = location.longitude,
+                    lat = location.latitude,
+                    fromApi = false
+                )
             }
     }
     val permissionLauncher = rememberLauncherForActivityResult(

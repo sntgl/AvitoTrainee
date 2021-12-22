@@ -16,10 +16,10 @@ interface SavedCityDao {
     // ну либо сделать через сравнение всех хар-к города
     @Query(
         "SELECT * FROM ${SavedCityContract.TABLE_NAME} " +
-                "WHERE ${SavedCityContract.Columns.NAME} = :name " +
+                "WHERE ${SavedCityContract.Columns.ID} = :id " +
                 "LIMIT 1"
     )
-    fun get(name: String): Flow<SavedCity?>
+    fun get(id: String): Flow<SavedCity?>
 
     @Insert
     suspend fun save(savedCity: SavedCity)

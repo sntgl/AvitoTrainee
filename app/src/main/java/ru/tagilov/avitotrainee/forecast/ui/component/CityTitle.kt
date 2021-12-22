@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.core.theme.AvitoTheme
 import ru.tagilov.avitotrainee.core.util.shimmerRound
+import java.util.*
 
 @Composable
 fun CityTitle(
@@ -47,7 +48,8 @@ fun CityTitle(
         }
         Box(
             modifier = Modifier
-                .height(1.dp).fillMaxWidth()
+                .height(1.dp)
+                .fillMaxWidth()
                 .background(color = MaterialTheme.colors.secondaryVariant),
         )
     }
@@ -56,7 +58,17 @@ fun CityTitle(
 @Preview
 @Composable
 private fun CityTitlePreview() {
-    AvitoTheme { CityTitle(city = CityParcelable(name = "Москва",null, 0.0, 0.0)) }
+    AvitoTheme {
+        CityTitle(
+            city = CityParcelable(
+                id = UUID.randomUUID().toString(),
+                name = "Москва",
+                countryCode = null,
+                latitude = 0.0,
+                longitude = 0.0,
+            )
+        )
+    }
 }
 
 private const val SKELETON_CITY_SIZE = 7

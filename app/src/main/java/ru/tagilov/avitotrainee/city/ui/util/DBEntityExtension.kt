@@ -5,7 +5,7 @@ import ru.tagilov.avitotrainee.core.db.SavedCity
 import kotlin.random.Random
 
 fun SavedCity.toModel() = CityModel (
-    id = id ?: Random.nextInt(),  //не используется, но по-хорошему надо было разделить сущности
+    id = id,
     name = name,
     lon = lon,
     lat = lat,

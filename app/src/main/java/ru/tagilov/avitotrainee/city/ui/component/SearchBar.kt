@@ -112,13 +112,3 @@ fun SearchBar(
         }
     }
 }
-
-//@ExperimentalAnimationApi
-//@Preview(showBackground = true)
-//@Composable
-//fun SearchBarPreview(){
-//    AvitoTheme {
-//        val v = remember{mutableStateOf(TextFieldValue())}
-//        SearchBar(state = v, textUpdated = {}, isFocused = false)
-//    }
-//}

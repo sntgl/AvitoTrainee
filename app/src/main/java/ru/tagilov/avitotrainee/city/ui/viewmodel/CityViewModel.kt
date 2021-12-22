@@ -36,7 +36,6 @@ class CityViewModel : ViewModel() {
         get() = savedCitiesMutableFlow
 
     fun newEntry(s: String) {
-        Timber.d("New search bar text = $s")
         viewModelScope.launch {
             entryMutableStateFlow.emit(s)
         }
@@ -49,10 +48,8 @@ class CityViewModel : ViewModel() {
     fun newSearchFocus(isFocused: Boolean) {
         viewModelScope.launch {
             searchFocusedMutableFlow.emit(isFocused)
-//            if (isFocused == false) {
             searchCityListMutableFlow.emit(null)
             screenStateMutableFlow.emit(CityState.Saved)
-//            }
         }
     }
 
@@ -87,7 +84,6 @@ class CityViewModel : ViewModel() {
     }
 
     fun delete(city: CityModel) {
-        Timber.d("Delete viewmodel $city")
         viewModelScope.launch {
             db.delete(city.toSaved())
         }

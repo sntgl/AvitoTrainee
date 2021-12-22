@@ -1,6 +1,7 @@
 # Avito tech trainee 
 
-[Тестовое задание](https://github.com/avito-tech/android-trainee-task-2021)
+- [Тестовое задание](https://github.com/avito-tech/android-trainee-task-2021)
+- [Видео работы приложения](https://youtu.be/w6tAj_zjciQ)
 
 Тагилов А.М.
 
@@ -86,3 +87,4 @@ https://api.ipgeolocation.io/ipgeo?apiKey=dd8bacba38c84ee4a11cbe0614b07322
  - Логика сохранения лежит на экране погоды. Если город не из текущей локации, то сохраняем (нужно, чтобы пользователь не ждал перехода на экран прогноза)
  - MVI все-таки с Compose больше вяжется(
  - Тк нет особо опыта с Compose, сделал ошибку - куча стейтов. Стейт должен быть один (общий), чтобы по несколько раз не рекомпозировать
+ - Зря использовал Gson вместо Moshi

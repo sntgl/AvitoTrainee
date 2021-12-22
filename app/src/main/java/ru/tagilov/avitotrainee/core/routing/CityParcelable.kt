@@ -4,23 +4,26 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class CityParcelable(
+    val id: String?,
     val name: String?,
     val countryCode: String?,
     val latitude: Double,
     val longitude: Double,
-): Parcelable {
+) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),
+        parcel.readString(),
         parcel.readDouble(),
-        parcel.readDouble(),
+        parcel.readDouble()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(id)
         parcel.writeString(name)
+        parcel.writeString(countryCode)
         parcel.writeDouble(latitude)
         parcel.writeDouble(longitude)
-        parcel.writeString(countryCode)
     }
 
     override fun describeContents(): Int {

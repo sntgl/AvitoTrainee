@@ -71,21 +71,20 @@ fun NavBar(
                     }
                     .padding(16.dp)
             )
-            if (!isLocation)
-                AnimatedVisibility(visible = !isSaved) {
-                    Button(
-                        onClick = { onSave() },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colors.onBackground,
-                            contentColor = MaterialTheme.colors.secondary
-                        ),
-                        shape = MaterialTheme.shapes.large
-                    ) {
-                        Text(
-                            text= stringResource(id = R.string.save),
-                        )
-                    }
+            AnimatedVisibility(visible = !isSaved && !isLocation) {
+                Button(
+                    onClick = { onSave() },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = MaterialTheme.colors.onBackground,
+                        contentColor = MaterialTheme.colors.secondary
+                    ),
+                    shape = MaterialTheme.shapes.large
+                ) {
+                    Text(
+                        text= stringResource(id = R.string.save),
+                    )
                 }
+            }
             Icon(
                 painter = painterResource(id = R.drawable.list),
                 contentDescription = "list",

@@ -9,8 +9,13 @@ import ru.tagilov.avitotrainee.forecast.ui.entity.fromResponse
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
 import java.io.IOException
 
-class ForecastRepository {
-    suspend fun getCityName(
+interface ForecastRepository {
+    suspend fun getCityName(longitude: Double, latitude: Double, ): Flow<String?>
+    suspend fun getWeather(longitude: Double, latitude: Double, ): Flow<Forecast?>
+}
+
+class ForecastRepositoryImpl: ForecastRepository {
+    override suspend fun getCityName(
         longitude: Double,
         latitude: Double,
     ): Flow<String?> = flow {
@@ -29,7 +34,7 @@ class ForecastRepository {
     }.flowOn(Dispatchers.IO)
 
 
-    suspend fun getWeather(
+    override suspend fun getWeather(
         longitude: Double,
         latitude: Double,
     ): Flow<Forecast?> = flow {

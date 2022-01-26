@@ -9,8 +9,12 @@ import ru.tagilov.avitotrainee.forecast.ui.entity.DomainLocation
 import ru.tagilov.avitotrainee.forecast.ui.entity.fromResponse
 import java.io.IOException
 
-class LocationRepository {
-    suspend fun getLocation(): Flow<DomainLocation?> = flow {
+interface LocationRepository {
+    suspend fun getLocation(): Flow<DomainLocation?>
+}
+
+class LocationRepositoryImpl: LocationRepository {
+    override suspend fun getLocation(): Flow<DomainLocation?> = flow {
         try {
             emit(ForecastNetworking.locationApi.location())
         } catch (e: IOException) {

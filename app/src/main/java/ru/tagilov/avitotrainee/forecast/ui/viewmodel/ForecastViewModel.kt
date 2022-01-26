@@ -12,7 +12,9 @@ import ru.tagilov.avitotrainee.core.db.SavedCity
 import ru.tagilov.avitotrainee.core.db.wrap
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.forecast.data.ForecastRepository
+import ru.tagilov.avitotrainee.forecast.data.ForecastRepositoryImpl
 import ru.tagilov.avitotrainee.forecast.data.LocationRepository
+import ru.tagilov.avitotrainee.forecast.data.LocationRepositoryImpl
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
 import ru.tagilov.avitotrainee.forecast.ui.entity.PermissionState
 import ru.tagilov.avitotrainee.forecast.ui.screen.ForecastState
@@ -21,8 +23,8 @@ import timber.log.Timber
 
 class ForecastViewModel : ViewModel() {
 
-    private val locationRepo = LocationRepository()
-    private val forecastRepo = ForecastRepository()
+    private val locationRepo: LocationRepository = LocationRepositoryImpl()
+    private val forecastRepo: ForecastRepository = ForecastRepositoryImpl()
     private var isApiLocation = true
     private var apiLocationFailed = false
     private var delayForecast = false

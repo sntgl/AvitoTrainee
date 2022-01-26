@@ -2,6 +2,7 @@ package ru.tagilov.avitotrainee.forecast.ui.screen
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Location
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -60,12 +61,14 @@ fun Forecast(
         LocationServices
             .getFusedLocationProviderClient(context)
             .lastLocation
-            .addOnSuccessListener { location ->
-                vm.setLocation(
-                    long = location.longitude,
-                    lat = location.latitude,
-                    fromApi = false
-                )
+            .addOnSuccessListener { location: Location? ->
+                location?.let {
+                    vm.setLocation(
+                        long = location.longitude,
+                        lat = location.latitude,
+                        fromApi = false
+                    )
+                }
             }
     }
     val permissionLauncher = rememberLauncherForActivityResult(

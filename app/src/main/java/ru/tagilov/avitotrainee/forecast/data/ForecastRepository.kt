@@ -5,23 +5,26 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import ru.tagilov.avitotrainee.forecast.ui.entity.fromResponse
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
+import ru.tagilov.avitotrainee.forecast.ui.entity.fromResponse
 import java.io.IOException
+import javax.inject.Inject
 
 interface ForecastRepository {
     suspend fun getCityName(longitude: Double, latitude: Double, ): Flow<String?>
     suspend fun getWeather(longitude: Double, latitude: Double, ): Flow<Forecast?>
 }
 
-class ForecastRepositoryImpl: ForecastRepository {
+class ForecastRepositoryImpl @Inject constructor(
+        private val forecastApi: ForecastApi
+): ForecastRepository {
     override suspend fun getCityName(
         longitude: Double,
         latitude: Double,
     ): Flow<String?> = flow {
         try {
             emit(
-                ForecastNetworking.forecastApi.getCityName(
+                forecastApi.getCityName(
                     longitude = longitude.toString(),
                     latitude = latitude.toString()
                 )
@@ -40,7 +43,7 @@ class ForecastRepositoryImpl: ForecastRepository {
     ): Flow<Forecast?> = flow {
         try {
             emit(
-                ForecastNetworking.forecastApi.getFullForecast(
+                forecastApi.getFullForecast(
                     longitude = longitude.toString(),
                     latitude = latitude.toString()
                 )

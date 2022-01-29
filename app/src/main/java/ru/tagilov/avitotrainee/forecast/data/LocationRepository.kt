@@ -8,15 +8,18 @@ import kotlinx.coroutines.flow.map
 import ru.tagilov.avitotrainee.forecast.ui.entity.DomainLocation
 import ru.tagilov.avitotrainee.forecast.ui.entity.fromResponse
 import java.io.IOException
+import javax.inject.Inject
 
 interface LocationRepository {
     suspend fun getLocation(): Flow<DomainLocation?>
 }
 
-class LocationRepositoryImpl: LocationRepository {
+class LocationRepositoryImpl @Inject constructor(
+        private val locationApi: LocationApi
+): LocationRepository {
     override suspend fun getLocation(): Flow<DomainLocation?> = flow {
         try {
-            emit(ForecastNetworking.locationApi.location())
+            emit(locationApi.location())
         } catch (e: IOException) {
             emit(null)
         }

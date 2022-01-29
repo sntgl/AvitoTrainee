@@ -11,9 +11,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.tagilov.avitotrainee.R
-import ru.tagilov.avitotrainee.forecast.ui.entity.CurrentForecast
 import ru.tagilov.avitotrainee.core.theme.AvitoTheme
 import ru.tagilov.avitotrainee.core.util.shimmerRound
+import ru.tagilov.avitotrainee.forecast.ui.entity.CurrentForecast
 
 
 // умышленно нет бекграунда

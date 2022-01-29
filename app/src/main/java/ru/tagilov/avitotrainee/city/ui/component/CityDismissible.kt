@@ -17,9 +17,8 @@ import kotlinx.coroutines.delay
 import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
-import ru.tagilov.avitotrainee.core.util.navigateWithParcelable
 import ru.tagilov.avitotrainee.core.routing.Destination
-import timber.log.Timber
+import ru.tagilov.avitotrainee.core.util.navigateWithParcelable
 
 @ExperimentalMaterialApi
 @Composable

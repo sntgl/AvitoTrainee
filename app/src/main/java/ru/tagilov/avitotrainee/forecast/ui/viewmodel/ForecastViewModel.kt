@@ -7,28 +7,28 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.tagilov.avitotrainee.core.ShowSnackbarEvent
 import ru.tagilov.avitotrainee.core.SnackBarMessage
-import ru.tagilov.avitotrainee.core.db.Database
+import ru.tagilov.avitotrainee.core.db.AppDatabase
 import ru.tagilov.avitotrainee.core.db.SavedCity
 import ru.tagilov.avitotrainee.core.db.wrap
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.forecast.data.ForecastRepository
-import ru.tagilov.avitotrainee.forecast.data.ForecastRepositoryImpl
 import ru.tagilov.avitotrainee.forecast.data.LocationRepository
-import ru.tagilov.avitotrainee.forecast.data.LocationRepositoryImpl
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
 import ru.tagilov.avitotrainee.forecast.ui.entity.PermissionState
 import ru.tagilov.avitotrainee.forecast.ui.screen.ForecastState
 import ru.tagilov.avitotrainee.forecast.ui.screen.SavedState
 import timber.log.Timber
+import javax.inject.Inject
 
-class ForecastViewModel : ViewModel() {
-
-    private val locationRepo: LocationRepository = LocationRepositoryImpl()
-    private val forecastRepo: ForecastRepository = ForecastRepositoryImpl()
+class ForecastViewModel @Inject constructor(
+        private val locationRepo: LocationRepository,
+        private val forecastRepo: ForecastRepository,
+        database: AppDatabase
+) : ViewModel() {
     private var isApiLocation = true
     private var apiLocationFailed = false
     private var delayForecast = false
-    private val db = Database.instance.cityDao()
+    private val db = database.cityDao()
 
     fun configure(city: CityParcelable?) {
         Timber.d("City configured: $city")

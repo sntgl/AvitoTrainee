@@ -19,7 +19,6 @@ import javax.inject.Inject
 class CityViewModel @Inject constructor(
         database: AppDatabase,
         private val cityRepository: CityRepository,
-
 ) : ViewModel() {
 
     private val db = database.cityDao()

@@ -22,7 +22,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -41,9 +40,10 @@ import ru.tagilov.avitotrainee.forecast.ui.viewmodel.ForecastViewModel
 @Composable
 fun Forecast(
     navController: NavController,
-    city: CityParcelable? = null
+    city: CityParcelable? = null,
+    vm: ForecastViewModel
 ) {
-    val vm: ForecastViewModel = viewModel()
+//    val vm: ForecastViewModel = viewModel()
     LaunchedEffect(key1 = Unit) {
         vm.configure(city = city)
     }

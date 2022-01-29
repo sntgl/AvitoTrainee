@@ -1,5 +1,6 @@
 package ru.tagilov.avitotrainee.root
 
+//import ru.tagilov.avitotrainee.forecast.di.DaggerForecastComponent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,10 +16,11 @@ import ru.tagilov.avitotrainee.city.ui.screen.City
 import ru.tagilov.avitotrainee.core.db.AppDatabase
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.core.routing.Destination
-import ru.tagilov.avitotrainee.forecast.ui.screen.Forecast
 import ru.tagilov.avitotrainee.core.theme.AvitoTheme
 import ru.tagilov.avitotrainee.core.util.appComponent
 import ru.tagilov.avitotrainee.core.util.daggerViewModel
+import ru.tagilov.avitotrainee.forecast.di.DaggerForecastComponent
+import ru.tagilov.avitotrainee.forecast.ui.screen.Forecast
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -47,9 +49,13 @@ class MainActivity: ComponentActivity() {
                         val city: CityParcelable? =
                             it.arguments?.getParcelable(Destination.Forecast.KEY_CITY)
                         Timber.d("City = $city")
+                        val component = DaggerForecastComponent.builder().deps(appComponent).build()
                         Forecast(
                             navController = navController,
-                            city = city
+                            city = city,
+                            vm = daggerViewModel {
+                                component.getViewModel()
+                            }
                         )
                     }
                     composable(

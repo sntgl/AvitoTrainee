@@ -1,12 +1,11 @@
 package ru.tagilov.avitotrainee.city.data
 
+//import ru.tagilov.avitotrainee.city.data.CityNetworking.cityApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import retrofit2.Retrofit
-//import ru.tagilov.avitotrainee.city.data.CityNetworking.cityApi
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.city.ui.entity.fromResponse
 import java.io.IOException

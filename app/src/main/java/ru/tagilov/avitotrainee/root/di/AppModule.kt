@@ -16,7 +16,6 @@ import ru.tagilov.avitotrainee.core.util.addQueryApiKey
 import ru.tagilov.avitotrainee.forecast.data.ForecastApi
 import ru.tagilov.avitotrainee.forecast.data.LocationApi
 import timber.log.Timber
-import javax.inject.Named
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -41,7 +40,6 @@ class AppModule{
     @Provides
     fun provideGsonConverterFactory(): GsonConverterFactory = GsonConverterFactory.create()
 
-
     @Provides
     @Forecast
     fun provideWeatherClient(
@@ -62,10 +60,41 @@ class AppModule{
             .client(weatherClient)
             .build()
 
+    @Location
+    @Provides
+    fun provideLocationClient(
+            httpLoggingInterceptor: HttpLoggingInterceptor
+    ): OkHttpClient = OkHttpClient.Builder()
+            .addQueryApiKey("apiKey", Key.LOCATION_API_KEY)
+            .addInterceptor(httpLoggingInterceptor)
+            .build()
+
+    @Location
+    @Provides
+    fun provideLocationRetrofit(
+            @Location locationClient: OkHttpClient,
+            gsonConverterFactory: GsonConverterFactory
+    ): Retrofit = Retrofit.Builder()
+            .baseUrl("https://api.ipgeolocation.io/")
+            .addConverterFactory(gsonConverterFactory)
+            .client(locationClient)
+            .build()
+
+    @Provides
+    fun provideForecastApi(
+            @Forecast forecastRetrofit: Retrofit
+    ) : ForecastApi = forecastRetrofit.create()
+
+    @Provides
+    fun provideLocationApi(
+            @Location forecastRetrofit: Retrofit
+    ) : LocationApi = forecastRetrofit.create()
+
     @Provides
     fun provideCityApi(
             @Forecast forecastRetrofit: Retrofit
     ) : CityApi = forecastRetrofit.create()
+
 
 }
 

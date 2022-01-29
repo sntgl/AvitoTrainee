@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
-import kotlin.jvm.Throws
 
 @Entity(tableName = SavedCityContract.TABLE_NAME)
 data class SavedCity(

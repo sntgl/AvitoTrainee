@@ -3,7 +3,6 @@ package ru.tagilov.avitotrainee.city.ui.entity
 import ru.tagilov.avitotrainee.city.data.entity.ResponseCity
 import ru.tagilov.avitotrainee.core.db.SavedCity
 import java.util.*
-import kotlin.random.Random
 
 data class CityModel(
     val id: String,

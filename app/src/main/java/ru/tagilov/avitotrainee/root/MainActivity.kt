@@ -1,4 +1,4 @@
-package ru.tagilov.avitotrainee
+package ru.tagilov.avitotrainee.root
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,20 +10,30 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
 import kotlinx.coroutines.FlowPreview
+import ru.tagilov.avitotrainee.city.di.DaggerCityComponent
 import ru.tagilov.avitotrainee.city.ui.screen.City
+import ru.tagilov.avitotrainee.core.db.AppDatabase
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.core.routing.Destination
 import ru.tagilov.avitotrainee.forecast.ui.screen.Forecast
 import ru.tagilov.avitotrainee.core.theme.AvitoTheme
+import ru.tagilov.avitotrainee.core.util.daggerViewModel
 import timber.log.Timber
+import javax.inject.Inject
 
 @ExperimentalAnimationApi
 @ExperimentalCoilApi
 @ExperimentalMaterialApi
 @FlowPreview
-class MainActivity : ComponentActivity() {
+class MainActivity: ComponentActivity() {
+
+    @Inject
+    lateinit var database: AppDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        appComponent.inject(this)
+        Timber.d("citydao - ${database.cityDao()}")
         setContent {
             AvitoTheme {
                 val navController = rememberNavController()
@@ -45,7 +55,14 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = Destination.City.route,
                     ) {
-                        City(navController = navController)
+
+                        val component = DaggerCityComponent.builder().deps(appComponent).build()
+                        City(
+                            navController = navController,
+                            vm = daggerViewModel {
+                                component.getViewModel()
+                            }
+                        )
                     }
                 }
             }

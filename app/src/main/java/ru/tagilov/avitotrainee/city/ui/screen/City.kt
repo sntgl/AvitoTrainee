@@ -27,9 +27,12 @@ import ru.tagilov.avitotrainee.city.ui.viewmodel.CityViewModel
 @Composable
 fun City(
     navController: NavController,
+    vm: CityViewModel
 ) {
     val searchBarState = remember { mutableStateOf(TextFieldValue()) }
-    val vm: CityViewModel = viewModel()
+//    val vm: CityViewModel = viewModel {
+//
+//    }
     val screenState = remember { vm.screenStateFlow }.collectAsState()
     val loadedCities = remember { vm.searchCityListFlow }.collectAsState()
     val savedCities = remember { vm.savedCitiesFlow }.collectAsState()

@@ -11,14 +11,18 @@ import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.city.ui.entity.toSaved
 import ru.tagilov.avitotrainee.city.ui.screen.CityState
 import ru.tagilov.avitotrainee.city.ui.util.toModel
-import ru.tagilov.avitotrainee.core.db.Database
+import ru.tagilov.avitotrainee.core.db.AppDatabase
 import timber.log.Timber
+import javax.inject.Inject
 
 @FlowPreview
-class CityViewModel : ViewModel() {
-    private val cityRepository = CityRepository()
+class CityViewModel @Inject constructor(
+        database: AppDatabase,
+        private val cityRepository: CityRepository,
 
-    private val db = Database.instance.cityDao()
+) : ViewModel() {
+
+    private val db = database.cityDao()
 
     private val entryMutableStateFlow = MutableStateFlow("")
     private val newSearchMutableStateFlow = MutableStateFlow("")

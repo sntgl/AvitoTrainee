@@ -9,7 +9,6 @@ import dagger.Component
 import kotlinx.coroutines.FlowPreview
 import ru.tagilov.avitotrainee.root.App
 import ru.tagilov.avitotrainee.root.MainActivity
-import javax.inject.Singleton
 
 @Component(modules = [AppModule::class])
 @AppScope

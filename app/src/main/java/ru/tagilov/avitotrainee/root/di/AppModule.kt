@@ -16,12 +16,8 @@ import ru.tagilov.avitotrainee.core.util.addQueryApiKey
 import ru.tagilov.avitotrainee.forecast.data.ForecastApi
 import ru.tagilov.avitotrainee.forecast.data.LocationApi
 import timber.log.Timber
-import java.lang.annotation.Documented
-import java.lang.annotation.RetentionPolicy
-import java.lang.annotation.RetentionPolicy.*
 import javax.inject.Qualifier
 import javax.inject.Scope
-import javax.inject.Singleton
 
 
 @Module

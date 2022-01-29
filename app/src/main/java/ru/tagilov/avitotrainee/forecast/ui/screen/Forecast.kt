@@ -43,7 +43,6 @@ fun Forecast(
     city: CityParcelable? = null,
     vm: ForecastViewModel
 ) {
-//    val vm: ForecastViewModel = viewModel()
     LaunchedEffect(key1 = Unit) {
         vm.configure(city = city)
     }

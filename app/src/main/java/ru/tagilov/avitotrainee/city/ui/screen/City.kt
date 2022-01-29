@@ -30,9 +30,6 @@ fun City(
     vm: CityViewModel
 ) {
     val searchBarState = remember { mutableStateOf(TextFieldValue()) }
-//    val vm: CityViewModel = viewModel {
-//
-//    }
     val screenState = remember { vm.screenStateFlow }.collectAsState()
     val loadedCities = remember { vm.searchCityListFlow }.collectAsState()
     val savedCities = remember { vm.savedCitiesFlow }.collectAsState()

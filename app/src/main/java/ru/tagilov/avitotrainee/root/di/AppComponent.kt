@@ -41,15 +41,10 @@ interface AppComponent :
     }
 }
 
-//@Qualifier
-//@Retention(AnnotationRetention.RUNTIME)
-//annotation class Location
-
-@Qualifier
-@Retention(AnnotationRetention.RUNTIME)
-annotation class Forecast
 
 
+
+//TODO
 //@Scope
 //@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
 //annotation class AppScope

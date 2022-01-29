@@ -10,10 +10,9 @@ import javax.inject.Named
 interface BaseDependencies {
     @Forecast
     val database: AppDatabase
-
-    @Forecast
-    val forecastRetrofit: Retrofit
 }
 
 
-interface CityDependencies: BaseDependencies
+interface CityDependencies: BaseDependencies {
+    val cityApi: CityApi
+}

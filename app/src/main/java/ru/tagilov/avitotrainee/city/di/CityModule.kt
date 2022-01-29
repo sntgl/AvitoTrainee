@@ -32,44 +32,16 @@ interface CityComponent {
     @FlowPreview
     fun getViewModel(): CityViewModel
 
-    @Forecast
-    val forecastRetrofit: Retrofit
-
     @Component.Builder
     interface Builder {
-        fun deps(dependencies: BaseDependencies): Builder
+        fun deps(dependencies: CityDependencies): Builder
         fun build(): CityComponent
     }
 }
 
 
 @Module(includes = [CityBinds::class])
-class CityModule {
-
-    @FlowPreview
-    @CityScreenScope
-    @Provides
-    fun provideViewModel(
-            database: AppDatabase, //зависимость из AppModule, провайдится и все ок
-            repository: CityRepository
-    ): CityViewModel = CityViewModel(
-            database,
-            repository
-    )
-
-    @Provides
-    fun provideCityRepository(
-            cityApi: CityApi
-    ): CityRepositoryImpl = CityRepositoryImpl(
-            cityApi = cityApi
-    )
-
-    @Provides
-    fun provideCityApi(
-            @Forecast forecastRetrofit: Retrofit //не хочет провайдится
-    ): CityApi = forecastRetrofit.create()
-
-}
+class CityModule
 
 @Module
 interface CityBinds {

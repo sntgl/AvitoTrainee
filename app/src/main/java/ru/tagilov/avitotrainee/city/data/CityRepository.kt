@@ -18,7 +18,7 @@ interface CityRepository {
     ): Flow<List<CityModel>?>
 }
 
-class CityRepositoryImpl /*@Inject constructor*/(
+class CityRepositoryImpl @Inject constructor(
         private val cityApi: CityApi
 ) : CityRepository {
     override suspend fun searchCities(

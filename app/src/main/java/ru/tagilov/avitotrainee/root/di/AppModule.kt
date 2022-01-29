@@ -17,6 +17,7 @@ import ru.tagilov.avitotrainee.forecast.data.ForecastApi
 import ru.tagilov.avitotrainee.forecast.data.LocationApi
 import timber.log.Timber
 import javax.inject.Named
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
@@ -33,7 +34,6 @@ class AppModule{
         ).build()
     }
 
-    @Singleton
     @Provides
     fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor =
             HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
@@ -42,7 +42,6 @@ class AppModule{
     fun provideGsonConverterFactory(): GsonConverterFactory = GsonConverterFactory.create()
 
 
-    @Singleton
     @Provides
     @Forecast
     fun provideWeatherClient(
@@ -52,7 +51,6 @@ class AppModule{
             .addInterceptor(httpLoggingInterceptor)
             .build()
 
-    @Singleton
     @Provides
     @Forecast
     fun provideForecastRetrofit(
@@ -64,4 +62,18 @@ class AppModule{
             .client(weatherClient)
             .build()
 
+    @Provides
+    fun provideCityApi(
+            @Forecast forecastRetrofit: Retrofit
+    ) : CityApi = forecastRetrofit.create()
+
 }
+
+
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Location
+
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Forecast

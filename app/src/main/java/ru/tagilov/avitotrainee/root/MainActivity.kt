@@ -17,6 +17,7 @@ import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.core.routing.Destination
 import ru.tagilov.avitotrainee.forecast.ui.screen.Forecast
 import ru.tagilov.avitotrainee.core.theme.AvitoTheme
+import ru.tagilov.avitotrainee.core.util.appComponent
 import ru.tagilov.avitotrainee.core.util.daggerViewModel
 import timber.log.Timber
 import javax.inject.Inject
@@ -33,7 +34,6 @@ class MainActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appComponent.inject(this)
-        Timber.d("citydao - ${database.cityDao()}")
         setContent {
             AvitoTheme {
                 val navController = rememberNavController()

@@ -5,14 +5,12 @@ import ru.tagilov.avitotrainee.forecast.ui.viewmodel.ForecastViewModel
 import ru.tagilov.avitotrainee.root.di.ForecastDependencies
 import javax.inject.Scope
 
+@ForecastScreenScope
 @Component(
         modules = [ForecastModule::class],
         dependencies = [ForecastDependencies::class]
 )
 interface ForecastComponent {
-    @Scope
-    @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
-    annotation class ForecastScreenScope
 
     @ForecastScreenScope
     fun getViewModel(): ForecastViewModel

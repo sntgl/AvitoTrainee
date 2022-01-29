@@ -12,7 +12,7 @@ import ru.tagilov.avitotrainee.root.MainActivity
 import javax.inject.Singleton
 
 @Component(modules = [AppModule::class])
-@Singleton
+@AppScope
 interface AppComponent :
         BaseDependencies,
         CityDependencies,

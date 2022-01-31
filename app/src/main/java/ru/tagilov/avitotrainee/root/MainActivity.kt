@@ -23,15 +23,12 @@ import ru.tagilov.avitotrainee.forecast.ui.screen.Forecast
 import timber.log.Timber
 import javax.inject.Inject
 
-@ExperimentalAnimationApi
-@ExperimentalCoilApi
-@ExperimentalMaterialApi
-@FlowPreview
 class MainActivity: ComponentActivity() {
 
     @Inject
     lateinit var database: AppDatabase
 
+    @OptIn(FlowPreview::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appComponent.inject(this)

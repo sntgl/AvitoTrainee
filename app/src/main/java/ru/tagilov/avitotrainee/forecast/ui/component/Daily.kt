@@ -30,8 +30,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-@ExperimentalAnimationApi
-@ExperimentalCoilApi
 @Composable
 private fun DailyItem(
     forecast: DailyForecast,
@@ -209,8 +207,6 @@ private fun DailyItem(
 Преположу, что animated visibility проверяет видимость по старой ссылке
 Чтобы не терять время решил просто сделать отдельный элемент-заглушку
  */
-@ExperimentalAnimationApi
-@ExperimentalCoilApi
 @Composable
 private fun DailyShimmer() {
     Column(
@@ -255,8 +251,6 @@ private fun DailyShimmer() {
     }
 }
 
-@ExperimentalAnimationApi
-@ExperimentalCoilApi
 @Preview
 @Composable
 private fun DailyItemPreview() {
@@ -300,8 +294,6 @@ private fun DailyItemPreview() {
     }
 }
 
-@ExperimentalAnimationApi
-@ExperimentalCoilApi
 @Composable
 fun Daily(
     modifier: Modifier = Modifier,
@@ -353,8 +345,6 @@ fun Daily(
 }
 
 @SuppressLint("SimpleDateFormat")
-@ExperimentalCoilApi
-@ExperimentalAnimationApi
 @Preview
 @Composable
 private fun DailyPreview() {

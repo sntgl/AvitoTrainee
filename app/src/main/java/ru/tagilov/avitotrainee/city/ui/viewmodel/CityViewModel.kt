@@ -15,7 +15,7 @@ import ru.tagilov.avitotrainee.core.db.AppDatabase
 import timber.log.Timber
 import javax.inject.Inject
 
-@FlowPreview
+@OptIn(FlowPreview::class)
 class CityViewModel @Inject constructor(
         database: AppDatabase,
         private val cityRepository: CityRepository,

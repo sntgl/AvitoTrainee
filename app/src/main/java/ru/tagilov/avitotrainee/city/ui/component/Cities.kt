@@ -54,7 +54,6 @@ private fun CityShimmer(
 }
 
 
-@ExperimentalMaterialApi
 @Composable
 fun Cities(
     modifier: Modifier = Modifier,

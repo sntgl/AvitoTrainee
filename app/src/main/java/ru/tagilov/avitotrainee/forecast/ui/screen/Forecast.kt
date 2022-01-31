@@ -35,8 +35,6 @@ import ru.tagilov.avitotrainee.forecast.ui.component.*
 import ru.tagilov.avitotrainee.forecast.ui.entity.PermissionState
 import ru.tagilov.avitotrainee.forecast.ui.viewmodel.ForecastViewModel
 
-@ExperimentalAnimationApi
-@ExperimentalCoilApi
 @Composable
 fun Forecast(
     navController: NavController,

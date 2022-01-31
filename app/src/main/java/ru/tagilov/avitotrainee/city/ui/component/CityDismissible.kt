@@ -20,7 +20,7 @@ import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.core.routing.Destination
 import ru.tagilov.avitotrainee.core.util.navigateWithParcelable
 
-@ExperimentalMaterialApi
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CityDismissible(
     city: CityModel,
@@ -80,7 +80,6 @@ fun CityDismissible(
     )
 }
 
-@ExperimentalMaterialApi
 @Composable
 fun CurrentCity(
     navController: NavController,
@@ -97,7 +96,6 @@ fun CurrentCity(
     }
 }
 
-@ExperimentalMaterialApi
 @Composable
 fun CityItemBase(
     cityName: String,
@@ -140,7 +138,6 @@ fun CityItemBase(
     }
 }
 
-@ExperimentalMaterialApi
 @Composable
 fun CityItem(
     city: CityModel,

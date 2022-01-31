@@ -21,7 +21,7 @@ import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.core.theme.AvitoTheme
 import ru.tagilov.avitotrainee.core.util.shimmerRound
 
-@ExperimentalCoilApi
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun WeatherIcon(
     icon: String,

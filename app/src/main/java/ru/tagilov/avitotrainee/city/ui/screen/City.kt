@@ -20,9 +20,7 @@ import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.city.ui.component.*
 import ru.tagilov.avitotrainee.city.ui.viewmodel.CityViewModel
 
-@ExperimentalMaterialApi
-@FlowPreview
-@ExperimentalAnimationApi
+@OptIn(FlowPreview::class)
 @Composable
 fun City(
     navController: NavController,

@@ -20,7 +20,6 @@ import ru.tagilov.avitotrainee.core.theme.AvitoTheme
 import ru.tagilov.avitotrainee.core.util.shimmerContent
 import ru.tagilov.avitotrainee.forecast.ui.entity.HourlyForecast
 
-@ExperimentalCoilApi
 @Composable
 fun Hourly(
     forecastList: List<HourlyForecast>?
@@ -106,7 +105,6 @@ private fun HourlyPreview() {
     }
 }
 
-@ExperimentalCoilApi
 @Composable
 private fun HourlyItem(
     forecast: HourlyForecast?,

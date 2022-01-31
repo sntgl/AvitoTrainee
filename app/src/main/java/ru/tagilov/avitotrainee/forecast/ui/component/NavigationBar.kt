@@ -18,7 +18,6 @@ import ru.tagilov.avitotrainee.core.routing.Destination
 import ru.tagilov.avitotrainee.core.util.navigateWithParcelable
 
 
-@ExperimentalAnimationApi
 @Composable
 fun NavBar(
     modifier: Modifier = Modifier,

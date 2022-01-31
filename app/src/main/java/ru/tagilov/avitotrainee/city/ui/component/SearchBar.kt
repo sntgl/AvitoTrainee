@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.StateFlow
 import ru.tagilov.avitotrainee.R
 
 
-@ExperimentalAnimationApi
 @Composable
 fun SearchBar(
     state: MutableState<TextFieldValue>,

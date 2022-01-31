@@ -18,12 +18,7 @@ interface AppComponent :
         ForecastDependencies
 {
 
-    @ExperimentalCoilApi
-    @FlowPreview
-    @ExperimentalMaterialApi
-    @ExperimentalAnimationApi
     fun inject(activity: MainActivity)
-
     fun inject(app: App)
 
     @Component.Factory

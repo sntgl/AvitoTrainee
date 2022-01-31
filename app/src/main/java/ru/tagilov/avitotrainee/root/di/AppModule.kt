@@ -18,6 +18,7 @@ import ru.tagilov.avitotrainee.forecast.data.LocationApi
 import timber.log.Timber
 import javax.inject.Qualifier
 import javax.inject.Scope
+import kotlin.annotation.AnnotationRetention.RUNTIME
 
 
 @Module
@@ -100,11 +101,11 @@ class AppModule{
 
 
 @Qualifier
-@Retention(AnnotationRetention.RUNTIME)
+@Retention(RUNTIME)
 annotation class Location
 
 @Qualifier
-@Retention(AnnotationRetention.RUNTIME)
+@Retention(RUNTIME)
 annotation class Forecast
 
 @Scope

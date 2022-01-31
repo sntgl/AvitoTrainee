@@ -21,7 +21,7 @@ class CityViewModel @Inject constructor(
         private val cityRepository: CityRepository,
 ) : ViewModel() {
 
-    private val db = database.cityDao()
+    private val cityDao = database.cityDao()
 
     private val entryMutableStateFlow = MutableStateFlow("")
     private val newSearchMutableStateFlow = MutableStateFlow("")
@@ -88,12 +88,12 @@ class CityViewModel @Inject constructor(
 
     fun delete(city: CityModel) {
         viewModelScope.launch {
-            db.delete(city.toSaved())
+            cityDao.delete(city.toSaved())
         }
     }
 
     init {
-        db.getAll().onEach { newSavedList ->
+        cityDao.getAll().onEach { newSavedList ->
             Timber.d("get saved cities = $newSavedList")
             savedCitiesMutableFlow.emit(newSavedList.map { it.toModel() })
         }.launchIn(viewModelScope)

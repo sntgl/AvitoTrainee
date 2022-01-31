@@ -28,7 +28,7 @@ class ForecastViewModel @Inject constructor(
     private var isApiLocation = true
     private var apiLocationFailed = false
     private var delayForecast = false
-    private val db = database.cityDao()
+    private val cityDao = database.cityDao()
 
     fun configure(city: CityParcelable?) {
         Timber.d("City configured: $city")
@@ -137,7 +137,7 @@ class ForecastViewModel @Inject constructor(
             permissionStateMutableFlow.value == PermissionState.None &&
             cityId != null
         ) {
-            db.get(cityId).onEach {
+            cityDao.get(cityId).onEach {
                 Timber.d("GET SAVED = $it")
                 savedCityMutableFlow.emit(
                     if (it != null) SavedState.SAVED else SavedState.NOT_SAVED
@@ -150,7 +150,7 @@ class ForecastViewModel @Inject constructor(
         cityMutableFlow.value?.let {
             viewModelScope.launch {
                 try {
-                    db.save(SavedCity.wrap(it))
+                    cityDao.save(SavedCity.wrap(it))
                 } catch (e: IllegalArgumentException) {
                     showSnackBarMutableEvent.emit(ShowSnackbarEvent(SnackBarMessage.UNABLE_SAVE))
                 }

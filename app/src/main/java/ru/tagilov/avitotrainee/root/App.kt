@@ -13,6 +13,6 @@ class App : Application() {
         super.onCreate()
         if (BuildConfig.DEBUG)
             Timber.plant(Timber.DebugTree())
-        appComponent = DaggerAppComponent.builder().context(this).build()
+        appComponent = DaggerAppComponent.factory().create(this)
     }
 }

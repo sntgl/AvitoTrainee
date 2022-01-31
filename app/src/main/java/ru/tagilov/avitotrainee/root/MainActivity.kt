@@ -48,7 +48,7 @@ class MainActivity: ComponentActivity() {
                         val city: CityParcelable? =
                             it.arguments?.getParcelable(Destination.Forecast.KEY_CITY)
                         Timber.d("City = $city")
-                        val component = DaggerForecastComponent.builder().deps(appComponent).build()
+                        val component = DaggerForecastComponent.factory().create(appComponent)
                         Forecast(
                             navController = navController,
                             city = city,
@@ -61,7 +61,7 @@ class MainActivity: ComponentActivity() {
                         route = Destination.City.route,
                     ) {
 
-                        val component = DaggerCityComponent.builder().deps(appComponent).build()
+                        val component = DaggerCityComponent.factory().create(appComponent)
                         City(
                             navController = navController,
                             vm = daggerViewModel {

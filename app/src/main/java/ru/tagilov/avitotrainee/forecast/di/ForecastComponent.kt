@@ -1,7 +1,9 @@
 package ru.tagilov.avitotrainee.forecast.di
 
 import dagger.Component
+import ru.tagilov.avitotrainee.city.di.CityComponent
 import ru.tagilov.avitotrainee.forecast.ui.viewmodel.ForecastViewModel
+import ru.tagilov.avitotrainee.root.di.CityDependencies
 import ru.tagilov.avitotrainee.root.di.ForecastDependencies
 import javax.inject.Scope
 
@@ -15,10 +17,9 @@ interface ForecastComponent {
     @ForecastScreenScope
     fun getViewModel(): ForecastViewModel
 
-    @Component.Builder
-    interface Builder {
-        fun deps(dependencies: ForecastDependencies): Builder
-        fun build(): ForecastComponent
+    @Component.Factory
+    interface Factory {
+        fun create(dependencies: ForecastDependencies): ForecastComponent
     }
 }
 

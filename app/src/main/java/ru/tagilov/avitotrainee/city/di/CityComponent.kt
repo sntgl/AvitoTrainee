@@ -17,10 +17,9 @@ interface CityComponent {
     @FlowPreview
     fun getViewModel(): CityViewModel
 
-    @Component.Builder
-    interface Builder {
-        fun deps(dependencies: CityDependencies): Builder
-        fun build(): CityComponent
+    @Component.Factory
+    interface Factory {
+        fun create(dependencies: CityDependencies): CityComponent
     }
 }
 

@@ -76,7 +76,6 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:5.0.1'
 //    Gson
     implementation 'com.google.code.gson:gson:2.8.9'
-    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
 //    Accompanist
     implementation "com.google.accompanist:accompanist-swiperefresh:0.21.2-beta"
     implementation "com.google.accompanist:accompanist-placeholder:0.21.2-beta"
@@ -85,8 +84,6 @@ dependencies {
     implementation "androidx.navigation:navigation-compose:2.4.0-rc01"
 //    HTTP logging
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
-//    Swipe refresh
-    implementation "com.google.accompanist:accompanist-swiperefresh:0.21.2-beta"
 //    Room
     def room_version = "2.4.0"
     implementation "androidx.room:room-ktx:$room_version"

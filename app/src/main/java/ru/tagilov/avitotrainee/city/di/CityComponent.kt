@@ -14,7 +14,6 @@ import javax.inject.Scope
 interface CityComponent {
 
     @CityScreenScope
-    @FlowPreview
     fun getViewModel(): CityViewModel
 
     @Component.Factory

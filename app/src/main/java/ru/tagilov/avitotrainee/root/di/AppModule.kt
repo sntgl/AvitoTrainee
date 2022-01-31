@@ -35,10 +35,12 @@ class AppModule{
         ).build()
     }
 
+    @AppScope
     @Provides
     fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor =
             HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
 
+    @AppScope
     @Provides
     fun provideGsonConverterFactory(): GsonConverterFactory = GsonConverterFactory.create()
 
@@ -82,20 +84,6 @@ class AppModule{
             .client(locationClient)
             .build()
 
-    @Provides
-    fun provideForecastApi(
-            @Forecast forecastRetrofit: Retrofit
-    ) : ForecastApi = forecastRetrofit.create()
-
-    @Provides
-    fun provideLocationApi(
-            @Location forecastRetrofit: Retrofit
-    ) : LocationApi = forecastRetrofit.create()
-
-    @Provides
-    fun provideCityApi(
-            @Forecast forecastRetrofit: Retrofit
-    ) : CityApi = forecastRetrofit.create()
 
 }
 

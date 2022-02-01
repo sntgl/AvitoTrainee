@@ -1,9 +1,7 @@
 package ru.tagilov.avitotrainee.forecast.di
 
 import dagger.Component
-import ru.tagilov.avitotrainee.city.di.CityComponent
 import ru.tagilov.avitotrainee.forecast.ui.viewmodel.ForecastViewModel
-import ru.tagilov.avitotrainee.root.di.CityDependencies
 import ru.tagilov.avitotrainee.root.di.ForecastDependencies
 import javax.inject.Scope
 

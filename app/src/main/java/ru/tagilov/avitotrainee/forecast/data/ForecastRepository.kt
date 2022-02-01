@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import ru.tagilov.avitotrainee.forecast.data.entity.toForecast
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
-import ru.tagilov.avitotrainee.forecast.ui.entity.fromResponse
 import java.io.IOException
 import javax.inject.Inject
 
@@ -53,7 +53,7 @@ class ForecastRepositoryImpl @Inject constructor(
         }
     }.map{
         if (it != null)
-            Forecast.fromResponse(it)
+            it.toForecast()
         else
             null
     }.flowOn(Dispatchers.IO)

@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import ru.tagilov.avitotrainee.forecast.data.entity.toDomain
 import ru.tagilov.avitotrainee.forecast.ui.entity.DomainLocation
-import ru.tagilov.avitotrainee.forecast.ui.entity.fromResponse
 import java.io.IOException
 import javax.inject.Inject
 
@@ -24,8 +24,7 @@ class LocationRepositoryImpl @Inject constructor(
             emit(null)
         }
     }.map {
-        if (it != null) (DomainLocation.fromResponse(it))
-        else null
+        it?.toDomain()
     }.flowOn(Dispatchers.IO)
 
 }

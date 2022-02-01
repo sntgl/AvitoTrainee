@@ -8,13 +8,9 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
-import ru.tagilov.avitotrainee.city.data.CityApi
 import ru.tagilov.avitotrainee.core.Key
 import ru.tagilov.avitotrainee.core.db.AppDatabase
 import ru.tagilov.avitotrainee.core.util.addQueryApiKey
-import ru.tagilov.avitotrainee.forecast.data.ForecastApi
-import ru.tagilov.avitotrainee.forecast.data.LocationApi
 import timber.log.Timber
 import javax.inject.Qualifier
 import javax.inject.Scope

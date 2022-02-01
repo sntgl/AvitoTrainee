@@ -1,11 +1,5 @@
 package ru.tagilov.avitotrainee.forecast.ui.entity
 
-import android.annotation.SuppressLint
-import ru.tagilov.avitotrainee.forecast.data.entity.CurrentForecastResponse
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.math.roundToInt
-
 data class CurrentForecast(
     val icon: String,
     val minTemp: Int,
@@ -17,24 +11,4 @@ data class CurrentForecast(
     val feelsLike: Int,
     val sunset: String,
     val sunrise: String,
-) {
-    companion object
-}
-
-@SuppressLint("SimpleDateFormat")
-fun CurrentForecast.Companion.fromResponse(
-    response: CurrentForecastResponse,
-    minTemp: Int,
-    maxTemp: Int
-) = CurrentForecast(
-    icon = response.weather[0].icon,
-    minTemp = minTemp,
-    maxTemp = maxTemp,
-    currentTemp = response.temp.roundToInt(),
-    currentDescription = response.weather[0].description.replaceFirstChar { it.uppercase() },
-    wind = response.windSpeed.roundToInt(),
-    humidity = response.humidity,
-    feelsLike = response.feelsLike.roundToInt(),
-    sunset = SimpleDateFormat("H:m").format(Date(response.sunset.toLong() * 1000)),
-    sunrise = SimpleDateFormat("H:m").format(Date(response.sunrise.toLong() * 1000)),
 )

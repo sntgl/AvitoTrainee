@@ -2,7 +2,6 @@ package ru.tagilov.avitotrainee.forecast.ui.component
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,7 +19,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.annotation.ExperimentalCoilApi
 import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.core.theme.AvitoTheme
 import ru.tagilov.avitotrainee.core.util.shimmerContent

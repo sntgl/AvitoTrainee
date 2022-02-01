@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import ru.tagilov.avitotrainee.city.data.entity.toCityModel
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
-import ru.tagilov.avitotrainee.city.ui.entity.fromResponse
 import java.io.IOException
 import javax.inject.Inject
 
@@ -32,7 +32,7 @@ class CityRepositoryImpl @Inject constructor(
         }
     }.map { list ->
         list?.map {
-            CityModel.fromResponse(it)
+            it.toCityModel()
         }
     }.flowOn(Dispatchers.IO)
 

@@ -3,12 +3,9 @@ package ru.tagilov.avitotrainee.root
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import coil.annotation.ExperimentalCoilApi
 import kotlinx.coroutines.FlowPreview
 import ru.tagilov.avitotrainee.city.di.DaggerCityComponent
 import ru.tagilov.avitotrainee.city.ui.screen.City

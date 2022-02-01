@@ -5,9 +5,9 @@ import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
 import retrofit2.create
+import ru.tagilov.avitotrainee.core.di.Forecast
+import ru.tagilov.avitotrainee.core.di.Location
 import ru.tagilov.avitotrainee.forecast.data.*
-import ru.tagilov.avitotrainee.root.di.Forecast
-import ru.tagilov.avitotrainee.root.di.Location
 
 @Module(includes = [ForecastBinds::class])
 class ForecastModule {

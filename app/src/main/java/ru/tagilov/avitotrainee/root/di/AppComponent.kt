@@ -3,6 +3,7 @@ package ru.tagilov.avitotrainee.root.di
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
+import ru.tagilov.avitotrainee.core.di.AppScope
 import ru.tagilov.avitotrainee.root.App
 import ru.tagilov.avitotrainee.root.MainActivity
 

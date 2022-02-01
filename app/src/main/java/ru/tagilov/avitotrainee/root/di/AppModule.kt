@@ -10,12 +10,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.tagilov.avitotrainee.core.Key
 import ru.tagilov.avitotrainee.core.db.AppDatabase
+import ru.tagilov.avitotrainee.core.di.AppScope
+import ru.tagilov.avitotrainee.core.di.Forecast
+import ru.tagilov.avitotrainee.core.di.Location
 import ru.tagilov.avitotrainee.core.util.addQueryApiKey
 import timber.log.Timber
-import javax.inject.Qualifier
-import javax.inject.Scope
-import kotlin.annotation.AnnotationRetention.RUNTIME
-
 
 @Module
 class AppModule{
@@ -72,25 +71,11 @@ class AppModule{
     @Location
     @Provides
     fun provideLocationRetrofit(
-            @Location locationClient: OkHttpClient,
-            gsonConverterFactory: GsonConverterFactory
+        @Location locationClient: OkHttpClient,
+        gsonConverterFactory: GsonConverterFactory
     ): Retrofit = Retrofit.Builder()
             .baseUrl("https://api.ipgeolocation.io/")
             .addConverterFactory(gsonConverterFactory)
             .client(locationClient)
             .build()
-
-
 }
-
-
-@Qualifier
-@Retention(RUNTIME)
-annotation class Location
-
-@Qualifier
-@Retention(RUNTIME)
-annotation class Forecast
-
-@Scope
-annotation class AppScope

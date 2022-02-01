@@ -1,18 +1,18 @@
 package ru.tagilov.avitotrainee.forecast.di
 
 import dagger.Component
+import ru.tagilov.avitotrainee.core.di.ScreenScope
 import ru.tagilov.avitotrainee.forecast.ui.viewmodel.ForecastViewModel
 import ru.tagilov.avitotrainee.root.di.ForecastDependencies
-import javax.inject.Scope
 
-@ForecastScreenScope
+@ScreenScope
 @Component(
         modules = [ForecastModule::class],
         dependencies = [ForecastDependencies::class]
 )
 interface ForecastComponent {
 
-    @ForecastScreenScope
+    @ScreenScope
     fun getViewModel(): ForecastViewModel
 
     @Component.Factory
@@ -20,8 +20,3 @@ interface ForecastComponent {
         fun create(dependencies: ForecastDependencies): ForecastComponent
     }
 }
-
-@Scope
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
-annotation class ForecastScreenScope
-

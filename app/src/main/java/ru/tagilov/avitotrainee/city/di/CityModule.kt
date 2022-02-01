@@ -8,7 +8,7 @@ import retrofit2.create
 import ru.tagilov.avitotrainee.city.data.CityApi
 import ru.tagilov.avitotrainee.city.data.CityRepository
 import ru.tagilov.avitotrainee.city.data.CityRepositoryImpl
-import ru.tagilov.avitotrainee.root.di.Forecast
+import ru.tagilov.avitotrainee.core.di.Forecast
 
 @Module(includes = [CityBinds::class])
 class CityModule {

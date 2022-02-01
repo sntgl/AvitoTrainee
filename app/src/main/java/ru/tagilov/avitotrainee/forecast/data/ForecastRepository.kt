@@ -5,11 +5,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import ru.tagilov.avitotrainee.city.ui.entity.CityModel
-import ru.tagilov.avitotrainee.city.ui.entity.toSaved
 import ru.tagilov.avitotrainee.core.db.AppDatabase
 import ru.tagilov.avitotrainee.core.db.SavedCity
-import ru.tagilov.avitotrainee.core.routing.toSavedCity
 import ru.tagilov.avitotrainee.forecast.data.entity.toForecast
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
 import ru.tagilov.avitotrainee.forecast.ui.screen.SavedState

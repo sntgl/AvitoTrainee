@@ -10,8 +10,6 @@ import ru.tagilov.avitotrainee.city.data.CityRepository
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.city.ui.entity.toSaved
 import ru.tagilov.avitotrainee.city.ui.screen.CityState
-import ru.tagilov.avitotrainee.city.ui.util.toModel
-import ru.tagilov.avitotrainee.core.db.AppDatabase
 import timber.log.Timber
 import javax.inject.Inject
 

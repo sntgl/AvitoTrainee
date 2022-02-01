@@ -1,7 +1,10 @@
 package ru.tagilov.avitotrainee.city.data
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import ru.tagilov.avitotrainee.city.data.entity.toCityModel
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.city.ui.util.toModel
@@ -11,9 +14,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 interface CityRepository {
-    fun searchCities(
-            query: String,
-    ): Flow<List<CityModel>?>
+    fun searchCities(query: String): Flow<List<CityModel>?>
     val savedCities: Flow<List<CityModel>>
     suspend fun deleteFromSaved(savedCity: SavedCity)
 }

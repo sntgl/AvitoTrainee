@@ -10,7 +10,9 @@ import ru.tagilov.avitotrainee.city.data.CityRepository
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.city.ui.entity.toSaved
 import ru.tagilov.avitotrainee.city.ui.screen.CityState
+import ru.tagilov.avitotrainee.core.util.TypedResult
 import timber.log.Timber
+import java.lang.reflect.Type
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
@@ -58,16 +60,17 @@ class CityViewModel @Inject constructor(
             screenStateMutableFlow.emit(CityState.Search.Loading)
             cityRepository.searchCities(query).collect { cities ->
                 Timber.d("$cities")
-                when {
-                    cities == null -> {
+                when (cities) {
+                     is TypedResult.Err -> {
                         screenStateMutableFlow.emit(CityState.Search.Error)
                     }
-                    cities.isEmpty() -> {
-                        screenStateMutableFlow.emit(CityState.Search.Empty)
-                    }
-                    else -> {
-                        screenStateMutableFlow.emit(CityState.Search.Content)
-                        searchCityListMutableFlow.emit(cities)
+                    is TypedResult.Ok -> {
+                        if (cities.result.isEmpty())
+                            screenStateMutableFlow.emit(CityState.Search.Empty)
+                        else {
+                            screenStateMutableFlow.emit(CityState.Search.Content)
+                            searchCityListMutableFlow.emit(cities.result)
+                        }
                     }
                 }
             }

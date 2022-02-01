@@ -10,11 +10,12 @@ import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.city.ui.util.toModel
 import ru.tagilov.avitotrainee.core.db.AppDatabase
 import ru.tagilov.avitotrainee.core.db.SavedCity
+import ru.tagilov.avitotrainee.core.util.TypedResult
 import java.io.IOException
 import javax.inject.Inject
 
 interface CityRepository {
-    fun searchCities(query: String): Flow<List<CityModel>?>
+    fun searchCities(query: String): Flow<TypedResult<List<CityModel>>>
     val savedCities: Flow<List<CityModel>>
     suspend fun deleteFromSaved(savedCity: SavedCity)
 }
@@ -27,17 +28,11 @@ class CityRepositoryImpl @Inject constructor(
 
     override fun searchCities(
             query: String,
-    ): Flow<List<CityModel>?> = flow {
+    ) = flow {
         try {
-            emit(
-                cityApi.getCities(q = query)
-            )
+            emit(TypedResult.Ok(cityApi.getCities(q = query).map { it.toCityModel() }))
         } catch (e: IOException) {
-            emit(null)
-        }
-    }.map { list ->
-        list?.map {
-            it.toCityModel()
+            emit(TypedResult.Err())
         }
     }.flowOn(Dispatchers.IO)
 

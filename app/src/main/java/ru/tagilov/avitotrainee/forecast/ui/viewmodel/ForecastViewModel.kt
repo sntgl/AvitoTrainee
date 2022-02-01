@@ -9,6 +9,7 @@ import ru.tagilov.avitotrainee.core.ShowSnackbarEvent
 import ru.tagilov.avitotrainee.core.SnackBarMessage
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
 import ru.tagilov.avitotrainee.core.routing.toSavedCity
+import ru.tagilov.avitotrainee.core.util.TypedResult
 import ru.tagilov.avitotrainee.forecast.data.ForecastRepository
 import ru.tagilov.avitotrainee.forecast.data.LocationRepository
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
@@ -99,12 +100,19 @@ class ForecastViewModel @Inject constructor(
             if (permissionStateFlow.value == PermissionState.None)
                 permissionStateMutableFlow.emit(PermissionState.Required)
             locationRepo.getLocation().collect { loc ->
-                if (loc != null) {
-                    setLocation(lat = loc.latitude, long = loc.longitude, fromApi = true)
-                } else {
-                    apiLocationFailed = true
-                    if (permissionStateMutableFlow.value == PermissionState.Denied)
-                        screenStateMutableFlow.emit(ForecastState.ErrorState.Location)
+                when (loc) {
+                    is TypedResult.Err -> {
+                        apiLocationFailed = true
+                        if (permissionStateMutableFlow.value == PermissionState.Denied)
+                            screenStateMutableFlow.emit(ForecastState.ErrorState.Location)
+                    }
+                    is TypedResult.Ok -> {
+                        setLocation(
+                            lat = loc.result.latitude,
+                            long = loc.result.longitude,
+                            fromApi = true
+                        )
+                    }
                 }
             }
             currentLocationJob = null
@@ -172,9 +180,9 @@ class ForecastViewModel @Inject constructor(
                         .zip(forecastFlow) { t1, t2 -> t1 to t2 }
                         .onEach { (city, forecast) ->
                             isRefreshingMutableFlow.emit(false)
-                            if (city != null && forecast != null) {
-                                cityMutableFlow.emit(oldCity.copy(name = city))
-                                forecastMutableFlow.emit(forecast)
+                            if (city is TypedResult.Ok && forecast is TypedResult.Ok) {
+                                cityMutableFlow.emit(oldCity.copy(name = city.result))
+                                forecastMutableFlow.emit(forecast.result)
                             } else if (forecastMutableFlow.value == null)
                                 screenStateMutableFlow.emit(ForecastState.ErrorState.Connection)
                             else
@@ -190,8 +198,8 @@ class ForecastViewModel @Inject constructor(
                         .onEach { forecast ->
                             isRefreshingMutableFlow.emit(false)
                             when {
-                                forecast != null ->
-                                    forecastMutableFlow.emit(forecast)
+                                forecast is TypedResult.Err ->
+                                    forecastMutableFlow.emit(null)
                                 forecastMutableFlow.value == null ->
                                     screenStateMutableFlow.emit(ForecastState.ErrorState.Connection)
                                 else ->

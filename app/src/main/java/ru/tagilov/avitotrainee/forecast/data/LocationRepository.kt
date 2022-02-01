@@ -4,7 +4,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import ru.tagilov.avitotrainee.core.util.TypedResult
 import ru.tagilov.avitotrainee.forecast.data.entity.toDomain
 import ru.tagilov.avitotrainee.forecast.ui.entity.DomainLocation

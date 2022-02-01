@@ -12,7 +12,6 @@ import ru.tagilov.avitotrainee.city.ui.entity.toSaved
 import ru.tagilov.avitotrainee.city.ui.screen.CityState
 import ru.tagilov.avitotrainee.core.util.TypedResult
 import timber.log.Timber
-import java.lang.reflect.Type
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class)

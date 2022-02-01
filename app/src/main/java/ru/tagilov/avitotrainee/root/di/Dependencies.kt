@@ -4,8 +4,6 @@ import retrofit2.Retrofit
 import ru.tagilov.avitotrainee.core.db.AppDatabase
 import ru.tagilov.avitotrainee.core.di.Forecast
 import ru.tagilov.avitotrainee.core.di.Location
-import javax.inject.Qualifier
-import javax.inject.Scope
 
 interface BaseDependencies {
     val database: AppDatabase

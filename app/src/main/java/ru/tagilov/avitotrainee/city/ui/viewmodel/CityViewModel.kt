@@ -17,11 +17,8 @@ import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
 class CityViewModel @Inject constructor(
-        database: AppDatabase,
         private val cityRepository: CityRepository,
 ) : ViewModel() {
-
-    private val cityDao = database.cityDao()
 
     private val entryMutableStateFlow = MutableStateFlow("")
     private val newSearchMutableStateFlow = MutableStateFlow("")
@@ -88,14 +85,13 @@ class CityViewModel @Inject constructor(
 
     fun delete(city: CityModel) {
         viewModelScope.launch {
-            cityDao.delete(city.toSaved())
+            cityRepository.deleteFromSaved(city.toSaved())
         }
     }
 
     init {
-        cityDao.getAll().onEach { newSavedList ->
-            Timber.d("get saved cities = $newSavedList")
-            savedCitiesMutableFlow.emit(newSavedList.map { it.toModel() })
+        cityRepository.savedCities.onEach {
+            savedCitiesMutableFlow.emit(it)
         }.launchIn(viewModelScope)
 
         entryMutableStateFlow

@@ -7,10 +7,8 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.tagilov.avitotrainee.core.ShowSnackbarEvent
 import ru.tagilov.avitotrainee.core.SnackBarMessage
-import ru.tagilov.avitotrainee.core.db.AppDatabase
-import ru.tagilov.avitotrainee.core.db.SavedCity
-import ru.tagilov.avitotrainee.core.db.wrap
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
+import ru.tagilov.avitotrainee.core.routing.toSavedCity
 import ru.tagilov.avitotrainee.forecast.data.ForecastRepository
 import ru.tagilov.avitotrainee.forecast.data.LocationRepository
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
@@ -23,12 +21,10 @@ import javax.inject.Inject
 class ForecastViewModel @Inject constructor(
         private val locationRepo: LocationRepository,
         private val forecastRepo: ForecastRepository,
-        database: AppDatabase
 ) : ViewModel() {
     private var isApiLocation = true
     private var apiLocationFailed = false
     private var delayForecast = false
-    private val cityDao = database.cityDao()
 
     fun configure(city: CityParcelable?) {
         Timber.d("City configured: $city")
@@ -137,11 +133,8 @@ class ForecastViewModel @Inject constructor(
             permissionStateMutableFlow.value == PermissionState.None &&
             cityId != null
         ) {
-            cityDao.get(cityId).onEach {
-                Timber.d("GET SAVED = $it")
-                savedCityMutableFlow.emit(
-                    if (it != null) SavedState.SAVED else SavedState.NOT_SAVED
-                )
+            forecastRepo.checkSaved(cityId).onEach {
+                savedCityMutableFlow.emit(it)
             }.launchIn(viewModelScope)
         }
     }
@@ -150,7 +143,7 @@ class ForecastViewModel @Inject constructor(
         cityMutableFlow.value?.let {
             viewModelScope.launch {
                 try {
-                    cityDao.save(SavedCity.wrap(it))
+                    forecastRepo.saveCity(it.toSavedCity())
                 } catch (e: IllegalArgumentException) {
                     showSnackBarMutableEvent.emit(ShowSnackbarEvent(SnackBarMessage.UNABLE_SAVE))
                 }

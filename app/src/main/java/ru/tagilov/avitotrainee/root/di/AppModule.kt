@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import dagger.Module
 import dagger.Provides
+import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -56,6 +57,7 @@ class AppModule{
     ) : Retrofit = Retrofit.Builder()
             .baseUrl("https://api.openweathermap.org/")
             .addConverterFactory(gsonConverterFactory)
+            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .client(weatherClient)
             .build()
 

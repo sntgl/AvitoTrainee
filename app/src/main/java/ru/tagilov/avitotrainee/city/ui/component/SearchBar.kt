@@ -16,7 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.StateFlow
 import ru.tagilov.avitotrainee.R
 
 
@@ -24,7 +23,7 @@ import ru.tagilov.avitotrainee.R
 fun SearchBar(
     state: MutableState<TextFieldValue>,
     textUpdated: (String) -> Unit,
-    isFocused: StateFlow<Boolean>,
+    focused: State<Boolean>,
     onFocusChanged: (Boolean) -> Unit,
 ) {
     val colorSecondary = MaterialTheme.colors.secondary
@@ -32,7 +31,6 @@ fun SearchBar(
     val textColor = remember { mutableStateOf(colorSecondary) }
     val placeHolderDefaultText = stringResource(R.string.text_field_tip)
     val placeHolderText = remember { mutableStateOf(placeHolderDefaultText) }
-    val focused = remember { isFocused }.collectAsState()
     val focusManager = LocalFocusManager.current
 
     SideEffect {

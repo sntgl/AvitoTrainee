@@ -1,132 +1,111 @@
 package ru.tagilov.avitotrainee.city.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ru.tagilov.avitotrainee.city.data.CityRepository
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.city.ui.entity.toSaved
 import ru.tagilov.avitotrainee.city.ui.screen.CityState
 import ru.tagilov.avitotrainee.core.util.TypedResult
+import ru.tagilov.avitotrainee.core.util.plusAssign
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-@OptIn(FlowPreview::class)
 class CityViewModel @Inject constructor(
-        private val cityRepository: CityRepository,
+    private val cityRepository: CityRepository,
 ) : ViewModel() {
+    private val disposables = CompositeDisposable()
 
-    private val entryMutableStateFlow = MutableStateFlow("")
-    private val newSearchMutableStateFlow = MutableStateFlow("")
+    private val mEntry: BehaviorSubject<String> = BehaviorSubject.create()
 
-    private val screenStateMutableFlow = MutableStateFlow<CityState>(CityState.None)
-    val screenStateFlow: StateFlow<CityState>
-        get() = screenStateMutableFlow
+    private val mScreenState: BehaviorSubject<CityState> = BehaviorSubject.create()
+    val screenState: Observable<CityState>
+        get() = mScreenState.hide()
 
-    private val searchCityListMutableFlow = MutableStateFlow<List<CityModel>?>(null)
-    val searchCityListFlow: StateFlow<List<CityModel>?>
-        get() = searchCityListMutableFlow
+    private val mSearchCityList: BehaviorSubject<List<CityModel>> = BehaviorSubject.create()
+    val searchCityList: Observable<List<CityModel>>
+        get() = mSearchCityList.hide()
 
-    private val savedCitiesMutableFlow = MutableStateFlow<List<CityModel>?>(null)
-    val savedCitiesFlow: StateFlow<List<CityModel>?>
-        get() = savedCitiesMutableFlow
+    private val mSavedCities: BehaviorSubject<List<CityModel>> = BehaviorSubject.create()
+    val savedCities: Observable<List<CityModel>>
+        get() = mSavedCities.hide()
+
+    private val mSearchFocused: BehaviorSubject<Boolean> = BehaviorSubject.create()
+    val searchFocused: Observable<Boolean>
+        get() = mSearchFocused.hide()
 
     fun newEntry(s: String) {
-        viewModelScope.launch {
-            entryMutableStateFlow.emit(s)
-        }
+        mEntry.onNext(s)
     }
-
-    private val searchFocusedMutableFlow = MutableStateFlow(false)
-    val searchFocusedFlow: StateFlow<Boolean>
-        get() = searchFocusedMutableFlow
 
     fun newSearchFocus(isFocused: Boolean) {
-        viewModelScope.launch {
-            searchFocusedMutableFlow.emit(isFocused)
-            searchCityListMutableFlow.emit(null)
-            screenStateMutableFlow.emit(CityState.Saved)
-        }
+        mSearchFocused.onNext(isFocused)
+        mSearchCityList.onNext(emptyList())
+        mScreenState.onNext(CityState.Saved)
     }
 
-    private var currentSearchJob: Job? = null
+
+    private fun handleError(throwable: Throwable? = null) {
+        Timber.d("Rxjava err: $throwable")
+        mScreenState.onNext(CityState.Search.Error)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposables.dispose()
+    }
+
     private fun search(query: String) {
-        currentSearchJob?.cancel()
-        currentSearchJob = viewModelScope.launch {
-            screenStateMutableFlow.emit(CityState.Search.Loading)
-            cityRepository.searchCities(query).collect { cities ->
-                Timber.d("$cities")
+        disposables += cityRepository.searchCitiesRx(query).subscribe(
+            { cities ->
+                Timber.d("Rxjava  ok: $cities")
                 when (cities) {
-                     is TypedResult.Err -> {
-                        screenStateMutableFlow.emit(CityState.Search.Error)
-                    }
+                    is TypedResult.Err -> handleError()
                     is TypedResult.Ok -> {
                         if (cities.result.isEmpty())
-                            screenStateMutableFlow.emit(CityState.Search.Empty)
+                            mScreenState.onNext(CityState.Search.Empty)
                         else {
-                            screenStateMutableFlow.emit(CityState.Search.Content)
-                            searchCityListMutableFlow.emit(cities.result)
+                            mSearchCityList.onNext(cities.result)
+                            mScreenState.onNext(CityState.Search.Content)
                         }
                     }
                 }
-            }
-            currentSearchJob = null
-        }
+            },
+            { handleError(it) }
+        )
     }
 
     fun retry() {
-        viewModelScope.launch {
-            search(entryMutableStateFlow.value)
-        }
+        val q = mEntry.value
+        if (q != null) search(q)
     }
 
     fun delete(city: CityModel) {
-        viewModelScope.launch {
-            cityRepository.deleteFromSaved(city.toSaved())
-        }
+        disposables += cityRepository
+            .deleteFromSavedRx(city.toSaved())
+            .subscribeOn(Schedulers.io())
+            .subscribe()
     }
 
     init {
-        cityRepository.savedCities.onEach {
-            savedCitiesMutableFlow.emit(it)
-        }.launchIn(viewModelScope)
+        cityRepository.savedCities
+            .observeOn(Schedulers.io())
+            .subscribe { mSavedCities.onNext(it) }
 
-        entryMutableStateFlow
-            .onEach {
-                if (it == "") {
-                    currentSearchJob?.cancel()
-                    screenStateMutableFlow.emit(CityState.Saved)
-                } else
-                    screenStateMutableFlow.emit(CityState.Search.Loading)
-            }
-            .debounce(500)
-            .onEach {
-                newSearchMutableStateFlow.emit(it)
-            }
-            .launchIn(viewModelScope)
 
-        newSearchMutableStateFlow
+        disposables += mEntry
+            .subscribeOn(Schedulers.io())
+            .doOnEach {
+                mScreenState.onNext(
+                    if (it.value == "") CityState.Saved else CityState.Search.Loading
+                )
+            }
+            .debounce(500, TimeUnit.MILLISECONDS)
             .filter { it != "" }
-            .onEach {
-                search(it)
-            }
-            .launchIn(viewModelScope)
-
-        searchCityListMutableFlow
-            .onEach {
-                Timber.d("Response cities = $it")
-            }.launchIn(viewModelScope)
-
-        screenStateFlow.onEach {
-            Timber.d("New screen state = $it")
-        }.launchIn(viewModelScope)
-
-        screenStateMutableFlow
-            .filter { it is CityState.Saved }
-            .onEach { Timber.d("Show saved") }
-            .launchIn(viewModelScope)
+            .subscribe { search(it) }
     }
 }

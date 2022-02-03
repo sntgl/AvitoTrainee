@@ -198,8 +198,8 @@ class ForecastViewModel @Inject constructor(
                         .onEach { forecast ->
                             isRefreshingMutableFlow.emit(false)
                             when {
-                                forecast is TypedResult.Err ->
-                                    forecastMutableFlow.emit(null)
+                                forecast is TypedResult.Ok ->
+                                    forecastMutableFlow.emit(forecast.result)
                                 forecastMutableFlow.value == null ->
                                     screenStateMutableFlow.emit(ForecastState.ErrorState.Connection)
                                 else ->

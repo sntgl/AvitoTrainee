@@ -13,12 +13,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.NavController
-import kotlinx.coroutines.FlowPreview
 import ru.tagilov.avitotrainee.R
-import ru.tagilov.avitotrainee.city.ui.component.*
+import ru.tagilov.avitotrainee.city.ui.component.Cities
+import ru.tagilov.avitotrainee.city.ui.component.CityLoadError
+import ru.tagilov.avitotrainee.city.ui.component.CurrentCity
+import ru.tagilov.avitotrainee.city.ui.component.EmptySearch
+import ru.tagilov.avitotrainee.city.ui.component.SearchBar
 import ru.tagilov.avitotrainee.city.ui.viewmodel.CityViewModel
 
-@OptIn(FlowPreview::class)
 @Composable
 fun City(
     navController: NavController,
@@ -55,7 +57,7 @@ fun City(
                     navController = navController,
                     title = stringResource(id = R.string.saved_cities),
                     isLocal = true,
-                    onDismiss = {vm.delete(it)}
+                    onDismiss = { vm.delete(it) }
                 )
             }
             CityState.Search.Content -> {
@@ -64,7 +66,7 @@ fun City(
                     navController = navController,
                     title = stringResource(id = R.string.searched_cities),
                     isLocal = false,
-                    onDismiss = {  }
+                    onDismiss = { }
                 )
             }
             CityState.Search.Empty -> {

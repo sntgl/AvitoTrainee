@@ -1,18 +1,24 @@
 package ru.tagilov.avitotrainee.core
 
 //просто ивент, каждый инстанс которого не равен любым другим инстансам
-class ShowSnackbarEvent(
-    val state: SnackBarMessage
-) {
-    override fun equals(other: Any?): Boolean {
-        return other === this
+sealed class SnackbarEvent {
+    class Show(
+        val state: SnackBarMessage
+    ) : SnackbarEvent() {
+        override fun equals(other: Any?): Boolean {
+            return other === this
+        }
+
+        override fun hashCode(): Int {
+            return javaClass.hashCode()
+        }
     }
-    override fun hashCode(): Int {
-        return javaClass.hashCode()
-    }
+
+    class Empty : SnackbarEvent()
 }
 
-enum class SnackBarMessage{
+
+enum class SnackBarMessage {
     UNABLE_LOAD, UNABLE_SAVE
 }
 

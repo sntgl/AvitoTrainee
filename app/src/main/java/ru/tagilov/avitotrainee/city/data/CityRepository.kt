@@ -1,6 +1,5 @@
 package ru.tagilov.avitotrainee.city.data
 
-import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -14,8 +13,8 @@ import javax.inject.Inject
 
 interface CityRepository {
     fun searchCitiesRx(query: String): Single<TypedResult<List<CityModel>>>
-    val savedCities: Flowable<List<CityModel>>
-    fun deleteFromSavedRx(savedCity: SavedCity): Completable
+    val savedCities: Flowable<TypedResult<List<CityModel>>>
+    fun deleteFromSavedRx(savedCity: SavedCity): Single<TypedResult<Unit>>
 }
 
 class CityRepositoryImpl @Inject constructor(
@@ -27,18 +26,20 @@ class CityRepositoryImpl @Inject constructor(
     override fun searchCitiesRx(query: String): Single<TypedResult<List<CityModel>>> =
         cityApi
             .getCitiesRx(query)
-            .map {
-                val body = it.body()?.map { it.toCityModel() }
-                if (it.isSuccessful && body != null)
-                    TypedResult.Ok(body)
-                else
-                    TypedResult.Err()
-            }
+            .map { TypedResult.Ok(it.map { it.toCityModel() }) as TypedResult<List<CityModel>> }
+            .onErrorResumeNext { Single.just(TypedResult.Err()) }
             .subscribeOn(Schedulers.io())
 
-    override val savedCities: Flowable<List<CityModel>>
-        get() = dao.getAllRx().map { it.map { it.toModel() } }
+    override val savedCities: Flowable<TypedResult<List<CityModel>>>
+        get() = dao.getAllRx()
+            .map { TypedResult.Ok(it.map { it.toModel() }) as TypedResult<List<CityModel>> }
+            .onErrorResumeNext { Flowable.just(TypedResult.Err()) }
+            .subscribeOn(Schedulers.io())
 
-    override fun deleteFromSavedRx(savedCity: SavedCity) = dao.deleteRx(savedCity = savedCity)
+    override fun deleteFromSavedRx(savedCity: SavedCity): Single<TypedResult<Unit>> =
+        dao.deleteRx(savedCity = savedCity)
+            .toSingleDefault(TypedResult.Ok(Unit) as TypedResult<Unit>)
+            .onErrorResumeNext { Single.just(TypedResult.Err()) }
+            .subscribeOn(Schedulers.io())
 
 }

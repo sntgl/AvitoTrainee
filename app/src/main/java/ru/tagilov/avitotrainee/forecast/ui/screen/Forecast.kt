@@ -12,13 +12,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Snackbar
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rxjava3.subscribeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
@@ -28,8 +37,18 @@ import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
 import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.core.SnackBarMessage
+import ru.tagilov.avitotrainee.core.SnackbarEvent
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
-import ru.tagilov.avitotrainee.forecast.ui.component.*
+import ru.tagilov.avitotrainee.core.util.TypedResult
+import ru.tagilov.avitotrainee.forecast.ui.component.CityTitle
+import ru.tagilov.avitotrainee.forecast.ui.component.ConnectionError
+import ru.tagilov.avitotrainee.forecast.ui.component.Current
+import ru.tagilov.avitotrainee.forecast.ui.component.Daily
+import ru.tagilov.avitotrainee.forecast.ui.component.Hourly
+import ru.tagilov.avitotrainee.forecast.ui.component.LocationError
+import ru.tagilov.avitotrainee.forecast.ui.component.NavBar
+import ru.tagilov.avitotrainee.forecast.ui.component.SaveSuggestion
+import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
 import ru.tagilov.avitotrainee.forecast.ui.entity.PermissionState
 import ru.tagilov.avitotrainee.forecast.ui.viewmodel.ForecastViewModel
 
@@ -39,18 +58,17 @@ fun Forecast(
     city: CityParcelable? = null,
     vm: ForecastViewModel
 ) {
-    LaunchedEffect(key1 = Unit) {
-        vm.configure(city = city)
-    }
+    LaunchedEffect(key1 = Unit) { vm.configure(city = city) }
 
-    val permissionState = remember { vm.permissionStateFlow }.collectAsState()
-    val cityState = remember { vm.cityFlow }.collectAsState()
-    val forecastState = remember { vm.forecastFlow }.collectAsState()
-    val isRefreshing = remember { vm.isRefreshingFlow }.collectAsState()
-    val screenState = remember { vm.stateFlow }.collectAsState()
+    val permissionState = remember { vm.permissionStateObservable }.subscribeAsState(initial = PermissionState.None)
+    val cityState = remember { vm.cityObservable }.subscribeAsState(initial = TypedResult.Err())
+    val forecastState = remember { vm.forecastObservable }.subscribeAsState(initial = Forecast.Empty())
+    val isRefreshing = remember { vm.isRefreshing }.subscribeAsState(initial = false)
+    val screenState = remember { vm.screenStateObservable }.subscribeAsState(initial = ForecastState.None)
     val context = LocalContext.current
-    val saved = remember { vm.savedCityFlow }.collectAsState()
-    val isLocation = remember { vm.isLocationFlow }.collectAsState()
+    val saved = remember { vm.savedCity }.subscribeAsState(initial = SavedState.NONE)
+    val isLocation = remember { vm.isGPSLocation }.subscribeAsState(initial = true)
+
     //локация
     val sendLocation = {
         LocationServices
@@ -89,15 +107,18 @@ fun Forecast(
                 permissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
         }
     }
+
 //    логика снекбара
     val snackbarState = remember { SnackbarHostState() }
-    val snackbarEvents = remember { vm.showSnackBarEvent }.collectAsState()
+    val snackbarEvents = remember {
+        vm.showSnackBar
+    }.subscribeAsState(initial = SnackbarEvent.Empty())
     val coroutineScope = rememberCoroutineScope()
     val unableUpdateMessage = stringResource(id = R.string.unable_to_update)
     val unableSaveMessage = stringResource(id = R.string.unable_to_save)
     LaunchedEffect(key1 = snackbarEvents.value) {
         val event = snackbarEvents.value
-        if (event != null)
+        if (event is SnackbarEvent.Show)
             coroutineScope.launch {
                 snackbarState.showSnackbar(
                     message = when (event.state) {
@@ -107,8 +128,8 @@ fun Forecast(
                 )
             }
     }
-//    непосредственно верстка
 
+//    непосредственно верстка
     Column {
 
         Column(
@@ -139,7 +160,11 @@ fun Forecast(
                     if (screenState.value == ForecastState.Content
                         || screenState.value == ForecastState.Loading
                     ) {
-                        CityTitle(city = cityState.value)
+                        val cityV = cityState.value
+                        CityTitle(city = when (cityV) {
+                            is TypedResult.Ok -> cityV.result
+                            is TypedResult.Err -> null
+                        })
                         SwipeRefresh(
                             state = rememberSwipeRefreshState(isRefreshing.value),
                             onRefresh = { vm.refresh() },
@@ -150,7 +175,9 @@ fun Forecast(
                                     .padding(horizontal = 8.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                item { Current(forecast = forecastState.value?.current) }
+                                val fv = forecastState.value
+                                val forecast: Forecast.Data? = if (fv is Forecast.Data) fv else null
+                                item { Current(forecast = forecast?.current) }
                                 item {
                                     AnimatedVisibility(
                                         visible = !isLocation.value &&
@@ -159,8 +186,8 @@ fun Forecast(
                                         SaveSuggestion { vm.save() }
                                     }
                                 }
-                                item { Hourly(forecastList = forecastState.value?.hourly) }
-                                item { Daily(forecastList = forecastState.value?.daily) }
+                                item { Hourly(forecastList = forecast?.hourly) }
+                                item { Daily(forecastList = forecast?.daily) }
                                 item {
                                     Text(
                                         text = stringResource(id = R.string.my_tag),
@@ -189,11 +216,4 @@ fun Forecast(
             onSave = { vm.save() }
         )
     }
-}
-
-
-@Preview
-@Composable
-fun ForecastPreview() {
-
 }

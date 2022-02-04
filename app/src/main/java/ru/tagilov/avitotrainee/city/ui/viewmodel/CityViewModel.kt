@@ -3,7 +3,6 @@ package ru.tagilov.avitotrainee.city.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ru.tagilov.avitotrainee.city.data.CityRepository
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
@@ -38,6 +37,7 @@ class CityViewModel @Inject constructor(
     val searchFocused: Observable<Boolean>
         get() = mSearchFocused.hide()
 
+
     fun newEntry(s: String) {
         mEntry.onNext(s)
     }
@@ -48,15 +48,25 @@ class CityViewModel @Inject constructor(
         mScreenState.onNext(CityState.Saved)
     }
 
+    fun retry() {
+        val q = mEntry.value
+        if (q != null) search(q)
+    }
 
-    private fun handleError(throwable: Throwable? = null) {
-        Timber.d("Rxjava err: $throwable")
-        mScreenState.onNext(CityState.Search.Error)
+    fun delete(city: CityModel) {
+        disposables += cityRepository
+            .deleteFromSavedRx(city.toSaved())
+            .subscribe({}, {})
     }
 
     override fun onCleared() {
         super.onCleared()
         disposables.dispose()
+    }
+
+    private fun handleError(throwable: Throwable? = null) {
+        Timber.d("Rxjava err: $throwable")
+        mScreenState.onNext(CityState.Search.Error)
     }
 
     private fun search(query: String) {
@@ -79,26 +89,11 @@ class CityViewModel @Inject constructor(
         )
     }
 
-    fun retry() {
-        val q = mEntry.value
-        if (q != null) search(q)
-    }
-
-    fun delete(city: CityModel) {
-        disposables += cityRepository
-            .deleteFromSavedRx(city.toSaved())
-            .subscribeOn(Schedulers.io())
-            .subscribe()
-    }
-
     init {
-        cityRepository.savedCities
-            .observeOn(Schedulers.io())
-            .subscribe { mSavedCities.onNext(it) }
-
+        disposables += cityRepository.savedCities
+            .subscribe { if (it is TypedResult.Ok) mSavedCities.onNext(it.result) }
 
         disposables += mEntry
-            .subscribeOn(Schedulers.io())
             .doOnEach {
                 mScreenState.onNext(
                     if (it.value == "") CityState.Saved else CityState.Search.Loading

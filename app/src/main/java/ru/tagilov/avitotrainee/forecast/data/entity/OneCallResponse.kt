@@ -17,7 +17,7 @@ fun OneCallResponse.toForecast(): Forecast {
     val minTemp: Int = hourly.minByOrNull { it.temperature }?.temperature ?: temp
     val maxTemp: Int = hourly.maxByOrNull { it.temperature }?.temperature ?: temp
 
-    return Forecast(
+    return Forecast.Data(
         current = current.toCurrentForecast(
             minTemp,
             maxTemp,

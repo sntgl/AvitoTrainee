@@ -78,6 +78,7 @@ class AppModule{
     ): Retrofit = Retrofit.Builder()
             .baseUrl("https://api.ipgeolocation.io/")
             .addConverterFactory(gsonConverterFactory)
+            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .client(locationClient)
             .build()
 }

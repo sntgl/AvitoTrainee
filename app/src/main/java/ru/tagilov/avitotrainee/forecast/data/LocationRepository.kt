@@ -1,29 +1,28 @@
 package ru.tagilov.avitotrainee.forecast.data
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import ru.tagilov.avitotrainee.core.util.TypedResult
 import ru.tagilov.avitotrainee.forecast.data.entity.toDomain
 import ru.tagilov.avitotrainee.forecast.ui.entity.DomainLocation
-import java.io.IOException
 import javax.inject.Inject
 
 interface LocationRepository {
-    suspend fun getLocation(): Flow<TypedResult<DomainLocation>>
+    fun getLocationRx(): Single<TypedResult<DomainLocation>>
 }
 
 class LocationRepositoryImpl @Inject constructor(
         private val locationApi: LocationApi
 ): LocationRepository {
-    override suspend fun getLocation() = flow {
-        try {
-            val result = locationApi.location()
-            emit(TypedResult.Ok(result.toDomain()))
-        } catch (e: IOException) {
-            emit(TypedResult.Err())
-        }
-    }.flowOn(Dispatchers.IO)
+
+    override fun getLocationRx(): Single<TypedResult<DomainLocation>> =
+        locationApi.locationRx()
+            .map {
+                val body = it.body()
+                if (it.isSuccessful && body != null) TypedResult.Ok(body.toDomain())
+                else TypedResult.Err()
+            }
+            .onErrorResumeNext { Single.just(TypedResult.Err()) }
+            .subscribeOn(Schedulers.io())
 
 }

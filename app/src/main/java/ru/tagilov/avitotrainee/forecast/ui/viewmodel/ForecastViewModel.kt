@@ -7,10 +7,9 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.tagilov.avitotrainee.core.ShowSnackbarEvent
 import ru.tagilov.avitotrainee.core.SnackBarMessage
-import ru.tagilov.avitotrainee.core.db.Database
-import ru.tagilov.avitotrainee.core.db.SavedCity
-import ru.tagilov.avitotrainee.core.db.wrap
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
+import ru.tagilov.avitotrainee.core.routing.toSavedCity
+import ru.tagilov.avitotrainee.core.util.TypedResult
 import ru.tagilov.avitotrainee.forecast.data.ForecastRepository
 import ru.tagilov.avitotrainee.forecast.data.LocationRepository
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
@@ -18,15 +17,15 @@ import ru.tagilov.avitotrainee.forecast.ui.entity.PermissionState
 import ru.tagilov.avitotrainee.forecast.ui.screen.ForecastState
 import ru.tagilov.avitotrainee.forecast.ui.screen.SavedState
 import timber.log.Timber
+import javax.inject.Inject
 
-class ForecastViewModel : ViewModel() {
-
-    private val locationRepo = LocationRepository()
-    private val forecastRepo = ForecastRepository()
+class ForecastViewModel @Inject constructor(
+        private val locationRepo: LocationRepository,
+        private val forecastRepo: ForecastRepository,
+) : ViewModel() {
     private var isApiLocation = true
     private var apiLocationFailed = false
     private var delayForecast = false
-    private val db = Database.instance.cityDao()
 
     fun configure(city: CityParcelable?) {
         Timber.d("City configured: $city")
@@ -101,12 +100,19 @@ class ForecastViewModel : ViewModel() {
             if (permissionStateFlow.value == PermissionState.None)
                 permissionStateMutableFlow.emit(PermissionState.Required)
             locationRepo.getLocation().collect { loc ->
-                if (loc != null) {
-                    setLocation(lat = loc.latitude, long = loc.longitude, fromApi = true)
-                } else {
-                    apiLocationFailed = true
-                    if (permissionStateMutableFlow.value == PermissionState.Denied)
-                        screenStateMutableFlow.emit(ForecastState.ErrorState.Location)
+                when (loc) {
+                    is TypedResult.Err -> {
+                        apiLocationFailed = true
+                        if (permissionStateMutableFlow.value == PermissionState.Denied)
+                            screenStateMutableFlow.emit(ForecastState.ErrorState.Location)
+                    }
+                    is TypedResult.Ok -> {
+                        setLocation(
+                            lat = loc.result.latitude,
+                            long = loc.result.longitude,
+                            fromApi = true
+                        )
+                    }
                 }
             }
             currentLocationJob = null
@@ -135,11 +141,8 @@ class ForecastViewModel : ViewModel() {
             permissionStateMutableFlow.value == PermissionState.None &&
             cityId != null
         ) {
-            db.get(cityId).onEach {
-                Timber.d("GET SAVED = $it")
-                savedCityMutableFlow.emit(
-                    if (it != null) SavedState.SAVED else SavedState.NOT_SAVED
-                )
+            forecastRepo.checkSaved(cityId).onEach {
+                savedCityMutableFlow.emit(it)
             }.launchIn(viewModelScope)
         }
     }
@@ -148,7 +151,7 @@ class ForecastViewModel : ViewModel() {
         cityMutableFlow.value?.let {
             viewModelScope.launch {
                 try {
-                    db.save(SavedCity.wrap(it))
+                    forecastRepo.saveCity(it.toSavedCity())
                 } catch (e: IllegalArgumentException) {
                     showSnackBarMutableEvent.emit(ShowSnackbarEvent(SnackBarMessage.UNABLE_SAVE))
                 }
@@ -177,9 +180,9 @@ class ForecastViewModel : ViewModel() {
                         .zip(forecastFlow) { t1, t2 -> t1 to t2 }
                         .onEach { (city, forecast) ->
                             isRefreshingMutableFlow.emit(false)
-                            if (city != null && forecast != null) {
-                                cityMutableFlow.emit(oldCity.copy(name = city))
-                                forecastMutableFlow.emit(forecast)
+                            if (city is TypedResult.Ok && forecast is TypedResult.Ok) {
+                                cityMutableFlow.emit(oldCity.copy(name = city.result))
+                                forecastMutableFlow.emit(forecast.result)
                             } else if (forecastMutableFlow.value == null)
                                 screenStateMutableFlow.emit(ForecastState.ErrorState.Connection)
                             else
@@ -195,8 +198,8 @@ class ForecastViewModel : ViewModel() {
                         .onEach { forecast ->
                             isRefreshingMutableFlow.emit(false)
                             when {
-                                forecast != null ->
-                                    forecastMutableFlow.emit(forecast)
+                                forecast is TypedResult.Err ->
+                                    forecastMutableFlow.emit(null)
                                 forecastMutableFlow.value == null ->
                                     screenStateMutableFlow.emit(ForecastState.ErrorState.Connection)
                                 else ->

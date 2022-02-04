@@ -1,42 +1,28 @@
 package ru.tagilov.avitotrainee.core.routing
 
-import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import ru.tagilov.avitotrainee.core.db.SavedCity
 
+@Parcelize
 data class CityParcelable(
     val id: String?,
     val name: String?,
     val countryCode: String?,
     val latitude: Double,
     val longitude: Double,
-) : Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readDouble(),
-        parcel.readDouble()
+) : Parcelable
+
+@Throws(IllegalArgumentException::class)
+fun CityParcelable.toSavedCity(): SavedCity {
+    requireNotNull(id)
+    requireNotNull(name)
+    requireNotNull(countryCode)
+    return SavedCity(
+        id = id,
+        name = name,
+        lon = longitude,
+        lat = latitude,
+        countryCode = countryCode,
     )
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(id)
-        parcel.writeString(name)
-        parcel.writeString(countryCode)
-        parcel.writeDouble(latitude)
-        parcel.writeDouble(longitude)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<CityParcelable> {
-        override fun createFromParcel(parcel: Parcel): CityParcelable {
-            return CityParcelable(parcel)
-        }
-
-        override fun newArray(size: Int): Array<CityParcelable?> {
-            return arrayOfNulls(size)
-        }
-    }
 }

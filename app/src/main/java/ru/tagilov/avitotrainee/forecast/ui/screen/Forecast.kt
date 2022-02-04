@@ -2,10 +2,10 @@ package ru.tagilov.avitotrainee.forecast.ui.screen
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Location
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,9 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.annotation.ExperimentalCoilApi
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.location.LocationServices
@@ -35,14 +33,12 @@ import ru.tagilov.avitotrainee.forecast.ui.component.*
 import ru.tagilov.avitotrainee.forecast.ui.entity.PermissionState
 import ru.tagilov.avitotrainee.forecast.ui.viewmodel.ForecastViewModel
 
-@ExperimentalAnimationApi
-@ExperimentalCoilApi
 @Composable
 fun Forecast(
     navController: NavController,
-    city: CityParcelable? = null
+    city: CityParcelable? = null,
+    vm: ForecastViewModel
 ) {
-    val vm: ForecastViewModel = viewModel()
     LaunchedEffect(key1 = Unit) {
         vm.configure(city = city)
     }
@@ -60,12 +56,14 @@ fun Forecast(
         LocationServices
             .getFusedLocationProviderClient(context)
             .lastLocation
-            .addOnSuccessListener { location ->
-                vm.setLocation(
-                    long = location.longitude,
-                    lat = location.latitude,
-                    fromApi = false
-                )
+            .addOnSuccessListener { location: Location? ->
+                location?.let {
+                    vm.setLocation(
+                        long = location.longitude,
+                        lat = location.latitude,
+                        fromApi = false
+                    )
+                }
             }
     }
     val permissionLauncher = rememberLauncherForActivityResult(

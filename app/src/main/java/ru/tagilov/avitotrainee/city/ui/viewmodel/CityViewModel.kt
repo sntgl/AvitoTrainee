@@ -10,15 +10,14 @@ import ru.tagilov.avitotrainee.city.data.CityRepository
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
 import ru.tagilov.avitotrainee.city.ui.entity.toSaved
 import ru.tagilov.avitotrainee.city.ui.screen.CityState
-import ru.tagilov.avitotrainee.city.ui.util.toModel
-import ru.tagilov.avitotrainee.core.db.Database
+import ru.tagilov.avitotrainee.core.util.TypedResult
 import timber.log.Timber
+import javax.inject.Inject
 
-@FlowPreview
-class CityViewModel : ViewModel() {
-    private val cityRepository = CityRepository()
-
-    private val db = Database.instance.cityDao()
+@OptIn(FlowPreview::class)
+class CityViewModel @Inject constructor(
+        private val cityRepository: CityRepository,
+) : ViewModel() {
 
     private val entryMutableStateFlow = MutableStateFlow("")
     private val newSearchMutableStateFlow = MutableStateFlow("")
@@ -60,16 +59,17 @@ class CityViewModel : ViewModel() {
             screenStateMutableFlow.emit(CityState.Search.Loading)
             cityRepository.searchCities(query).collect { cities ->
                 Timber.d("$cities")
-                when {
-                    cities == null -> {
+                when (cities) {
+                     is TypedResult.Err -> {
                         screenStateMutableFlow.emit(CityState.Search.Error)
                     }
-                    cities.isEmpty() -> {
-                        screenStateMutableFlow.emit(CityState.Search.Empty)
-                    }
-                    else -> {
-                        screenStateMutableFlow.emit(CityState.Search.Content)
-                        searchCityListMutableFlow.emit(cities)
+                    is TypedResult.Ok -> {
+                        if (cities.result.isEmpty())
+                            screenStateMutableFlow.emit(CityState.Search.Empty)
+                        else {
+                            screenStateMutableFlow.emit(CityState.Search.Content)
+                            searchCityListMutableFlow.emit(cities.result)
+                        }
                     }
                 }
             }
@@ -85,14 +85,13 @@ class CityViewModel : ViewModel() {
 
     fun delete(city: CityModel) {
         viewModelScope.launch {
-            db.delete(city.toSaved())
+            cityRepository.deleteFromSaved(city.toSaved())
         }
     }
 
     init {
-        db.getAll().onEach { newSavedList ->
-            Timber.d("get saved cities = $newSavedList")
-            savedCitiesMutableFlow.emit(newSavedList.map { it.toModel() })
+        cityRepository.savedCities.onEach {
+            savedCitiesMutableFlow.emit(it)
         }.launchIn(viewModelScope)
 
         entryMutableStateFlow

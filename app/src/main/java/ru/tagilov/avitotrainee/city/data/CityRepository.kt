@@ -5,26 +5,42 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import ru.tagilov.avitotrainee.city.data.CityNetworking.cityApi
+import ru.tagilov.avitotrainee.city.data.entity.toCityModel
 import ru.tagilov.avitotrainee.city.ui.entity.CityModel
-import ru.tagilov.avitotrainee.city.ui.entity.fromResponse
+import ru.tagilov.avitotrainee.city.ui.util.toModel
+import ru.tagilov.avitotrainee.core.db.AppDatabase
+import ru.tagilov.avitotrainee.core.db.SavedCity
+import ru.tagilov.avitotrainee.core.util.TypedResult
 import java.io.IOException
+import javax.inject.Inject
 
-class CityRepository {
-    suspend fun searchCities(
-        query: String,
-    ): Flow<List<CityModel>?> = flow {
+interface CityRepository {
+    fun searchCities(query: String): Flow<TypedResult<List<CityModel>>>
+    val savedCities: Flow<List<CityModel>>
+    suspend fun deleteFromSaved(savedCity: SavedCity)
+}
+
+class CityRepositoryImpl @Inject constructor(
+        private val cityApi: CityApi,
+        db: AppDatabase
+) : CityRepository {
+    val dao = db.cityDao()
+
+    override fun searchCities(
+            query: String,
+    ) = flow {
         try {
-            emit(
-                cityApi.getCities(q = query)
-            )
+            emit(TypedResult.Ok(cityApi.getCities(q = query).map { it.toCityModel() }))
         } catch (e: IOException) {
-            emit(null)
-        }
-    }.map{ list ->
-        list?.map{
-            CityModel.fromResponse(it)
+            emit(TypedResult.Err())
         }
     }.flowOn(Dispatchers.IO)
+
+    override val savedCities: Flow<List<CityModel>>
+        get() = dao.getAll().map { it.map { it.toModel() } }
+
+    override suspend fun deleteFromSaved(savedCity: SavedCity) {
+        dao.delete(savedCity = savedCity)
+    }
 
 }

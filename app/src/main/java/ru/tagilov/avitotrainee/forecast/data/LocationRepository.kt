@@ -4,21 +4,26 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import ru.tagilov.avitotrainee.core.util.TypedResult
+import ru.tagilov.avitotrainee.forecast.data.entity.toDomain
 import ru.tagilov.avitotrainee.forecast.ui.entity.DomainLocation
-import ru.tagilov.avitotrainee.forecast.ui.entity.fromResponse
 import java.io.IOException
+import javax.inject.Inject
 
-class LocationRepository {
-    suspend fun getLocation(): Flow<DomainLocation?> = flow {
+interface LocationRepository {
+    suspend fun getLocation(): Flow<TypedResult<DomainLocation>>
+}
+
+class LocationRepositoryImpl @Inject constructor(
+        private val locationApi: LocationApi
+): LocationRepository {
+    override suspend fun getLocation() = flow {
         try {
-            emit(ForecastNetworking.locationApi.location())
+            val result = locationApi.location()
+            emit(TypedResult.Ok(result.toDomain()))
         } catch (e: IOException) {
-            emit(null)
+            emit(TypedResult.Err())
         }
-    }.map {
-        if (it != null) (DomainLocation.fromResponse(it))
-        else null
     }.flowOn(Dispatchers.IO)
 
 }

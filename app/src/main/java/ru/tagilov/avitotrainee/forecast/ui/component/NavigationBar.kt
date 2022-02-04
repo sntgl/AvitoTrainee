@@ -1,7 +1,6 @@
 package ru.tagilov.avitotrainee.forecast.ui.component
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,7 +17,6 @@ import ru.tagilov.avitotrainee.core.routing.Destination
 import ru.tagilov.avitotrainee.core.util.navigateWithParcelable
 
 
-@ExperimentalAnimationApi
 @Composable
 fun NavBar(
     modifier: Modifier = Modifier,

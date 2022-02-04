@@ -63,10 +63,15 @@ class ForecastViewModel @Inject constructor(
     val cityObservable: Observable<TypedResult<CityParcelable>>
         get() = citySubject.hide()
 
-    fun configure(city: CityParcelable?) {
+    fun configure(city: CityParcelable) {
         Timber.d("City configured: $city")
         setCity(city)
         getForecast(city)
+    }
+
+    fun configure() {
+        permissionStateSubject.onNext(PermissionState.Required)
+        getForecast()
     }
 
     fun newPermissionState(state: PermissionState) {
@@ -118,10 +123,8 @@ class ForecastViewModel @Inject constructor(
         disposables.dispose()
     }
 
-    private fun setCity(city: CityParcelable?) {
-        if (city == null) {
-            permissionStateSubject.onNext(PermissionState.Required)
-        } else if (citySubject.value is TypedResult.Err) {
+    private fun setCity(city: CityParcelable) {
+        if (citySubject.value is TypedResult.Err) {
             isGPSLocationSubject.onNext(false)
             citySubject.onNext(TypedResult.Ok(city))
         }
@@ -194,7 +197,7 @@ class ForecastViewModel @Inject constructor(
             }, ::handleError)
     }
 
-    private fun getForecast(city: CityParcelable?) = getForecast(
+    private fun getForecast(city: CityParcelable? = null) = getForecast(
         when (city) {
             null -> TypedResult.Err()
             else -> TypedResult.Ok(city)
@@ -224,7 +227,7 @@ class ForecastViewModel @Inject constructor(
 
     init {
         permissionStateSubject.onNext(PermissionState.None)
-        forecastSubject.onNext(Forecast.Empty())
+        forecastSubject.onNext(Forecast.Empty)
         savedCitySubject.onNext(SavedState.NONE)
         isGPSLocationSubject.onNext(true)
         screenStateSubject.onNext(ForecastState.None)

@@ -6,5 +6,5 @@ sealed class Forecast {
         val hourly: List<HourlyForecast>,
         val daily: List<DailyForecast>,
     ): Forecast()
-    class Empty: Forecast()
+    object Empty: Forecast()
 }

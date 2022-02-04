@@ -2,6 +2,7 @@ package ru.tagilov.avitotrainee.root.di
 
 import android.content.Context
 import androidx.room.Room
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory
@@ -15,9 +16,11 @@ import ru.tagilov.avitotrainee.core.di.AppScope
 import ru.tagilov.avitotrainee.core.di.Forecast
 import ru.tagilov.avitotrainee.core.di.Location
 import ru.tagilov.avitotrainee.core.util.addQueryApiKey
+import ru.tagilov.avitotrainee.forecast.di.SchedulersFactory
+import ru.tagilov.avitotrainee.forecast.di.SchedulersFactoryImpl
 import timber.log.Timber
 
-@Module
+@Module(includes = [AppBinds::class])
 class AppModule{
 
     @AppScope //Есть вопросы
@@ -81,4 +84,11 @@ class AppModule{
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .client(locationClient)
             .build()
+}
+
+
+@Module
+interface AppBinds{
+    @Binds
+    fun bindSchedulers(factory: SchedulersFactoryImpl): SchedulersFactory
 }

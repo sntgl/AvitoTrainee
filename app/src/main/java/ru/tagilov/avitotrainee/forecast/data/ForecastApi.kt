@@ -8,22 +8,10 @@ import ru.tagilov.avitotrainee.forecast.data.entity.ResponseCityName
 
 interface ForecastApi {
     @GET("geo/1.0/reverse")
-    suspend fun getCityName(
-        @Query("lon") longitude: String,
-        @Query("lat") latitude: String,
-    ): List<ResponseCityName>
-
-    @GET("geo/1.0/reverse")
     fun getCityNameRx(
         @Query("lon") longitude: String,
         @Query("lat") latitude: String,
     ): Single<List<ResponseCityName>>
-
-    @GET("data/2.5/onecall?exclude=minutely&lang=ru&units=metric")
-    suspend fun getFullForecast(
-        @Query("lon") longitude: String,
-        @Query("lat") latitude: String,
-    ): OneCallResponse
 
     @GET("data/2.5/onecall?exclude=minutely&lang=ru&units=metric")
     fun getFullForecastRx(

@@ -2,15 +2,14 @@ package ru.tagilov.avitotrainee.forecast.data
 
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
 import ru.tagilov.avitotrainee.core.db.AppDatabase
 import ru.tagilov.avitotrainee.core.db.SavedCity
 import ru.tagilov.avitotrainee.core.util.TypedResult
 import ru.tagilov.avitotrainee.forecast.data.entity.ResponseCityName
 import ru.tagilov.avitotrainee.forecast.data.entity.toForecast
+import ru.tagilov.avitotrainee.forecast.di.SchedulersFactory
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
 import ru.tagilov.avitotrainee.forecast.ui.screen.SavedState
-import timber.log.Timber
 import javax.inject.Inject
 
 interface ForecastRepository {
@@ -22,6 +21,7 @@ interface ForecastRepository {
 
 class ForecastRepositoryImpl @Inject constructor(
     private val forecastApi: ForecastApi,
+    private val schedulers: SchedulersFactory,
     db: AppDatabase
 ) : ForecastRepository {
     private val cityDao = db.cityDao()
@@ -34,7 +34,7 @@ class ForecastRepositoryImpl @Inject constructor(
                 else
                     TypedResult.Err()
             }.onErrorResumeNext { Single.just(TypedResult.Err()) }
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(schedulers.io())
 
     override fun getWeatherRx(longitude: Double, latitude: Double): Single<TypedResult<Forecast>> =
         forecastApi.getFullForecastRx(
@@ -43,7 +43,7 @@ class ForecastRepositoryImpl @Inject constructor(
         )
             .map { TypedResult.Ok(it.toForecast()) as TypedResult<Forecast> }
             .onErrorResumeNext { Single.just(TypedResult.Err()) }
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(schedulers.io())
 
     override fun saveCityRx(city: SavedCity): Single<TypedResult<Unit>> =
         cityDao.saveRx(city)
@@ -51,19 +51,17 @@ class ForecastRepositoryImpl @Inject constructor(
             .onErrorResumeNext {
                 Single.just(TypedResult.Err())
             }
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(schedulers.io())
 
     override fun checkSavedRx(id: String): Flowable<SavedState> =
         cityDao.checkSavedRx(id)
             .map {
-                Timber.d("rxjava $it")
                 if (it == 0) SavedState.NOT_SAVED else SavedState.SAVED
             }
             .onErrorResumeNext {
-                Timber.d("rxjava Exception: $it")
                 Flowable.just(SavedState.NOT_SAVED)
             }
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(schedulers.io())
 
 }
 

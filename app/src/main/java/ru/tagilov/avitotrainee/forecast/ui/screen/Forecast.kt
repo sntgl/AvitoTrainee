@@ -58,11 +58,16 @@ fun Forecast(
     city: CityParcelable? = null,
     vm: ForecastViewModel
 ) {
-    LaunchedEffect(key1 = Unit) { vm.configure(city = city) }
+    LaunchedEffect(key1 = Unit) {
+        if (city != null)
+            vm.configure(city)
+        else
+            vm.configure()
+    }
 
     val permissionState = remember { vm.permissionStateObservable }.subscribeAsState(initial = PermissionState.None)
     val cityState = remember { vm.cityObservable }.subscribeAsState(initial = TypedResult.Err())
-    val forecastState = remember { vm.forecastObservable }.subscribeAsState(initial = Forecast.Empty())
+    val forecastState = remember { vm.forecastObservable }.subscribeAsState(initial = Forecast.Empty)
     val isRefreshing = remember { vm.isRefreshingObservable }.subscribeAsState(initial = false)
     val screenState = remember { vm.screenStateObservable }.subscribeAsState(initial = ForecastState.None)
     val context = LocalContext.current
@@ -160,9 +165,9 @@ fun Forecast(
                     if (screenState.value == ForecastState.Content
                         || screenState.value == ForecastState.Loading
                     ) {
-                        val cityV = cityState.value
-                        CityTitle(city = when (cityV) {
-                            is TypedResult.Ok -> cityV.result
+                        val cityValue = cityState.value
+                        CityTitle(city = when (cityValue) {
+                            is TypedResult.Ok -> cityValue.result
                             is TypedResult.Err -> null
                         })
                         SwipeRefresh(
@@ -175,8 +180,11 @@ fun Forecast(
                                     .padding(horizontal = 8.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                val fv = forecastState.value
-                                val forecast: Forecast.Data? = if (fv is Forecast.Data) fv else null
+                                val forecastValue = forecastState.value
+                                val forecast: Forecast.Data? = if (forecastValue is Forecast.Data)
+                                    forecastValue
+                                else
+                                    null
                                 item { Current(forecast = forecast?.current) }
                                 item {
                                     AnimatedVisibility(

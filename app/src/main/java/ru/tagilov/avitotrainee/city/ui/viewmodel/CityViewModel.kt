@@ -49,8 +49,7 @@ class CityViewModel @Inject constructor(
     }
 
     fun retry() {
-        val q = entrySubject.value
-        if (q != null) search(q)
+        entrySubject.value?.let { search(it) }
     }
 
     fun delete(city: CityModel) {

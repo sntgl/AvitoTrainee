@@ -112,7 +112,7 @@ fun Forecast(
     val snackbarState = remember { SnackbarHostState() }
     val snackbarEvents = remember {
         vm.showSnackBar
-    }.subscribeAsState(initial = SnackbarEvent.Empty())
+    }.subscribeAsState(initial = SnackbarEvent.Empty)
     val coroutineScope = rememberCoroutineScope()
     val unableUpdateMessage = stringResource(id = R.string.unable_to_update)
     val unableSaveMessage = stringResource(id = R.string.unable_to_save)

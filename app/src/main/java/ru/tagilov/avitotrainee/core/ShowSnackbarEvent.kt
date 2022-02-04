@@ -2,7 +2,7 @@ package ru.tagilov.avitotrainee.core
 
 //просто ивент, каждый инстанс которого не равен любым другим инстансам
 sealed class SnackbarEvent {
-    class Show(
+    data class Show(
         val state: SnackBarMessage
     ) : SnackbarEvent() {
         override fun equals(other: Any?): Boolean {
@@ -13,8 +13,7 @@ sealed class SnackbarEvent {
             return javaClass.hashCode()
         }
     }
-
-    class Empty : SnackbarEvent()
+    object Empty : SnackbarEvent()
 }
 
 

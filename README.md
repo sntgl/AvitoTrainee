@@ -1,4 +1,5 @@
 # Avito tech trainee 
+- [Версия при подаче заявки на стажировку](https://github.com/sntgl/AvitoTrainee/tree/release). После этого был добавлен [Dagger2 для DI](https://github.com/sntgl/AvitoTrainee/tree/Dagger), а также есть [ветка](https://github.com/sntgl/AvitoTrainee/tree/rxjava) с заменой корутин на rxjava3
 
 - [Тестовое задание](https://github.com/avito-tech/android-trainee-task-2021)
 - [Видео работы приложения](https://youtu.be/w6tAj_zjciQ)

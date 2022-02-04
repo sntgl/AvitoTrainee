@@ -31,17 +31,17 @@ class ForecastViewModel @Inject constructor(
     private var apiLocationFailed = false
     private var delayForecast = false
 
-    private val mIsGPSLocation: ReplaySubject<Boolean> = ReplaySubject.create()
-    val isGPSLocation: Observable<Boolean>
-        get() = mIsGPSLocation.hide()
+    private val isGPSLocationSubject: ReplaySubject<Boolean> = ReplaySubject.create()
+    val isGPSLocationObservable: Observable<Boolean>
+        get() = isGPSLocationSubject.hide()
 
-    private val mIsRefreshing: BehaviorSubject<Boolean> = BehaviorSubject.create()
-    val isRefreshing: Observable<Boolean>
-        get() = mIsRefreshing.hide()
+    private val isRefreshingSubject: BehaviorSubject<Boolean> = BehaviorSubject.create()
+    val isRefreshingObservable: Observable<Boolean>
+        get() = isRefreshingSubject.hide()
 
-    private val mSavedCity: BehaviorSubject<SavedState> = BehaviorSubject.create()
-    val savedCity: Observable<SavedState>
-        get() = mSavedCity.hide()
+    private val savedCitySubject: BehaviorSubject<SavedState> = BehaviorSubject.create()
+    val savedCityObservable: Observable<SavedState>
+        get() = savedCitySubject.hide()
 
     private val forecastSubject: BehaviorSubject<Forecast> = BehaviorSubject.create()
     val forecastObservable: Observable<Forecast>
@@ -84,7 +84,7 @@ class ForecastViewModel @Inject constructor(
     }
 
     fun refresh() {
-        mIsRefreshing.onNext(true)
+        isRefreshingSubject.onNext(true)
         citySubject.value?.let { city ->
             getForecast(city)
         }
@@ -122,7 +122,7 @@ class ForecastViewModel @Inject constructor(
         if (city == null) {
             permissionStateSubject.onNext(PermissionState.Required)
         } else if (citySubject.value is TypedResult.Err) {
-            mIsGPSLocation.onNext(false)
+            isGPSLocationSubject.onNext(false)
             citySubject.onNext(TypedResult.Ok(city))
         }
     }
@@ -165,7 +165,7 @@ class ForecastViewModel @Inject constructor(
             weatherSource,
             { name, forecast -> name to forecast })
             .subscribe({ (trName, trForecast) ->
-                mIsRefreshing.onNext(false)
+                isRefreshingSubject.onNext(false)
                 if (trName is TypedResult.Ok && trForecast is TypedResult.Ok) {
                     citySubject.onNext(TypedResult.Ok(city.copy(name = trName.result)))
                     forecastSubject.onNext(trForecast.result)
@@ -182,7 +182,7 @@ class ForecastViewModel @Inject constructor(
         disposables += forecastRepo
             .getWeatherRx(longitude = city.longitude, latitude = city.latitude)
             .subscribe({ forecast ->
-                mIsRefreshing.onNext(false)
+                isRefreshingSubject.onNext(false)
                 when {
                     forecast is TypedResult.Ok ->
                         forecastSubject.onNext(forecast.result)
@@ -225,8 +225,8 @@ class ForecastViewModel @Inject constructor(
     init {
         permissionStateSubject.onNext(PermissionState.None)
         forecastSubject.onNext(Forecast.Empty())
-        mSavedCity.onNext(SavedState.NONE)
-        mIsGPSLocation.onNext(true)
+        savedCitySubject.onNext(SavedState.NONE)
+        isGPSLocationSubject.onNext(true)
         screenStateSubject.onNext(ForecastState.None)
         citySubject.onNext(TypedResult.Err())
         screenStateSubject.onNext(ForecastState.Loading)
@@ -244,7 +244,7 @@ class ForecastViewModel @Inject constructor(
             .subscribe { city ->
                 city.id?.let { id ->
                     forecastRepo.checkSavedRx(id).subscribe({ ss: SavedState ->
-                        mSavedCity.onNext(ss)
+                        savedCitySubject.onNext(ss)
                     }, ::handleError)
                 }
             }

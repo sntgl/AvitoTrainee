@@ -27,10 +27,10 @@ fun City(
     vm: CityViewModel
 ) {
     val searchBarState = remember { mutableStateOf(TextFieldValue()) }
-    val screenState = remember { vm.screenState }.subscribeAsState(initial = CityState.None)
-    val loadedCities = remember { vm.searchCityList }.subscribeAsState(initial = emptyList())
-    val savedCities = remember { vm.savedCities }.subscribeAsState(initial = emptyList())
-    val searchFocused = remember { vm.searchFocused }.subscribeAsState(initial = false)
+    val screenState = remember { vm.screenStateObservable }.subscribeAsState(initial = CityState.None)
+    val loadedCities = remember { vm.searchCityListObservable }.subscribeAsState(initial = emptyList())
+    val savedCities = remember { vm.savedCitiesObservable }.subscribeAsState(initial = emptyList())
+    val searchFocused = remember { vm.searchFocusedObservable }.subscribeAsState(initial = false)
 
     BackHandler(enabled = screenState.value is CityState.Search) {
         vm.newSearchFocus(false)

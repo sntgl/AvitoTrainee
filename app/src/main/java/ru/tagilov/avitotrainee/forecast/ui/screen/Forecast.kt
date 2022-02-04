@@ -63,11 +63,11 @@ fun Forecast(
     val permissionState = remember { vm.permissionStateObservable }.subscribeAsState(initial = PermissionState.None)
     val cityState = remember { vm.cityObservable }.subscribeAsState(initial = TypedResult.Err())
     val forecastState = remember { vm.forecastObservable }.subscribeAsState(initial = Forecast.Empty())
-    val isRefreshing = remember { vm.isRefreshing }.subscribeAsState(initial = false)
+    val isRefreshing = remember { vm.isRefreshingObservable }.subscribeAsState(initial = false)
     val screenState = remember { vm.screenStateObservable }.subscribeAsState(initial = ForecastState.None)
     val context = LocalContext.current
-    val saved = remember { vm.savedCity }.subscribeAsState(initial = SavedState.NONE)
-    val isLocation = remember { vm.isGPSLocation }.subscribeAsState(initial = true)
+    val saved = remember { vm.savedCityObservable }.subscribeAsState(initial = SavedState.NONE)
+    val isLocation = remember { vm.isGPSLocationObservable }.subscribeAsState(initial = true)
 
     //локация
     val sendLocation = {

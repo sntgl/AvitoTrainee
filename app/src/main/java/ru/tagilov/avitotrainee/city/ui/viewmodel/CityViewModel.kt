@@ -19,37 +19,37 @@ class CityViewModel @Inject constructor(
 ) : ViewModel() {
     private val disposables = CompositeDisposable()
 
-    private val mEntry: BehaviorSubject<String> = BehaviorSubject.create()
+    private val entrySubject: BehaviorSubject<String> = BehaviorSubject.create()
 
-    private val mScreenState: BehaviorSubject<CityState> = BehaviorSubject.create()
-    val screenState: Observable<CityState>
-        get() = mScreenState.hide()
+    private val screenStateSubject: BehaviorSubject<CityState> = BehaviorSubject.create()
+    val screenStateObservable: Observable<CityState>
+        get() = screenStateSubject.hide()
 
-    private val mSearchCityList: BehaviorSubject<List<CityModel>> = BehaviorSubject.create()
-    val searchCityList: Observable<List<CityModel>>
-        get() = mSearchCityList.hide()
+    private val searchCityListSubject: BehaviorSubject<List<CityModel>> = BehaviorSubject.create()
+    val searchCityListObservable: Observable<List<CityModel>>
+        get() = searchCityListSubject.hide()
 
-    private val mSavedCities: BehaviorSubject<List<CityModel>> = BehaviorSubject.create()
-    val savedCities: Observable<List<CityModel>>
-        get() = mSavedCities.hide()
+    private val savedCitiesSubject: BehaviorSubject<List<CityModel>> = BehaviorSubject.create()
+    val savedCitiesObservable: Observable<List<CityModel>>
+        get() = savedCitiesSubject.hide()
 
-    private val mSearchFocused: BehaviorSubject<Boolean> = BehaviorSubject.create()
-    val searchFocused: Observable<Boolean>
-        get() = mSearchFocused.hide()
+    private val searchFocusedSubject: BehaviorSubject<Boolean> = BehaviorSubject.create()
+    val searchFocusedObservable: Observable<Boolean>
+        get() = searchFocusedSubject.hide()
 
 
     fun newEntry(s: String) {
-        mEntry.onNext(s)
+        entrySubject.onNext(s)
     }
 
     fun newSearchFocus(isFocused: Boolean) {
-        mSearchFocused.onNext(isFocused)
-        mSearchCityList.onNext(emptyList())
-        mScreenState.onNext(CityState.Saved)
+        searchFocusedSubject.onNext(isFocused)
+        searchCityListSubject.onNext(emptyList())
+        screenStateSubject.onNext(CityState.Saved)
     }
 
     fun retry() {
-        val q = mEntry.value
+        val q = entrySubject.value
         if (q != null) search(q)
     }
 
@@ -66,7 +66,7 @@ class CityViewModel @Inject constructor(
 
     private fun handleError(throwable: Throwable? = null) {
         Timber.d("Rxjava err: $throwable")
-        mScreenState.onNext(CityState.Search.Error)
+        screenStateSubject.onNext(CityState.Search.Error)
     }
 
     private fun search(query: String) {
@@ -77,10 +77,10 @@ class CityViewModel @Inject constructor(
                     is TypedResult.Err -> handleError()
                     is TypedResult.Ok -> {
                         if (cities.result.isEmpty())
-                            mScreenState.onNext(CityState.Search.Empty)
+                            screenStateSubject.onNext(CityState.Search.Empty)
                         else {
-                            mSearchCityList.onNext(cities.result)
-                            mScreenState.onNext(CityState.Search.Content)
+                            searchCityListSubject.onNext(cities.result)
+                            screenStateSubject.onNext(CityState.Search.Content)
                         }
                     }
                 }
@@ -91,11 +91,11 @@ class CityViewModel @Inject constructor(
 
     init {
         disposables += cityRepository.savedCities
-            .subscribe { if (it is TypedResult.Ok) mSavedCities.onNext(it.result) }
+            .subscribe { if (it is TypedResult.Ok) savedCitiesSubject.onNext(it.result) }
 
-        disposables += mEntry
+        disposables += entrySubject
             .doOnEach {
-                mScreenState.onNext(
+                screenStateSubject.onNext(
                     if (it.value == "") CityState.Saved else CityState.Search.Loading
                 )
             }

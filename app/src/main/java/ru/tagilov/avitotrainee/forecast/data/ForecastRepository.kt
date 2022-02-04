@@ -14,10 +14,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 interface ForecastRepository {
-    //    fun getCityName(longitude: Double, latitude: Double): Flow<TypedResult<String>>
     fun getCityNameRx(longitude: Double, latitude: Double): Single<TypedResult<String>>
-
-    //    fun getWeather(longitude: Double, latitude: Double): Flow<TypedResult<Forecast>>
     fun getWeatherRx(longitude: Double, latitude: Double): Single<TypedResult<Forecast>>
     fun saveCityRx(city: SavedCity): Single<TypedResult<Unit>>
     fun checkSavedRx(id: String): Flowable<SavedState>

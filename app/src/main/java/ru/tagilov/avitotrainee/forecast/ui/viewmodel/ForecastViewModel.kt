@@ -26,8 +26,6 @@ class ForecastViewModel @Inject constructor(
     private val forecastRepo: ForecastRepository,
 ) : ViewModel() {
     private val disposables = CompositeDisposable()
-    private var cityNameAndForecastDisposable = CompositeDisposable()
-    private var locationDisposable = CompositeDisposable()
 
     private var isApiLocation = true
     private var apiLocationFailed = false
@@ -118,8 +116,6 @@ class ForecastViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         disposables.dispose()
-        cityNameAndForecastDisposable.dispose()
-        locationDisposable.dispose()
     }
 
     private fun setCity(city: CityParcelable?) {
@@ -132,10 +128,9 @@ class ForecastViewModel @Inject constructor(
     }
 
     private fun getLocation() {
-        locationDisposable.dispose()
         if (permissionStateSubject.value == PermissionState.None)
             permissionStateSubject.onNext(PermissionState.Required)
-        locationDisposable += locationRepo.getLocationRx()
+        locationRepo.getLocationRx()
             .subscribe({ loc ->
                 when (loc) {
                     is TypedResult.Err -> {
@@ -165,8 +160,7 @@ class ForecastViewModel @Inject constructor(
             latitude = city.latitude
         )
 
-        cityNameAndForecastDisposable.dispose()
-        cityNameAndForecastDisposable += Single.zip(
+        disposables += Single.zip(
             nameSource,
             weatherSource,
             { name, forecast -> name to forecast })
@@ -185,8 +179,7 @@ class ForecastViewModel @Inject constructor(
     private fun getOnlyForecast(city: CityParcelable) {
         delayForecast = false
 
-        cityNameAndForecastDisposable.dispose()
-        cityNameAndForecastDisposable += forecastRepo
+        disposables += forecastRepo
             .getWeatherRx(longitude = city.longitude, latitude = city.latitude)
             .subscribe({ forecast ->
                 mIsRefreshing.onNext(false)

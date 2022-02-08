@@ -39,7 +39,6 @@ import ru.tagilov.avitotrainee.R
 import ru.tagilov.avitotrainee.core.SnackBarMessage
 import ru.tagilov.avitotrainee.core.SnackbarEvent
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
-import ru.tagilov.avitotrainee.core.util.TypedResult
 import ru.tagilov.avitotrainee.forecast.ui.component.CityTitle
 import ru.tagilov.avitotrainee.forecast.ui.component.ConnectionError
 import ru.tagilov.avitotrainee.forecast.ui.component.Current
@@ -48,9 +47,11 @@ import ru.tagilov.avitotrainee.forecast.ui.component.Hourly
 import ru.tagilov.avitotrainee.forecast.ui.component.LocationError
 import ru.tagilov.avitotrainee.forecast.ui.component.NavBar
 import ru.tagilov.avitotrainee.forecast.ui.component.SaveSuggestion
+import ru.tagilov.avitotrainee.forecast.ui.entity.City
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
 import ru.tagilov.avitotrainee.forecast.ui.entity.PermissionState
 import ru.tagilov.avitotrainee.forecast.ui.viewmodel.ForecastViewModel
+import timber.log.Timber
 
 @Composable
 fun Forecast(
@@ -60,19 +61,17 @@ fun Forecast(
 ) {
     LaunchedEffect(key1 = Unit) {
         if (city != null)
-            vm.configure(city)
+            vm.setCity(city)
         else
-            vm.configure()
+            vm.setEmptyCity()
     }
 
     val permissionState = remember { vm.permissionStateObservable }.subscribeAsState(initial = PermissionState.None)
-    val cityState = remember { vm.cityObservable }.subscribeAsState(initial = TypedResult.Err())
+    val cityState = remember { vm.cityObservable }.subscribeAsState(initial = City.Empty)
     val forecastState = remember { vm.forecastObservable }.subscribeAsState(initial = Forecast.Empty)
-    val isRefreshing = remember { vm.isRefreshingObservable }.subscribeAsState(initial = false)
     val screenState = remember { vm.screenStateObservable }.subscribeAsState(initial = ForecastState.None)
     val context = LocalContext.current
-    val saved = remember { vm.savedCityObservable }.subscribeAsState(initial = SavedState.NONE)
-    val isLocation = remember { vm.isGPSLocationObservable }.subscribeAsState(initial = true)
+    val saved = remember { vm.savedStateObservable }.subscribeAsState(initial = SavedState.NONE)
 
     //локация
     val sendLocation = {
@@ -81,10 +80,9 @@ fun Forecast(
             .lastLocation
             .addOnSuccessListener { location: Location? ->
                 location?.let {
-                    vm.setLocation(
+                    vm.setGPSLocation(
                         long = location.longitude,
                         lat = location.latitude,
-                        fromApi = false
                     )
                 }
             }
@@ -116,7 +114,7 @@ fun Forecast(
 //    логика снекбара
     val snackbarState = remember { SnackbarHostState() }
     val snackbarEvents = remember {
-        vm.showSnackBar
+        vm.showSnackBarObservable
     }.subscribeAsState(initial = SnackbarEvent.Empty)
     val coroutineScope = rememberCoroutineScope()
     val unableUpdateMessage = stringResource(id = R.string.unable_to_update)
@@ -167,11 +165,17 @@ fun Forecast(
                     ) {
                         val cityValue = cityState.value
                         CityTitle(city = when (cityValue) {
-                            is TypedResult.Ok -> cityValue.result
-                            is TypedResult.Err -> null
+                            is City.Empty -> null
+                            is City.Full -> cityValue
+                            is City.WithGeo -> null
                         })
+                        Timber.d("state is ${screenState.value}")
                         SwipeRefresh(
-                            state = rememberSwipeRefreshState(isRefreshing.value),
+                            state =
+                            rememberSwipeRefreshState(
+                                screenState.value is ForecastState.Loading
+//                                        && forecastState.value !is Forecast.Empty
+                            ),
                             onRefresh = { vm.refresh() },
                         ) {
                             LazyColumn(
@@ -188,8 +192,7 @@ fun Forecast(
                                 item { Current(forecast = forecast?.current) }
                                 item {
                                     AnimatedVisibility(
-                                        visible = !isLocation.value &&
-                                                saved.value != SavedState.SAVED
+                                        visible = saved.value == SavedState.NOT_SAVED
                                     ) {
                                         SaveSuggestion { vm.save() }
                                     }
@@ -219,7 +222,7 @@ fun Forecast(
         }
         NavBar(
             navController = navController,
-            isLocation = isLocation.value,
+            isLocation = city == null,
             isSaved = saved.value == SavedState.SAVED,
             onSave = { vm.save() }
         )

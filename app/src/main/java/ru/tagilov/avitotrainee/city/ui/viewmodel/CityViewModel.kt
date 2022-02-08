@@ -25,9 +25,9 @@ class CityViewModel @Inject constructor(
     val screenStateObservable: Observable<CityState>
         get() = screenStateSubject.hide()
 
-    private val searchCityListSubject: BehaviorSubject<List<CityModel>> = BehaviorSubject.create()
+    private val searchCitiesSubject: BehaviorSubject<List<CityModel>> = BehaviorSubject.create()
     val searchCityListObservable: Observable<List<CityModel>>
-        get() = searchCityListSubject.hide()
+        get() = searchCitiesSubject.hide()
 
     private val savedCitiesSubject: BehaviorSubject<List<CityModel>> = BehaviorSubject.create()
     val savedCitiesObservable: Observable<List<CityModel>>
@@ -37,6 +37,16 @@ class CityViewModel @Inject constructor(
     val searchFocusedObservable: Observable<Boolean>
         get() = searchFocusedSubject.hide()
 
+    init {
+        subscribeToSavedCities()
+        subscribeToEntry()
+    }
+
+
+    override fun onCleared() {
+        super.onCleared()
+        disposables.dispose()
+    }
 
     fun newEntry(s: String) {
         entrySubject.onNext(s)
@@ -44,7 +54,7 @@ class CityViewModel @Inject constructor(
 
     fun newSearchFocus(isFocused: Boolean) {
         searchFocusedSubject.onNext(isFocused)
-        searchCityListSubject.onNext(emptyList())
+        searchCitiesSubject.onNext(emptyList())
         screenStateSubject.onNext(CityState.Saved)
     }
 
@@ -58,9 +68,21 @@ class CityViewModel @Inject constructor(
             .subscribe({}, {})
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        disposables.dispose()
+    private fun subscribeToSavedCities() {
+        disposables += cityRepository.savedCities
+            .subscribe { if (it is TypedResult.Ok) savedCitiesSubject.onNext(it.result) }
+    }
+
+    private fun subscribeToEntry() {
+        disposables += entrySubject
+            .doOnEach {
+                screenStateSubject.onNext(
+                    if (it.value == "") CityState.Saved else CityState.Search.Loading
+                )
+            }
+            .debounce(500, TimeUnit.MILLISECONDS)
+            .filter { it != "" }
+            .subscribe { search(it) }
     }
 
     private fun handleError(throwable: Throwable? = null) {
@@ -78,28 +100,14 @@ class CityViewModel @Inject constructor(
                         if (cities.result.isEmpty())
                             screenStateSubject.onNext(CityState.Search.Empty)
                         else {
-                            searchCityListSubject.onNext(cities.result)
+                            searchCitiesSubject.onNext(cities.result)
                             screenStateSubject.onNext(CityState.Search.Content)
                         }
                     }
                 }
             },
-            { handleError(it) }
+            ::handleError
         )
     }
 
-    init {
-        disposables += cityRepository.savedCities
-            .subscribe { if (it is TypedResult.Ok) savedCitiesSubject.onNext(it.result) }
-
-        disposables += entrySubject
-            .doOnEach {
-                screenStateSubject.onNext(
-                    if (it.value == "") CityState.Saved else CityState.Search.Loading
-                )
-            }
-            .debounce(500, TimeUnit.MILLISECONDS)
-            .filter { it != "" }
-            .subscribe { search(it) }
-    }
 }

@@ -3,7 +3,6 @@ package ru.tagilov.avitotrainee.forecast.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ru.tagilov.avitotrainee.core.SnackBarMessage
 import ru.tagilov.avitotrainee.core.SnackbarEvent
@@ -85,19 +84,17 @@ class ForecastViewModel @Inject constructor(
 
     fun save() {
         val cityValue = citySubject.value
-        if (cityValue is City.Full)
+        if (cityValue is City.Full) {
             disposables += forecastRepo
                 .saveCityRx(cityValue.toSaved()).subscribe({ }, { unableSave() })
-        else
+        } else {
             unableSave()
+        }
     }
 
     fun refresh() {
         val cityValue = citySubject.value
-        if (cityValue == null)
-            citySubject.onNext(City.Empty)
-        else
-            citySubject.onNext(cityValue)
+        citySubject.onNext(cityValue ?: City.Empty)
     }
 
     fun setGPSLocation(long: Double, lat: Double) {
@@ -148,12 +145,13 @@ class ForecastViewModel @Inject constructor(
                 when (forecast) {
                     is TypedResult.Ok -> forecastSubject.onNext(forecast.result)
                     is TypedResult.Err -> {
-                        if (forecastSubject.value is Forecast.Data)
+                        if (forecastSubject.value is Forecast.Data) {
                             showSnackBarSubject.onNext(
                                 SnackbarEvent.Show(SnackBarMessage.UNABLE_LOAD)
                             )
-                        else
+                        } else {
                             screenStateSubject.onNext(ForecastState.ErrorState.Connection)
+                        }
                     }
                 }
             }, ::handleError)
@@ -165,27 +163,21 @@ class ForecastViewModel @Inject constructor(
     }
 
     private fun subscribeToNewLocation() {
-        var disposable: Disposable? = null
-        disposable = setLocationSubject
+        disposables += setLocationSubject
             .zipWith(citySubject, { newLocation, currentCity -> newLocation to currentCity })
             .subscribe({ (newLocation, currentCity) ->
                 if (currentCity is City.Empty) {
                     citySubject.onNext(newLocation.toCity())
-                    disposable?.dispose()
                 }
             }, ::handleError)
-        disposables += disposable
     }
 
     private fun subscribeToLocationPermission() {
-        var disposable: Disposable? = null
-        disposable = permissionStateSubject
+        disposables += permissionStateSubject
             .filter { it is PermissionState.Denied }
             .subscribe({
                 getLocation()
-                disposable?.dispose()
             }, ::handleError)
-        disposables += disposable
     }
 
     private fun requireLocation() {

@@ -18,7 +18,6 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -38,7 +37,7 @@ import ru.tagilov.avitotrainee.R
 fun SearchBar(
     state: MutableState<TextFieldValue>,
     textUpdated: (String) -> Unit,
-    focused: State<Boolean>,
+    focused: Boolean,
     onFocusChanged: (Boolean) -> Unit,
 ) {
     val colorSecondary = MaterialTheme.colors.secondary
@@ -49,7 +48,7 @@ fun SearchBar(
     val focusManager = LocalFocusManager.current
 
     SideEffect {
-        if (!focused.value){
+        if (!focused){
             focusManager.clearFocus()
             state.value = TextFieldValue("")
             textUpdated("")
@@ -108,7 +107,7 @@ fun SearchBar(
                     modifier = Modifier.fillMaxWidth())
                 },
         )
-        AnimatedVisibility (focused.value) {
+        AnimatedVisibility (focused) {
             Text(
                 text = stringResource(id = R.string.cancel),
                 modifier = Modifier

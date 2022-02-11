@@ -21,6 +21,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rxjava3.subscribeAsState
@@ -66,15 +67,15 @@ fun Forecast(
             vm.setEmptyCity()
     }
 
-    val permissionState = vm.permissionStateObservable
+    val permissionState by vm.permissionStateObservable
         .subscribeAsState(initial = PermissionState.None)
-    val cityState = vm.cityObservable
+    val cityState by vm.cityObservable
         .subscribeAsState(initial = City.Empty)
-    val forecastState = vm.forecastObservable
+    val forecastState by vm.forecastObservable
         .subscribeAsState(initial = Forecast.Empty)
-    val screenState = vm.screenStateObservable
+    val screenState by vm.screenStateObservable
         .subscribeAsState(initial = ForecastState.None)
-    val saved = vm.savedStateObservable
+    val saved by vm.savedStateObservable
         .subscribeAsState(initial = SavedState.NONE)
     val context = LocalContext.current
 
@@ -102,7 +103,7 @@ fun Forecast(
             vm.newPermissionState(PermissionState.Denied)
     }
     SideEffect {
-        if (permissionState.value == PermissionState.Required) {
+        if (permissionState == PermissionState.Required) {
             vm.newPermissionState(PermissionState.Waiting)
             if (ContextCompat.checkSelfPermission(
                     context,
@@ -118,13 +119,13 @@ fun Forecast(
 
 //    логика снекбара
     val snackbarState = remember { SnackbarHostState() }
-    val snackbarEvents = vm.showSnackBarObservable
+    val snackbarEvents by vm.showSnackBarObservable
         .subscribeAsState(initial = SnackbarEvent.Empty)
     val coroutineScope = rememberCoroutineScope()
     val unableUpdateMessage = stringResource(id = R.string.unable_to_update)
     val unableSaveMessage = stringResource(id = R.string.unable_to_save)
-    LaunchedEffect(key1 = snackbarEvents.value) {
-        val event = snackbarEvents.value
+    LaunchedEffect(key1 = snackbarEvents) {
+        val event = snackbarEvents
         if (event is SnackbarEvent.Show)
             coroutineScope.launch {
                 snackbarState.showSnackbar(
@@ -163,20 +164,20 @@ fun Forecast(
                 Column(
                     modifier = Modifier
                 ) {
-                    if (screenState.value == ForecastState.Content
-                        || screenState.value == ForecastState.Loading
+                    if (screenState == ForecastState.Content
+                        || screenState == ForecastState.Loading
                     ) {
-                        val cityValue = cityState.value
+                        val cityValue = cityState
                         CityTitle(city = when (cityValue) {
                             is City.Empty -> null
                             is City.Full -> cityValue
                             is City.WithGeo -> null
                         })
-                        Timber.d("state is ${screenState.value}")
+                        Timber.d("state is $screenState")
                         SwipeRefresh(
                             state =
                             rememberSwipeRefreshState(
-                                screenState.value is ForecastState.Loading
+                                screenState is ForecastState.Loading
 //                                        && forecastState.value !is Forecast.Empty
                             ),
                             onRefresh = { vm.refresh() },
@@ -187,7 +188,7 @@ fun Forecast(
                                     .padding(horizontal = 8.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                val forecastValue = forecastState.value
+                                val forecastValue = forecastState
                                 val forecast: Forecast.Data? = if (forecastValue is Forecast.Data)
                                     forecastValue
                                 else
@@ -195,7 +196,7 @@ fun Forecast(
                                 item { Current(forecast = forecast?.current) }
                                 item {
                                     AnimatedVisibility(
-                                        visible = saved.value == SavedState.NOT_SAVED
+                                        visible = saved == SavedState.NOT_SAVED
                                     ) {
                                         SaveSuggestion { vm.save() }
                                     }
@@ -215,9 +216,9 @@ fun Forecast(
                                 }
                             }
                         }
-                    } else if (screenState.value == ForecastState.ErrorState.Connection) {
+                    } else if (screenState == ForecastState.ErrorState.Connection) {
                         ConnectionError { vm.refresh() }
-                    } else if (screenState.value == ForecastState.ErrorState.Location) {
+                    } else if (screenState == ForecastState.ErrorState.Location) {
                         LocationError { vm.refresh() }
                     }
                 }
@@ -226,7 +227,7 @@ fun Forecast(
         NavBar(
             navController = navController,
             isLocation = city == null,
-            isSaved = saved.value == SavedState.SAVED,
+            isSaved = saved == SavedState.SAVED,
             onSave = { vm.save() }
         )
     }

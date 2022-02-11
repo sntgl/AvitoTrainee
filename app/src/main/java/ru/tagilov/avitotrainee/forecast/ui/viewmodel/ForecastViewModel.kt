@@ -1,256 +1,202 @@
 package ru.tagilov.avitotrainee.forecast.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import ru.tagilov.avitotrainee.core.ShowSnackbarEvent
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import ru.tagilov.avitotrainee.core.SnackBarMessage
+import ru.tagilov.avitotrainee.core.SnackbarEvent
 import ru.tagilov.avitotrainee.core.routing.CityParcelable
-import ru.tagilov.avitotrainee.core.routing.toSavedCity
 import ru.tagilov.avitotrainee.core.util.TypedResult
+import ru.tagilov.avitotrainee.core.util.plusAssign
 import ru.tagilov.avitotrainee.forecast.data.ForecastRepository
 import ru.tagilov.avitotrainee.forecast.data.LocationRepository
+import ru.tagilov.avitotrainee.forecast.data.entity.SetLocationData
+import ru.tagilov.avitotrainee.forecast.data.entity.toCity
+import ru.tagilov.avitotrainee.forecast.ui.entity.City
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
+import ru.tagilov.avitotrainee.forecast.ui.entity.GeoOrigin
 import ru.tagilov.avitotrainee.forecast.ui.entity.PermissionState
+import ru.tagilov.avitotrainee.forecast.ui.entity.complete
+import ru.tagilov.avitotrainee.forecast.ui.entity.toCity
+import ru.tagilov.avitotrainee.forecast.ui.entity.toSaved
 import ru.tagilov.avitotrainee.forecast.ui.screen.ForecastState
 import ru.tagilov.avitotrainee.forecast.ui.screen.SavedState
 import timber.log.Timber
 import javax.inject.Inject
 
 class ForecastViewModel @Inject constructor(
-        private val locationRepo: LocationRepository,
-        private val forecastRepo: ForecastRepository,
+    private val locationRepo: LocationRepository,
+    private val forecastRepo: ForecastRepository,
 ) : ViewModel() {
-    private var isApiLocation = true
-    private var apiLocationFailed = false
-    private var delayForecast = false
+    private val disposables = CompositeDisposable()
 
-    fun configure(city: CityParcelable?) {
-        Timber.d("City configured: $city")
-        setCity(city = city)
-        getForecast()
+    private val screenStateSubject: BehaviorSubject<ForecastState> = BehaviorSubject.create()
+    val screenStateObservable: Observable<ForecastState>
+        get() = screenStateSubject.hide()
+
+    private val forecastSubject: BehaviorSubject<Forecast> = BehaviorSubject.create()
+    val forecastObservable: Observable<Forecast>
+        get() = forecastSubject.hide()
+
+    private val savedStateSubject: BehaviorSubject<SavedState> = BehaviorSubject.create()
+    val savedStateObservable: Observable<SavedState>
+        get() = savedStateSubject.hide()
+
+    private val showSnackBarSubject: BehaviorSubject<SnackbarEvent> = BehaviorSubject.create()
+    val showSnackBarObservable: Observable<SnackbarEvent>
+        get() = showSnackBarSubject.hide()
+
+    private val permissionStateSubject: BehaviorSubject<PermissionState> = BehaviorSubject.create()
+    val permissionStateObservable: Observable<PermissionState>
+        get() = permissionStateSubject.hide()
+
+    private val citySubject: BehaviorSubject<City> = BehaviorSubject.create()
+    val cityObservable: Observable<City>
+        get() = citySubject.hide()
+
+    private val setLocationSubject = BehaviorSubject.create<SetLocationData>()
+
+    init {
+        subscribeToLocationPermission()
+        subscribeToCity()
+        subscribeToNewLocation()
     }
 
-    private val permissionStateMutableFlow = MutableStateFlow<PermissionState>(PermissionState.None)
-    val permissionStateFlow: StateFlow<PermissionState>
-        get() = permissionStateMutableFlow
+    override fun onCleared() {
+        super.onCleared()
+        disposables.dispose()
+    }
 
-    private val isLocationMutableFlow = MutableStateFlow(true)
-    val isLocationFlow: StateFlow<Boolean>
-        get() = isLocationMutableFlow
+    fun setCity(city: CityParcelable) {
+        citySubject.onNext(city.toCity())
+        city.id?.let { subscribeToSavedState(it) }
+    }
 
-    private val screenStateMutableFlow = MutableStateFlow<ForecastState>(ForecastState.None)
-    val stateFlow: StateFlow<ForecastState>
-        get() = screenStateMutableFlow
-
-    private val isRefreshingMutableFlow = MutableStateFlow(false)
-    val isRefreshingFlow: StateFlow<Boolean>
-        get() = isRefreshingMutableFlow
+    fun setEmptyCity() {
+        citySubject.onNext(City.Empty)
+        screenStateSubject.onNext(ForecastState.Loading)
+    }
 
     fun newPermissionState(state: PermissionState) {
-        Timber.d("new permission state - $state")
-        viewModelScope.launch {
-            permissionStateMutableFlow.emit(state)
-        }
-    }
-
-    private val cityMutableFlow = MutableStateFlow<CityParcelable?>(null)
-    val cityFlow: StateFlow<CityParcelable?>
-        get() = cityMutableFlow
-
-    private fun setCity(city: CityParcelable?) {
-        viewModelScope.launch {
-            if (city == null) {
-                permissionStateMutableFlow.emit(PermissionState.Required)
-            } else if (cityMutableFlow.value == null) {
-                isLocationMutableFlow.emit(false)
-                cityMutableFlow.emit(city)
-            }
-        }
-    }
-
-
-    @Synchronized //тк может придти от разных источников - и от системы, и от апи, апи менее приоритетный источник
-    fun setLocation(long: Double, lat: Double, fromApi: Boolean) {
-        Timber.d("got loc $long, $lat (from api - $fromApi)")
-        viewModelScope.launch {
-            if (isApiLocation || !fromApi) {
-                val city = cityMutableFlow.value
-                cityMutableFlow.emit(
-                    city?.copy(longitude = long, latitude = lat)
-                        ?: CityParcelable(
-                            id = null,
-                            name = null,
-                            countryCode = null,
-                            longitude = long,
-                            latitude = lat
-                        )
-                )
-                isApiLocation = fromApi
-            }
-        }
-    }
-
-    private var currentLocationJob: Job? = null
-    private fun getLocation() {
-        currentLocationJob?.cancel()
-        currentLocationJob = viewModelScope.launch {
-            if (permissionStateFlow.value == PermissionState.None)
-                permissionStateMutableFlow.emit(PermissionState.Required)
-            locationRepo.getLocation().collect { loc ->
-                when (loc) {
-                    is TypedResult.Err -> {
-                        apiLocationFailed = true
-                        if (permissionStateMutableFlow.value == PermissionState.Denied)
-                            screenStateMutableFlow.emit(ForecastState.ErrorState.Location)
-                    }
-                    is TypedResult.Ok -> {
-                        setLocation(
-                            lat = loc.result.latitude,
-                            long = loc.result.longitude,
-                            fromApi = true
-                        )
-                    }
-                }
-            }
-            currentLocationJob = null
-        }
-    }
-
-    private val forecastMutableFlow = MutableStateFlow<Forecast?>(null)
-    val forecastFlow: StateFlow<Forecast?>
-        get() = forecastMutableFlow
-    private var currentForecastJob: Job? = null
-
-    private val showSnackBarMutableEvent = MutableStateFlow<ShowSnackbarEvent?>(null)
-    val showSnackBarEvent: StateFlow<ShowSnackbarEvent?>
-        get() = showSnackBarMutableEvent
-
-
-    private val savedCityMutableFlow = MutableStateFlow(SavedState.NONE)
-    val savedCityFlow: StateFlow<SavedState>
-        get() = savedCityMutableFlow
-
-
-    private fun checkSaved() {
-        val cityId = cityMutableFlow.value?.id
-        if (
-            savedCityMutableFlow.value == SavedState.NONE &&
-            permissionStateMutableFlow.value == PermissionState.None &&
-            cityId != null
-        ) {
-            forecastRepo.checkSaved(cityId).onEach {
-                savedCityMutableFlow.emit(it)
-            }.launchIn(viewModelScope)
-        }
+        permissionStateSubject.onNext(state)
     }
 
     fun save() {
-        cityMutableFlow.value?.let {
-            viewModelScope.launch {
-                try {
-                    forecastRepo.saveCity(it.toSavedCity())
-                } catch (e: IllegalArgumentException) {
-                    showSnackBarMutableEvent.emit(ShowSnackbarEvent(SnackBarMessage.UNABLE_SAVE))
-                }
-            }
+        val cityValue = citySubject.value
+        if (cityValue is City.Full) {
+            disposables += forecastRepo
+                .saveCityRx(cityValue.toSaved()).subscribe({ }, { unableSave() })
+        } else {
+            unableSave()
         }
-    }
-
-    private fun getForecast() { //какой-то жирный получился, мб раскидать стоит
-        currentForecastJob?.cancel()
-        currentForecastJob = viewModelScope.launch {
-            screenStateMutableFlow.emit(ForecastState.Loading)
-            val oldCity = cityMutableFlow.value
-            //какой-то continuation получился))
-            when {
-                oldCity == null -> {
-                    getLocation()
-                    delayForecast = true
-                }
-                cityMutableFlow.value?.name == null -> {
-                    delayForecast = false
-                    val cityFlow = forecastRepo
-                        .getCityName(longitude = oldCity.longitude, latitude = oldCity.latitude)
-                    val forecastFlow = forecastRepo
-                        .getWeather(longitude = oldCity.longitude, latitude = oldCity.latitude)
-                    cityFlow
-                        .zip(forecastFlow) { t1, t2 -> t1 to t2 }
-                        .onEach { (city, forecast) ->
-                            isRefreshingMutableFlow.emit(false)
-                            if (city is TypedResult.Ok && forecast is TypedResult.Ok) {
-                                cityMutableFlow.emit(oldCity.copy(name = city.result))
-                                forecastMutableFlow.emit(forecast.result)
-                            } else if (forecastMutableFlow.value == null)
-                                screenStateMutableFlow.emit(ForecastState.ErrorState.Connection)
-                            else
-                                showSnackBarMutableEvent.emit(
-                                    ShowSnackbarEvent(SnackBarMessage.UNABLE_LOAD)
-                                )
-                        }.launchIn(viewModelScope)
-                }
-                else -> {
-                    delayForecast = false
-                    forecastRepo
-                        .getWeather(longitude = oldCity.longitude, latitude = oldCity.latitude)
-                        .onEach { forecast ->
-                            isRefreshingMutableFlow.emit(false)
-                            when {
-                                forecast is TypedResult.Err ->
-                                    forecastMutableFlow.emit(null)
-                                forecastMutableFlow.value == null ->
-                                    screenStateMutableFlow.emit(ForecastState.ErrorState.Connection)
-                                else ->
-                                    showSnackBarMutableEvent.emit(
-                                        ShowSnackbarEvent(SnackBarMessage.UNABLE_LOAD)
-                                    )
-                            }
-                        }.launchIn(viewModelScope)
-                }
-            }
-        }
-        currentForecastJob = null
     }
 
     fun refresh() {
-        viewModelScope.launch {
-            isRefreshingMutableFlow.emit(true)
-        }
-        getForecast()
+        val cityValue = citySubject.value
+        citySubject.onNext(cityValue ?: City.Empty)
     }
 
-    init {
-        cityMutableFlow.onEach {
-            Timber.d("new city: ${it?.name} at " + it?.latitude.toString() + " " + it?.longitude.toString())
-            if (it != null && delayForecast) {
-                getForecast()
-            }
-        }.launchIn(viewModelScope)
+    fun setGPSLocation(long: Double, lat: Double) {
+        setLocationSubject.onNext(SetLocationData(lat = lat, long = long, origin = GeoOrigin.GPS))
+    }
 
-        forecastMutableFlow.onEach {
-            Timber.d("new forecast: $it")
-        }.launchIn(viewModelScope)
+    private fun unableSave() {
+        showSnackBarSubject.onNext(SnackbarEvent.Show(SnackBarMessage.UNABLE_SAVE))
+    }
 
-        viewModelScope.launch {
-            screenStateMutableFlow.emit(ForecastState.Loading)
-        }
-        screenStateMutableFlow.onEach {
-            Timber.d("New screen state - $it")
-        }.launchIn(viewModelScope)
+    private fun setApiLocation(long: Double, lat: Double) {
+        setLocationSubject.onNext(SetLocationData(long = long, lat = lat, origin = GeoOrigin.API))
+    }
 
-        permissionStateMutableFlow.onEach {
-            if (it == PermissionState.Denied && apiLocationFailed)
-                screenStateMutableFlow.emit(ForecastState.ErrorState.Location)
-        }.launchIn(viewModelScope)
+    private fun getLocation() {
+        disposables += locationRepo.getLocationRx()
+            .subscribe({ loc ->
+                when (loc) {
+                    is TypedResult.Err -> {
+                        screenStateSubject.onNext(ForecastState.ErrorState.Location)
+                    }
+                    is TypedResult.Ok -> {
+                        loc.result.let { setApiLocation(lat = it.latitude, long = it.longitude) }
+                    }
+                }
+            }, ::handleError)
+    }
 
-        cityMutableFlow.onEach {
-            checkSaved()
-        }.launchIn(viewModelScope)
+    private fun getName(city: City.WithGeo) {
+        disposables += forecastRepo
+            .getCityNameRx(longitude = city.longitude, latitude = city.latitude)
+            .subscribe({
+                when (it) {
+                    is TypedResult.Err ->
+                        screenStateSubject.onNext(ForecastState.ErrorState.Connection)
+                    is TypedResult.Ok ->
+                        citySubject.onNext(city.complete(it.result.name, it.result.countryCode))
+                }
+            }, ::handleError)
+    }
 
-        savedCityMutableFlow.onEach {
-            Timber.d("Saved = $it")
-        }.launchIn(viewModelScope)
+    private fun getForecast(city: City.Full) {
+        screenStateSubject.onNext(ForecastState.Loading)
+        disposables += forecastRepo
+            .getWeatherRx(longitude = city.longitude, latitude = city.latitude)
+            .subscribe({ forecast ->
+                screenStateSubject.onNext(ForecastState.Content)
+                when (forecast) {
+                    is TypedResult.Ok -> forecastSubject.onNext(forecast.result)
+                    is TypedResult.Err -> {
+                        if (forecastSubject.value is Forecast.Data) {
+                            showSnackBarSubject.onNext(
+                                SnackbarEvent.Show(SnackBarMessage.UNABLE_LOAD)
+                            )
+                        } else {
+                            screenStateSubject.onNext(ForecastState.ErrorState.Connection)
+                        }
+                    }
+                }
+            }, ::handleError)
+    }
+
+    private fun handleError(throwable: Throwable) {
+        Timber.e(throwable, "RxJava error!")
+        screenStateSubject.onNext(ForecastState.ErrorState.Connection)
+    }
+
+    private fun subscribeToNewLocation() {
+        disposables += setLocationSubject
+            .zipWith(citySubject, { newLocation, currentCity -> newLocation to currentCity })
+            .subscribe({ (newLocation, currentCity) ->
+                if (currentCity is City.Empty) {
+                    citySubject.onNext(newLocation.toCity())
+                }
+            }, ::handleError)
+    }
+
+    private fun subscribeToLocationPermission() {
+        disposables += permissionStateSubject
+            .filter { it is PermissionState.Denied }
+            .subscribe({
+                getLocation()
+            }, ::handleError)
+    }
+
+    private fun requireLocation() {
+        permissionStateSubject.onNext(PermissionState.Required)
+    }
+
+    private fun subscribeToSavedState(cityId: String) {
+        disposables += forecastRepo.checkSavedRx(cityId)
+            .subscribe({ savedStateSubject.onNext(it) }, ::handleError)
+    }
+
+    private fun subscribeToCity() {
+        disposables += citySubject
+            .subscribe({ city ->
+                when (city) {
+                    is City.Empty -> requireLocation()
+                    is City.WithGeo -> getName(city = city)
+                    is City.Full -> getForecast(city = city)
+                }
+            }, ::handleError)
     }
 }

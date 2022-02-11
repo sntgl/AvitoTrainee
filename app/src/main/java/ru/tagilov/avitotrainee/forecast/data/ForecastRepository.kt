@@ -1,73 +1,68 @@
 package ru.tagilov.avitotrainee.forecast.data
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Single
 import ru.tagilov.avitotrainee.core.db.AppDatabase
 import ru.tagilov.avitotrainee.core.db.SavedCity
 import ru.tagilov.avitotrainee.core.util.TypedResult
+import ru.tagilov.avitotrainee.forecast.data.entity.ResponseCityName
+import ru.tagilov.avitotrainee.forecast.data.entity.toCityNameData
 import ru.tagilov.avitotrainee.forecast.data.entity.toForecast
+import ru.tagilov.avitotrainee.forecast.di.SchedulersFactory
+import ru.tagilov.avitotrainee.forecast.ui.entity.CityNameData
 import ru.tagilov.avitotrainee.forecast.ui.entity.Forecast
 import ru.tagilov.avitotrainee.forecast.ui.screen.SavedState
-import java.io.IOException
 import javax.inject.Inject
 
 interface ForecastRepository {
-    fun getCityName(longitude: Double, latitude: Double): Flow<TypedResult<String>>
-    fun getWeather(longitude: Double, latitude: Double): Flow<TypedResult<Forecast>>
-    suspend fun saveCity(city: SavedCity)
-    fun checkSaved(id: String): Flow<SavedState>
+    fun getCityNameRx(longitude: Double, latitude: Double): Single<TypedResult<CityNameData>>
+    fun getWeatherRx(longitude: Double, latitude: Double): Single<TypedResult<Forecast>>
+    fun saveCityRx(city: SavedCity): Single<TypedResult<Unit>>
+    fun checkSavedRx(id: String): Flowable<SavedState>
 }
 
 class ForecastRepositoryImpl @Inject constructor(
     private val forecastApi: ForecastApi,
+    private val schedulers: SchedulersFactory,
     db: AppDatabase
 ) : ForecastRepository {
     private val cityDao = db.cityDao()
 
-    override fun getCityName(
-        longitude: Double,
-        latitude: Double,
-    ) = flow {
-        try {
-            val result = forecastApi.getCityName(
-                longitude = longitude.toString(),
-                latitude = latitude.toString()
-            )
-            if (result.isNotEmpty())
-                emit(TypedResult.Ok(result[0].localNames?.ru ?: result[0].name))
-            else
-                emit(TypedResult.Err())
-        } catch (e: IOException) {
-            emit(TypedResult.Err())
-        }
-    }.flowOn(Dispatchers.IO)
+    override fun getCityNameRx(longitude: Double, latitude: Double): Single<TypedResult<CityNameData>> =
+        forecastApi.getCityNameRx(longitude = longitude.toString(), latitude = latitude.toString())
+            .map { result: List<ResponseCityName> ->
+                if (result.isNotEmpty())
+                    TypedResult.Ok(result[0].toCityNameData())
+                else
+                    TypedResult.Err()
+            }.onErrorResumeNext { Single.just(TypedResult.Err()) }
+            .subscribeOn(schedulers.io())
 
+    override fun getWeatherRx(longitude: Double, latitude: Double): Single<TypedResult<Forecast>> =
+        forecastApi.getFullForecastRx(
+            longitude = longitude.toString(),
+            latitude = latitude.toString()
+        )
+            .map { TypedResult.Ok(it.toForecast()) as TypedResult<Forecast> }
+            .onErrorResumeNext { Single.just(TypedResult.Err()) }
+            .subscribeOn(schedulers.io())
 
-    override fun getWeather(
-        longitude: Double,
-        latitude: Double,
-    ) = flow {
-        try {
-            val result = forecastApi.getFullForecast(
-                longitude = longitude.toString(),
-                latitude = latitude.toString()
-            )
-            emit(TypedResult.Ok(result.toForecast()))
-        } catch (e: IOException) {
-            emit(TypedResult.Err())
-        }
-    }.flowOn(Dispatchers.IO)
+    override fun saveCityRx(city: SavedCity): Single<TypedResult<Unit>> =
+        cityDao.saveRx(city)
+            .toSingleDefault(TypedResult.Ok(Unit) as TypedResult<Unit>)
+            .onErrorResumeNext {
+                Single.just(TypedResult.Err())
+            }.subscribeOn(schedulers.io())
 
-    override suspend fun saveCity(city: SavedCity) {
-        cityDao.save(city)
-    }
-
-    override fun checkSaved(id: String): Flow<SavedState> = cityDao.get(id).map {
-        if (it != null) SavedState.SAVED else SavedState.NOT_SAVED
-    }
+    override fun checkSavedRx(id: String): Flowable<SavedState> =
+        cityDao.checkSavedRx(id)
+            .map {
+                if (it == 0) SavedState.NOT_SAVED else SavedState.SAVED
+            }
+            .onErrorResumeNext {
+                Flowable.just(SavedState.NOT_SAVED)
+            }
+            .subscribeOn(schedulers.io())
 
 }
 

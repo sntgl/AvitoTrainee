@@ -7,7 +7,12 @@ import retrofit2.Retrofit
 import retrofit2.create
 import ru.tagilov.avitotrainee.core.di.Forecast
 import ru.tagilov.avitotrainee.core.di.Location
-import ru.tagilov.avitotrainee.forecast.data.*
+import ru.tagilov.avitotrainee.forecast.data.ForecastApi
+import ru.tagilov.avitotrainee.forecast.data.ForecastRepository
+import ru.tagilov.avitotrainee.forecast.data.ForecastRepositoryImpl
+import ru.tagilov.avitotrainee.forecast.data.LocationApi
+import ru.tagilov.avitotrainee.forecast.data.LocationRepository
+import ru.tagilov.avitotrainee.forecast.data.LocationRepositoryImpl
 
 @Module(includes = [ForecastBinds::class])
 class ForecastModule {

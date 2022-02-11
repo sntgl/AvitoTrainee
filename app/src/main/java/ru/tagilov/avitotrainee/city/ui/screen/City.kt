@@ -6,30 +6,34 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rxjava3.subscribeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.NavController
-import kotlinx.coroutines.FlowPreview
 import ru.tagilov.avitotrainee.R
-import ru.tagilov.avitotrainee.city.ui.component.*
+import ru.tagilov.avitotrainee.city.ui.component.Cities
+import ru.tagilov.avitotrainee.city.ui.component.CityLoadError
+import ru.tagilov.avitotrainee.city.ui.component.CurrentCity
+import ru.tagilov.avitotrainee.city.ui.component.EmptySearch
+import ru.tagilov.avitotrainee.city.ui.component.SearchBar
 import ru.tagilov.avitotrainee.city.ui.viewmodel.CityViewModel
 
-@OptIn(FlowPreview::class)
 @Composable
 fun City(
     navController: NavController,
     vm: CityViewModel
 ) {
     val searchBarState = remember { mutableStateOf(TextFieldValue()) }
-    val screenState = remember { vm.screenStateFlow }.collectAsState()
-    val loadedCities = remember { vm.searchCityListFlow }.collectAsState()
-    val savedCities = remember { vm.savedCitiesFlow }.collectAsState()
+    val screenState by vm.screenStateObservable.subscribeAsState(initial = CityState.None)
+    val loadedCities by vm.searchCityListObservable.subscribeAsState(initial = emptyList())
+    val savedCities by vm.savedCitiesObservable.subscribeAsState(initial = emptyList())
+    val searchFocused by vm.searchFocusedObservable.subscribeAsState(initial = false)
 
-    BackHandler(enabled = screenState.value is CityState.Search) {
+    BackHandler(enabled = screenState is CityState.Search) {
         vm.newSearchFocus(false)
     }
 
@@ -41,29 +45,29 @@ fun City(
         SearchBar(
             state = searchBarState,
             textUpdated = { vm.newEntry(it) },
-            isFocused = vm.searchFocusedFlow,
+            focused = searchFocused,
             onFocusChanged = { vm.newSearchFocus(it) }
         )
-        when (screenState.value) {
+        when (screenState) {
             CityState.None -> {
                 CurrentCity(navController = navController)
             }
             CityState.Saved -> {
                 Cities(
-                    cities = savedCities.value,
+                    cities = savedCities,
                     navController = navController,
                     title = stringResource(id = R.string.saved_cities),
                     isLocal = true,
-                    onDismiss = {vm.delete(it)}
+                    onDismiss = { vm.delete(it) }
                 )
             }
             CityState.Search.Content -> {
                 Cities(
-                    cities = loadedCities.value,
+                    cities = loadedCities,
                     navController = navController,
                     title = stringResource(id = R.string.searched_cities),
                     isLocal = false,
-                    onDismiss = {  }
+                    onDismiss = { }
                 )
             }
             CityState.Search.Empty -> {

@@ -3,9 +3,23 @@ package ru.tagilov.avitotrainee.city.ui.component
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
@@ -16,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.StateFlow
 import ru.tagilov.avitotrainee.R
 
 
@@ -24,7 +37,7 @@ import ru.tagilov.avitotrainee.R
 fun SearchBar(
     state: MutableState<TextFieldValue>,
     textUpdated: (String) -> Unit,
-    isFocused: StateFlow<Boolean>,
+    focused: Boolean,
     onFocusChanged: (Boolean) -> Unit,
 ) {
     val colorSecondary = MaterialTheme.colors.secondary
@@ -32,11 +45,10 @@ fun SearchBar(
     val textColor = remember { mutableStateOf(colorSecondary) }
     val placeHolderDefaultText = stringResource(R.string.text_field_tip)
     val placeHolderText = remember { mutableStateOf(placeHolderDefaultText) }
-    val focused = remember { isFocused }.collectAsState()
     val focusManager = LocalFocusManager.current
 
     SideEffect {
-        if (!focused.value){
+        if (!focused){
             focusManager.clearFocus()
             state.value = TextFieldValue("")
             textUpdated("")
@@ -95,7 +107,7 @@ fun SearchBar(
                     modifier = Modifier.fillMaxWidth())
                 },
         )
-        AnimatedVisibility (focused.value) {
+        AnimatedVisibility (focused) {
             Text(
                 text = stringResource(id = R.string.cancel),
                 modifier = Modifier

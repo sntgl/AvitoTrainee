@@ -39,9 +39,9 @@ enum class GeoOrigin {
 }
 
 fun CityParcelable?.toCity(): City {
-    return if (this == null)
+    return if (this == null) {
         City.Empty
-    else {
+    } else {
         val city = City.WithGeo(latitude = latitude, longitude = longitude, origin = GeoOrigin.UNKNOWN)
         if (this.id != null && this.name != null && this.countryCode != null)
             city.complete(name = name, countryCode = countryCode)

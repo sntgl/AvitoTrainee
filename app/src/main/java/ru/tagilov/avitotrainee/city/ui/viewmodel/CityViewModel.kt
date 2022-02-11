@@ -42,7 +42,6 @@ class CityViewModel @Inject constructor(
         subscribeToEntry()
     }
 
-
     override fun onCleared() {
         super.onCleared()
         disposables.dispose()
@@ -105,9 +104,7 @@ class CityViewModel @Inject constructor(
                         }
                     }
                 }
-            },
-            ::handleError
-        )
+            }, ::handleError)
     }
 
 }

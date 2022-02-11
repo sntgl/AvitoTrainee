@@ -66,14 +66,19 @@ fun Forecast(
             vm.setEmptyCity()
     }
 
-    val permissionState = remember { vm.permissionStateObservable }.subscribeAsState(initial = PermissionState.None)
-    val cityState = remember { vm.cityObservable }.subscribeAsState(initial = City.Empty)
-    val forecastState = remember { vm.forecastObservable }.subscribeAsState(initial = Forecast.Empty)
-    val screenState = remember { vm.screenStateObservable }.subscribeAsState(initial = ForecastState.None)
+    val permissionState = vm.permissionStateObservable
+        .subscribeAsState(initial = PermissionState.None)
+    val cityState = vm.cityObservable
+        .subscribeAsState(initial = City.Empty)
+    val forecastState = vm.forecastObservable
+        .subscribeAsState(initial = Forecast.Empty)
+    val screenState = vm.screenStateObservable
+        .subscribeAsState(initial = ForecastState.None)
+    val saved = vm.savedStateObservable
+        .subscribeAsState(initial = SavedState.NONE)
     val context = LocalContext.current
-    val saved = remember { vm.savedStateObservable }.subscribeAsState(initial = SavedState.NONE)
 
-    //локация
+//     локация
     val sendLocation = {
         LocationServices
             .getFusedLocationProviderClient(context)
@@ -113,9 +118,8 @@ fun Forecast(
 
 //    логика снекбара
     val snackbarState = remember { SnackbarHostState() }
-    val snackbarEvents = remember {
-        vm.showSnackBarObservable
-    }.subscribeAsState(initial = SnackbarEvent.Empty)
+    val snackbarEvents = vm.showSnackBarObservable
+        .subscribeAsState(initial = SnackbarEvent.Empty)
     val coroutineScope = rememberCoroutineScope()
     val unableUpdateMessage = stringResource(id = R.string.unable_to_update)
     val unableSaveMessage = stringResource(id = R.string.unable_to_save)
@@ -134,7 +138,6 @@ fun Forecast(
 
 //    непосредственно верстка
     Column {
-
         Column(
             modifier = Modifier
                 .background(color = MaterialTheme.colors.surface)

@@ -1,0 +1,61 @@
+{
+    "name": "new focus state method invoke -- state is changed",
+    "start": 1672557715154,
+    "stop": 1672557715159,
+    "stage": "finished",
+    "description": null,
+    "descriptionHtml": null,
+    "status": "passed",
+    "statusDetails": null,
+    "steps": [
+    ],
+    "attachments": [
+    ],
+    "parameters": [
+    ],
+    "uuid": "81a6fb90-4c1e-415e-9fe9-22d876b379ac",
+    "historyId": "189afdd3ede014e794f42b007b3311ac",
+    "fullName": "ru.tagilov.avitotrainee.city.ui.viewmodel.CityViewModelNoMockTest.new focus state method invoke -- state is changed",
+    "labels": [
+        {
+            "name": "package",
+            "value": "ru.tagilov.avitotrainee.city.ui.viewmodel"
+        },
+        {
+            "name": "testClass",
+            "value": "ru.tagilov.avitotrainee.city.ui.viewmodel.CityViewModelNoMockTest"
+        },
+        {
+            "name": "testMethod",
+            "value": "new focus state method invoke -- state is changed"
+        },
+        {
+            "name": "suite",
+            "value": "ViewModel logic test (on mocks)"
+        },
+        {
+            "name": "host",
+            "value": "Aleksandrs-MacBook-Pro-3.local"
+        },
+        {
+            "name": "thread",
+            "value": "70057@Aleksandrs-MacBook-Pro-3.local.Test worker(13)"
+        },
+        {
+            "name": "framework",
+            "value": "junit4"
+        },
+        {
+            "name": "language",
+            "value": "kotlin"
+        },
+        {
+            "name": "epic",
+            "value": "City"
+        },
+        {
+            "name": "tag",
+            "value": "Unit test"
+        }
+    ]
+}

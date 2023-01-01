@@ -3,15 +3,16 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
+    id 'org.jetbrains.kotlin.android'
 }
 
 android {
-    compileSdk 31
+    compileSdk 33
 
     defaultConfig {
         applicationId "ru.tagilov.avitotrainee"
         minSdk 23
-        targetSdk 31
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -50,11 +51,22 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    testOptions {
+        unitTests.all {
+            jvmArgs "-javaagent:${classpath.find { it.name.contains('junit-foundation') }.absolutePath}"
+        }
+    }
+    defaultConfig {
+        testInstrumentationRunner "io.qameta.allure.android.runners.AllureAndroidJUnitRunner"
+    }
 }
 
 dependencies {
     def composeVersion = '1.2.0-alpha02'
 
+    implementation 'junit:junit:4.13.2'
+    implementation 'androidx.core:core-ktx:+'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.0'
     implementation 'com.google.android.material:material:1.4.0'
@@ -74,7 +86,7 @@ dependencies {
     def retrofitVersion = '2.9.0'
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
 //    Kotlin coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
 //    Timber
     implementation 'com.jakewharton.timber:timber:5.0.1'
 //    Gson
@@ -95,4 +107,14 @@ dependencies {
     def dagger_version = "2.40.5"
     implementation "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
+
+
+    testImplementation "io.qameta.allure:allure-kotlin-commons:2.4.0"
+    testImplementation "io.qameta.allure:allure-kotlin-junit4:2.4.0"
+    testImplementation "io.qameta.allure:allure-kotlin-model:2.4.0"
+    testImplementation 'com.nordstrom.tools:junit-foundation:12.2.0'
+    testImplementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.2.2"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.1.0"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1"
+
 }

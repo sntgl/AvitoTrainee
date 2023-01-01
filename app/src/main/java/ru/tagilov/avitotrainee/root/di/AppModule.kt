@@ -17,23 +17,23 @@ import ru.tagilov.avitotrainee.core.util.addQueryApiKey
 import timber.log.Timber
 
 @Module
-class AppModule{
+class AppModule {
 
     @AppScope //Есть вопросы
     @Provides
     fun provideDatabase(context: Context): AppDatabase {
         Timber.d("Database init!")
         return Room.databaseBuilder(
-                context,
-                AppDatabase::class.java,
-                AppDatabase.DB_NAME
+            context,
+            AppDatabase::class.java,
+            AppDatabase.DB_NAME
         ).build()
     }
 
     @AppScope
     @Provides
     fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor =
-            HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
+        HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
 
     @AppScope
     @Provides
@@ -42,31 +42,31 @@ class AppModule{
     @Provides
     @Forecast
     fun provideWeatherClient(
-            httpLoggingInterceptor: HttpLoggingInterceptor
+        httpLoggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient = OkHttpClient.Builder()
-            .addQueryApiKey("appid", Key.WEATHER_API_KEY)
-            .addInterceptor(httpLoggingInterceptor)
-            .build()
+        .addQueryApiKey("appid", Key.WEATHER_API_KEY)
+        .addInterceptor(httpLoggingInterceptor.apply { setLevel(HttpLoggingInterceptor.Level.BODY) })
+        .build()
 
     @Provides
     @Forecast
     fun provideForecastRetrofit(
-            @Forecast weatherClient: OkHttpClient,
-            gsonConverterFactory: GsonConverterFactory
-    ) : Retrofit = Retrofit.Builder()
-            .baseUrl("https://api.openweathermap.org/")
-            .addConverterFactory(gsonConverterFactory)
-            .client(weatherClient)
-            .build()
+        @Forecast weatherClient: OkHttpClient,
+        gsonConverterFactory: GsonConverterFactory
+    ): Retrofit = Retrofit.Builder()
+        .baseUrl("https://api.openweathermap.org/")
+        .addConverterFactory(gsonConverterFactory)
+        .client(weatherClient)
+        .build()
 
     @Location
     @Provides
     fun provideLocationClient(
-            httpLoggingInterceptor: HttpLoggingInterceptor
+        httpLoggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient = OkHttpClient.Builder()
-            .addQueryApiKey("apiKey", Key.LOCATION_API_KEY)
-            .addInterceptor(httpLoggingInterceptor)
-            .build()
+        .addQueryApiKey("apiKey", Key.LOCATION_API_KEY)
+        .addInterceptor(httpLoggingInterceptor)
+        .build()
 
     @Location
     @Provides
@@ -74,8 +74,8 @@ class AppModule{
         @Location locationClient: OkHttpClient,
         gsonConverterFactory: GsonConverterFactory
     ): Retrofit = Retrofit.Builder()
-            .baseUrl("https://api.ipgeolocation.io/")
-            .addConverterFactory(gsonConverterFactory)
-            .client(locationClient)
-            .build()
+        .baseUrl("https://api.ipgeolocation.io/")
+        .addConverterFactory(gsonConverterFactory)
+        .client(locationClient)
+        .build()
 }

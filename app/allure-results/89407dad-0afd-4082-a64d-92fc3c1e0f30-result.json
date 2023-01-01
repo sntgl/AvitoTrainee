@@ -1,0 +1,61 @@
+{
+    "name": "loaded saved cities -- state is changed to saved cities",
+    "start": 1672557719961,
+    "stop": 1672557719964,
+    "stage": "finished",
+    "description": null,
+    "descriptionHtml": null,
+    "status": "passed",
+    "statusDetails": null,
+    "steps": [
+    ],
+    "attachments": [
+    ],
+    "parameters": [
+    ],
+    "uuid": "89407dad-0afd-4082-a64d-92fc3c1e0f30",
+    "historyId": "dcd380ba2ad9064dd569d7d6282e71d8",
+    "fullName": "ru.tagilov.avitotrainee.city.ui.viewmodel.CityViewModelTest.loaded saved cities -- state is changed to saved cities",
+    "labels": [
+        {
+            "name": "package",
+            "value": "ru.tagilov.avitotrainee.city.ui.viewmodel"
+        },
+        {
+            "name": "testClass",
+            "value": "ru.tagilov.avitotrainee.city.ui.viewmodel.CityViewModelTest"
+        },
+        {
+            "name": "testMethod",
+            "value": "loaded saved cities -- state is changed to saved cities"
+        },
+        {
+            "name": "suite",
+            "value": "ViewModel logic test (on mocks)"
+        },
+        {
+            "name": "host",
+            "value": "Aleksandrs-MacBook-Pro-3.local"
+        },
+        {
+            "name": "thread",
+            "value": "70060@Aleksandrs-MacBook-Pro-3.local.Test worker(13)"
+        },
+        {
+            "name": "framework",
+            "value": "junit4"
+        },
+        {
+            "name": "language",
+            "value": "kotlin"
+        },
+        {
+            "name": "epic",
+            "value": "City"
+        },
+        {
+            "name": "tag",
+            "value": "Unit test"
+        }
+    ]
+}
